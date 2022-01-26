@@ -1,67 +1,28 @@
-from cv2 import batchDistance
-import tweepy
-import time
-import os
-import pandas as pd
 from tqdm import tqdm
+import os
+import time
+import datetime as dt
+import pandas as pd
+import tweepy
 
+import fileio as io
 import utils
 import settings
 
-start_user_ids = [146153494] # andhrelja
+USERS_CSV = os.path.join(settings.INPUT_DIR, 'users.csv')
+USERS_INFO_CSV = os.path.join(settings.INPUT_DIR, 'users-info.csv')
+
 api = utils.connect_to_twitter()
 
 
-def get_followers_ids(user_id):
-    followers_ids = []
+def get_twitter_endpoint(method, user_id):
+    content = []
+    cursor = tweepy.Cursor(method=method, user_id=user_id)
     
-    try:
-        root = api.get_user(user_id=user_id)
-    except tweepy.errors.NotFound:
-        print("User {} not found, skipping this step".format(user_id))
-        return followers_ids
-
-    twitter_screen_name = root.screen_name
-    
-    #print('get_followers_ids function working on: ' + twitter_screen_name)
-    
-    try:
-        cursor = tweepy.Cursor(api.get_follower_ids, screen_name=twitter_screen_name)
-    except BaseException as e:
-        print('failed on_status,',str(e))
-        time.sleep(3)
-
     for page in cursor.pages():
-        followers_ids.extend(page)
-    
-    #print(str(twitter_screen_name) + " has " + str(len(followers_ids)) + " followers")
-    return followers_ids
+        content.extend(page)
 
-
-def get_friends_ids(user_id):
-    friends_ids = []
-    
-    try:
-        root = api.get_user(user_id=user_id)
-    except tweepy.errors.NotFound:
-        print("User {} not found, skipping this step".format(user_id))
-        return friends_ids
-    
-    twitter_screen_name = root.screen_name
-    
-    #print('get_friends_ids function working on: ' + twitter_screen_name)
-    
-    try:
-        cursor = tweepy.Cursor(api.get_friend_ids, screen_name=twitter_screen_name)
-    except BaseException as e:
-        print('failed on_status,',str(e))
-        time.sleep(3)
-
-    for page in cursor.pages():
-        friends_ids.extend(page)
-    
-    #print(str(twitter_screen_name) + " is following " + str(len(friends_ids)) + " friends")
-    return friends_ids
+    return content
 
 
 def _get_start_user_ids():
@@ -70,7 +31,7 @@ def _get_start_user_ids():
         df = pd.read_csv(users_csv_path)
         return set(df.user_id)
     else:
-        return set(start_user_ids)
+        return set([146153494]) # andhrelja
 
 def _get_lst_batches(lst, n=100):
     batches = []
@@ -78,43 +39,54 @@ def _get_lst_batches(lst, n=100):
         batches.append(lst[i:i+n])
     return batches
 
-
-def scrape_users():
-    all_user_ids = _get_start_user_ids()
-    
+def collect_user_ids(all_user_ids):
     print("Collecting friends and follower IDs for start_user_ids...")
     for user_id in tqdm(all_user_ids):
         try:
-            friend_ids = get_friends_ids(user_id)
-            follower_ids = get_followers_ids(user_id)
+            friend_ids = get_twitter_endpoint(api.get_friend_ids, user_id)
+            follower_ids = get_twitter_endpoint(api.get_follower_ids, user_id)
         except tweepy.errors.TooManyRequests:
-            print("Rate limit exceeded. Sleeping for 15 minutes")
+            print("\nRate limit exceeded. Sleeping for 15 minutes")
             time.sleep(60*15)
             
-            friend_ids = get_friends_ids(user_id)
-            follower_ids = get_followers_ids(user_id)
+            friend_ids = get_twitter_endpoint(api.get_friend_ids, user_id)
+            follower_ids = get_twitter_endpoint(api.get_follower_ids, user_id)
         
         all_user_ids = all_user_ids.union(set(friend_ids))
         all_user_ids = all_user_ids.union(set(follower_ids))
-    
+    return all_user_ids
+
+
+def collect_user_objs(all_user_ids):
     print("Collecting friends and follower objects...")
     all_users = []
-    for user_ids in tqdm(_get_lst_batches(all_user_ids, 100)):
+    for user_ids in tqdm(_get_lst_batches(list(all_user_ids), 100)):
         try:
             batch_users = api.lookup_users(user_id=user_ids)
-        except tweepy.errors.TooManyRequests:
-            print("Rate limit exceeded. Sleeping for 15 minutes")
+        except tweepy.errors.TooManyRequests: # 429
+            print("\nRate limit exceeded. Sleeping for 15 minutes")
             time.sleep(60*15)
-            
+            batch_users = api.lookup_users(user_id=user_ids)
+        except tweepy.errors.TwitterServerError: # 503
+            print("\nService unavailable. Sleeping for 10 seconds")
+            time.sleep(10)
             batch_users = api.lookup_users(user_id=user_ids)
         
-        all_users.extend(batch_users)
+        content = [user._json for user in batch_users]
+        io.write_content(USERS_INFO_CSV, content, 'csv', metadata={'created_at_dttm': dt.datetime.now()})
+        all_users.extend(content)
+    return all_users
+
+def scrape_users(skip_user_ids=False):
+    start_user_ids = _get_start_user_ids()
+    if skip_user_ids:
+        all_user_ids = start_user_ids
+    else:
+        all_user_ids = collect_user_ids(start_user_ids)
     
-    user_info_csv_path = os.path.join(settings.INPUT_DIR, 'user_info.csv')
-    df = pd.DataFrame(all_users)
-    df.to_csv(user_info_csv_path, encoding='utf-8')
+    collect_user_objs(all_user_ids)
     print("Done")
 
 
 if __name__ == '__main__':
-    scrape_users()
+    scrape_users(skip_user_ids=True)
