@@ -3,34 +3,29 @@ import csv
 import json
 
 
-def write_content(path, content, file_type='csv', metadata={}):
-    fieldnames = _get_content_fieldnames(content)
-    for key, value in metadata:
-        if key in fieldnames:
-            key = key + '_custom'
-        for i in range(len(content)):
-            content[i][key] = value
-    
+def write_content(path, content, file_type='csv'):
     if os.path.isfile(path):
         if file_type == 'csv':
+            fieldnames = _get_content_fieldnames(content)
             _append_csv_content(path, content, fieldnames)
         elif file_type == 'json':
             _append_json_content(path, content)
     else:
         if file_type == 'csv':
+            fieldnames = _get_content_fieldnames(content)
             _write_csv_content(path, content, fieldnames)
         elif file_type == 'json':
             _write_json_content(path, content)
 
 
-def read_content(path, file_type='csv'):
+def read_content(path, file_type='csv', column=None):
     if os.path.isfile(path):
         if file_type == 'csv':
-            return _read_csv_content(path)
+            return _read_csv_content(path, column)
         elif file_type == 'json':
-            return _read_json_content(path)
+            return _read_json_content(path, column)
     else:
-        raise FileNotFoundError("File '{}' not found".format(path))
+        return []
 
 
 def _write_csv_content(path, content, fieldnames):
@@ -46,8 +41,6 @@ def _write_csv_content(path, content, fieldnames):
 
 
 def _write_json_content(path, content):
-    if isinstance(content, dict):
-        content = [content]
     with open(path, 'w', encoding='utf-8') as jsonfile:
         json.dump(content, jsonfile, ensure_ascii=False, indent=2)
 
@@ -63,32 +56,44 @@ def _append_csv_content(path, content, fieldnames):
         
 
 def _append_json_content(path, content):
-    if isinstance(content, dict):
-        content = [content]
-    with open(path, 'a', encoding='utf-8') as jsonfile:
-        existing_content = json.load(jsonfile)
+    existing_content = _read_json_content(path)
+    if isinstance(content, list):
         content += existing_content
-        json.dump(content, jsonfile, ensure_ascii=False, indent=2)
+    elif isinstance(content, dict):
+        content.update(existing_content)
+    _write_json_content(path, content)
 
 
-def _read_json_content(path, limit=None):
+def _read_json_content(path, column=None, limit=None):
     if not os.path.isfile(path):
         return None
     with open(path, 'r', encoding='utf-8') as jsonfile:
         content = json.load(jsonfile)
-        return content[:limit]
+    if column:
+        return [item[column] for item in content[:limit]]
+    else:
+        if isinstance(content, list):
+            return content[:limit]
+        return content
 
 
-def _read_csv_content(path, limit=None):
+def _read_csv_content(path, column, limit=None):
     if not os.path.isfile(path):
         return None
     with open(path, 'r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
-        return list(reader)[:limit]
+        content = list(reader)
+    if column:
+        return [item[column] for item in content[:limit]]
+    else:
+        return content[:limit]
 
 
 def _get_content_fieldnames(content):
     fieldnames = []
     for item in content:
-        fieldnames.extend(item.keys())
+        if isinstance(item, dict):
+            fieldnames.extend(item.keys())
+        else:
+            fieldnames.append('')
     return set(fieldnames)
