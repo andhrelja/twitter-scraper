@@ -50,7 +50,6 @@ api = utils.connect_to_twitter(wait_on_rate_limit=True)
 
 def get_paginated_twitter_content(api_method, user_id):
     content = []
-    missing_users = set()
     cursor = tweepy.Cursor(method=api_method, user_id=user_id)
 
     try:
@@ -58,12 +57,12 @@ def get_paginated_twitter_content(api_method, user_id):
             content.extend(page)
     except tweepy.errors.NotFound: # 404
         print("\nUser {} not found".format(user_id))
-        missing_users.add(user_id)
+        return content, user_id
     except tweepy.errors.Unauthorized: # 401
         print("\nUser {} unauthorized".format(user_id))
-        missing_users.add(user_id)
+        return content, user_id
 
-    return content, list(missing_users)
+    return content, None
 
 
 def collect_user_ids(all_user_ids):
@@ -71,12 +70,14 @@ def collect_user_ids(all_user_ids):
     for user_ids in tqdm(utils.batches(list(all_user_ids), 15)):
         print("\n {}".format(dt.datetime.now()))
         output_dict = {}
-        missing_users = []
+        missing_users = set()
         for user_id in user_ids:
-            friend_ids, inactive_friends = get_paginated_twitter_content(api.get_friend_ids, user_id)
-            follower_ids, inactive_followers = get_paginated_twitter_content(api.get_follower_ids, user_id)
-            missing_users.extend(inactive_friends)
-            missing_users.extend(inactive_followers)
+            friend_ids, inactive_user = get_paginated_twitter_content(api.get_friend_ids, user_id)
+            if inactive_user and not friend_ids:
+                missing_users.add(inactive_user)
+                continue
+            follower_ids, _ = get_paginated_twitter_content(api.get_follower_ids, user_id)
+            
             
             output_dict[str(user_id)] = {
                 'num_friends': len(friend_ids),
@@ -86,7 +87,7 @@ def collect_user_ids(all_user_ids):
             }
             
         io.write_content(USER_IDS_JSON, output_dict, 'json')
-        io.write_content(MISSING_USERS_JSON, missing_users, 'json')
+        io.write_content(MISSING_USERS_JSON, list(missing_users), 'json')
 
 
 def collect_user_objs(all_user_ids):
