@@ -50,6 +50,7 @@ def get_paginated_twitter_content(api, api_method_name, user_id, retry_max=3, re
 def collect_user_ids(api):
     global q, l
     while not q.empty():
+        pbar.update(1)
         user_id = q.get()
         output_dict = {}
         
@@ -71,7 +72,7 @@ def collect_user_ids(api):
         fileio.write_content(os.path.join(INPUT_DIR, '{}.json'.format(user_id_str)), output_dict, 'json')
         fileio.write_content(settings.PROCESSED_USER_IDS, [user_id], 'json')
         l.release()
-        pbar.update(1)
+        
 
 
 def get_initial_user_ids():
@@ -86,7 +87,7 @@ def get_initial_user_ids():
 
 
 if __name__ == '__main__':
-    print("{} - Collecting friends and follower IDs for start_user_ids...".format(dt.datetime.now()))
+    print("{} - Collecting friends and follower IDs for initial_user_ids...".format(dt.datetime.now()))
     start_time = time.time()
     
     initial_user_ids = get_initial_user_ids()
@@ -109,4 +110,4 @@ if __name__ == '__main__':
         thread.join()
     
     end_time = time.time()
-    print("Time elapsed: {}s".format(end_time - start_time))
+    print("Time elapsed: {} min".format((end_time - start_time)/60))

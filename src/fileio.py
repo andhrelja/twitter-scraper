@@ -58,35 +58,32 @@ def _append_csv_content(path, content, fieldnames):
 def _append_json_content(path, content):
     existing_content = _read_json_content(path)
     if isinstance(content, list):
-        content += existing_content
+        existing_content += content
     elif isinstance(content, dict):
-        content.update(existing_content)
+        existing_content.update(content)
     _write_json_content(path, content)
 
 
-def _read_json_content(path, column=None, limit=None):
+def _read_json_content(path, column=None):
     if not os.path.isfile(path):
-        return None
+        return []
     with open(path, 'r', encoding='utf-8') as jsonfile:
         content = json.load(jsonfile)
     if column:
-        return [item[column] for item in content[:limit]]
+        return [item[column] for item in content]
     else:
-        if isinstance(content, list):
-            return content[:limit]
         return content
 
 
-def _read_csv_content(path, column, limit=None):
+def _read_csv_content(path, column):
     if not os.path.isfile(path):
-        return None
+        return []
     with open(path, 'r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
-        content = list(reader)
-    if column:
-        return [item[column] for item in content[:limit]]
-    else:
-        return content[:limit]
+        if column:
+            return [item[column] for item in reader]
+        else:
+            return list(reader)
 
 
 def _get_content_fieldnames(content):
