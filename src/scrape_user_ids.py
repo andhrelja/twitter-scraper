@@ -40,7 +40,7 @@ def get_paginated_twitter_content(api, api_method_name, user_id, retry_max=3, re
             api = utils.reconnect_api(conn_name)
             method = getattr(api, api_method_name)
             cursor = tweepy.Cursor(method=method, user_id=user_id)
-            print("\nConnectionError: trying again for {} times, {}s delay".format(retry_num, retry_delay))
+            print("\nConnectionError: try #{}, {}s delay".format(retry_num+1, retry_delay))
             time.sleep(retry_delay)
             retry_num += 1
     
@@ -56,7 +56,9 @@ def collect_user_ids(api):
         
         friend_ids, inactive_user = get_paginated_twitter_content(api, 'get_friend_ids', user_id)
         if inactive_user and not friend_ids:
+            l.acquire()
             fileio.write_content(settings.MISSING_USER_IDS, [int(inactive_user)], 'json')
+            l.release()
             continue
         
         follower_ids, _ = get_paginated_twitter_content(api, 'get_follower_ids', user_id)
@@ -87,7 +89,6 @@ def get_initial_user_ids():
 
 
 if __name__ == '__main__':
-    print("{} - Collecting friends and follower IDs for initial_user_ids...".format(dt.datetime.now()))
     start_time = time.time()
     
     initial_user_ids = get_initial_user_ids()
@@ -100,6 +101,7 @@ if __name__ == '__main__':
     threads = []
     apis = utils.get_api_connections()
     
+    print("{} - Collecting friends and follower IDs for initial_user_ids...".format(dt.datetime.now()))
     pbar = tqdm(total=len(initial_user_ids))
     for api in apis:
         thread = threading.Thread(target=collect_user_ids, args=(api,))
@@ -110,4 +112,4 @@ if __name__ == '__main__':
         thread.join()
     
     end_time = time.time()
-    print("Time elapsed: {} min".format((end_time - start_time)/60))
+    print("\n\nTime elapsed: {} min".format((end_time - start_time)/60))

@@ -29,12 +29,12 @@ def get_lookup_users(api, user_ids, retry_max=3, retry_delay=3):
         try:
             batch_users = api.lookup_users(user_id=user_ids)
         except tweepy.errors.TwitterServerError: # 503
-            print("\nTwitterServerError: trying again for {} times, {}s delay".format(retry_num, retry_delay))
+            print("\nTwitterServerError: try #{}, {}s delay".format(retry_num+1, retry_delay))
             time.sleep(retry_delay)
             retry_num += 1
         except requests.exceptions.ConnectionError:
             api = utils.reconnect_api(conn_name)
-            print("\nConnectionError: trying again for {} times, {}s delay".format(retry_num, retry_delay))
+            print("\nConnectionError: try #{}, {}s delay".format(retry_num+1, retry_delay))
             time.sleep(retry_delay)
             retry_num += 1
         else:
@@ -45,7 +45,6 @@ def get_lookup_users(api, user_ids, retry_max=3, retry_delay=3):
                     'screen_name': user.get('screen_name'), 
                     'created_at': user.get('created_at'), 
                     'verified': user.get('verified'), 
-                    'url': user.get('url'), 
                     'name': user.get('name'), 
                     'description': user.get('description'),
                     'statuses_count': user.get('statuses_count'), 
@@ -115,4 +114,4 @@ if __name__ == '__main__':
         thread.join()
     
     end_time = time.time()
-    print("Time elapsed: {} min".format((end_time - start_time)/60))
+    print("\n\nTime elapsed: {} min".format((end_time - start_time)/60))
