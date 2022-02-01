@@ -1,8 +1,5 @@
-import os
-import json
 import tweepy
 
-import fileio
 import settings
 
 

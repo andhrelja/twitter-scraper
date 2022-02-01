@@ -22,7 +22,7 @@ if not os.path.exists(OUTPUT_DIR):
 USER_OBJS_CSV = os.path.join(OUTPUT_DIR, 'user-objs.csv')
 
 
-def get_lookup_users(api, user_ids, retry_max=3, retry_delay=3):
+def get_twitter_lookup_users(api, user_ids, retry_max=3, retry_delay=3):
     conn_name, api = list(api.items())[0]
     retry_num = 0
     while retry_num < retry_max:
@@ -60,7 +60,7 @@ def collect_user_objs(api):
     global q, l
     while not q.empty():
         user_ids = q.get()
-        user_objs = get_lookup_users(api, user_ids)
+        user_objs = get_twitter_lookup_users(api, user_ids)
         l.acquire()
         fileio.write_content(USER_OBJS_CSV, user_objs, 'csv')
         l.release()
@@ -92,16 +92,16 @@ def get_collected_user_ids():
 if __name__ == '__main__':
     start_time = time.time()
     
-    collected_user_ids = get_collected_user_ids()
-    user_id_batches = utils.batches(list(collected_user_ids), 100)
-    
     l = threading.Lock()
     q = queue.Queue()
-    for user_ids in user_id_batches:
-        q.put(user_ids)
     
     threads = []
     apis = utils.get_api_connections()
+    
+    collected_user_ids = get_collected_user_ids()
+    user_id_batches = utils.batches(list(collected_user_ids), 100)
+    for user_ids in user_id_batches:
+        q.put(user_ids)
     
     print("{} - Collecting user objects...".format(dt.datetime.now()))
     pbar = tqdm(total=len(user_id_batches))

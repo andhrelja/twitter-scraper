@@ -46,6 +46,8 @@ def _write_json_content(path, content):
 
 
 def _append_csv_content(path, content, fieldnames):
+    if content is None:
+        return
     with open(path, 'a', encoding='utf-8', newline='') as csvfile:
         if isinstance(content, list):
             writer = csv.DictWriter(csvfile, fieldnames)
@@ -56,11 +58,15 @@ def _append_csv_content(path, content, fieldnames):
         
 
 def _append_json_content(path, content):
+    if content is None:
+        return
+    if isinstance(content, str) or isinstance(content, int):
+        content = [content]
     existing_content = _read_json_content(path)
     if isinstance(content, list):
-        existing_content += content
+        content += existing_content
     elif isinstance(content, dict):
-        existing_content.update(content)
+        content.update(existing_content)
     _write_json_content(path, content)
 
 
