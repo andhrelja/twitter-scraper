@@ -13,6 +13,7 @@ import settings
 
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
+folder_name = '2022-02-01'
 
 INPUT_DIR = os.path.join(settings.INPUT_DIR, folder_name)
 if not os.path.exists(INPUT_DIR):
@@ -40,6 +41,13 @@ def get_twitter_user_ids(conn_name, api, api_method_name, user_id, retry_max=3, 
             method = getattr(api, api_method_name)
             cursor = tweepy.Cursor(method=method, user_id=user_id)
             print("\nConnectionError: try #{}, {}s delay".format(retry_num+1, retry_delay))
+            time.sleep(retry_delay)
+            retry_num += 1
+        except tweepy.errors.TweepyException:
+            api = utils.reconnect_api(conn_name)
+            method = getattr(api, api_method_name)
+            cursor = tweepy.Cursor(method=method, user_id=user_id)
+            print("\nTweepyException: try #{}, {}s delay".format(retry_num+1, retry_delay))
             time.sleep(retry_delay)
             retry_num += 1
     

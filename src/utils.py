@@ -4,11 +4,11 @@ import settings
 
 
 def get_api_connections():
-    apis = []
+    apis = {}
     for conn_name, conn_details in settings.connections.items():
         auth = tweepy.OAuthHandler(conn_details['consumer_key'], conn_details['consumer_secret'])
         auth.set_access_token(conn_details['access_key'], conn_details['access_secret'])
-        apis.append({conn_name: tweepy.API(auth, wait_on_rate_limit=True)})
+        apis.update({conn_name: tweepy.API(auth, wait_on_rate_limit=True)})
         print('{} API successfully connected!'.format(conn_name))
     return apis
 

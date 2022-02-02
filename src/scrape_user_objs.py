@@ -22,8 +22,7 @@ if not os.path.exists(OUTPUT_DIR):
 USER_OBJS_CSV = os.path.join(OUTPUT_DIR, 'user-objs.csv')
 
 
-def get_twitter_lookup_users(api, user_ids, retry_max=3, retry_delay=3):
-    conn_name, api = list(api.items())[0]
+def get_twitter_lookup_users(conn_name, api, user_ids, retry_max=3, retry_delay=3):
     retry_num = 0
     while retry_num < retry_max:
         try:
@@ -32,35 +31,44 @@ def get_twitter_lookup_users(api, user_ids, retry_max=3, retry_delay=3):
             print("\nTwitterServerError: try #{}, {}s delay".format(retry_num+1, retry_delay))
             time.sleep(retry_delay)
             retry_num += 1
+        except tweepy.errors.TweepyException:
+            api = utils.reconnect_api(conn_name)
+            print("\nTweepyException: try #{}, {}s delay".format(retry_num+1, retry_delay))
+            time.sleep(retry_delay)
+            retry_num += 1
         except requests.exceptions.ConnectionError:
             api = utils.reconnect_api(conn_name)
             print("\nConnectionError: try #{}, {}s delay".format(retry_num+1, retry_delay))
             time.sleep(retry_delay)
             retry_num += 1
         else:
-            _content = [user._json for user in batch_users]
-            content = [
-                {
-                    'user_id': user.get('id'), 
-                    'screen_name': user.get('screen_name'), 
-                    'created_at': user.get('created_at'), 
-                    'verified': user.get('verified'), 
-                    'name': user.get('name'), 
-                    'description': user.get('description'),
-                    'statuses_count': user.get('statuses_count'), 
-                    'friends_count': user.get('friends_count'), 
-                    'followers_count': user.get('followers_count'), 
-                    'location': user.get('location')
-                } for user in _content
-            ]
+            #_content = [user._json for user in batch_users]
+            content = []
+            for user in batch_users:
+                _user = user._json
+                if not str(_user.get('id')).isnumeric():
+                    breakpoint()
+                _content = {
+                    'user_id': _user.get('id'), 
+                    'location': _user.get('location'),
+                    'screen_name': _user.get('screen_name'), 
+                    'name': _user.get('name'), 
+                    'statuses_count': _user.get('statuses_count'), 
+                    'friends_count': _user.get('friends_count'), 
+                    'followers_count': _user.get('followers_count'),
+                    'description': _user.get('description'),
+                    'created_at': _user.get('created_at'), 
+                    'verified': _user.get('verified')
+                }
+                content.append(_content)
             return content
 
 
-def collect_user_objs(api):
+def collect_user_objs(conn_name, api):
     global q, l
     while not q.empty():
         user_ids = q.get()
-        user_objs = get_twitter_lookup_users(api, user_ids)
+        user_objs = get_twitter_lookup_users(conn_name, api, user_ids)
         l.acquire()
         fileio.write_content(USER_OBJS_CSV, user_objs, 'csv')
         l.release()
@@ -79,13 +87,13 @@ def get_collected_user_ids():
     
     print("Appending friends and followers to user_id list...")
     all_user_ids = set()
-    for user_id, user_info in tqdm(content.items()):
+    for user_id, user_info in tqdm(list(content.items())):
         all_user_ids.add(user_id)
         all_user_ids = all_user_ids.union(user_info.get('friends'))
         all_user_ids = all_user_ids.union(user_info.get('followers'))
     
     collected_user_obj_ids = fileio.read_content(USER_OBJS_CSV, 'csv', column='user_id')
-    all_user_ids.difference_update(map(int, collected_user_obj_ids))
+    all_user_ids.difference_update(map(int, filter(lambda x: x.isnumeric(), collected_user_obj_ids)))
     return all_user_ids
 
 
@@ -105,8 +113,8 @@ if __name__ == '__main__':
     
     print("{} - Collecting user objects...".format(dt.datetime.now()))
     pbar = tqdm(total=len(user_id_batches))
-    for api in apis:
-        thread = threading.Thread(target=collect_user_objs, args=(api,))
+    for conn_name, api in apis.items():
+        thread = threading.Thread(target=collect_user_objs, args=(conn_name, api))
         thread.start()
         threads.append(thread)
     

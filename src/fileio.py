@@ -2,18 +2,18 @@ import os
 import csv
 import json
 
+import settings
+
 
 def write_content(path, content, file_type='csv'):
     if os.path.isfile(path):
         if file_type == 'csv':
-            fieldnames = _get_content_fieldnames(content)
-            _append_csv_content(path, content, fieldnames)
+            _append_csv_content(path, content)
         elif file_type == 'json':
             _append_json_content(path, content)
     else:
         if file_type == 'csv':
-            fieldnames = _get_content_fieldnames(content)
-            _write_csv_content(path, content, fieldnames)
+            _write_csv_content(path, content)
         elif file_type == 'json':
             _write_json_content(path, content)
 
@@ -28,14 +28,16 @@ def read_content(path, file_type='csv', column=None):
         return []
 
 
-def _write_csv_content(path, content, fieldnames):
+def _write_csv_content(path, content):
+    if path.endswith('user-objs.csv'):
+        fieldnames = settings.USER_OBJS_FIELDNAMES
     with open(path, 'w', encoding='utf-8', newline='') as csvfile:
         if isinstance(content, list):
-            writer = csv.DictWriter(csvfile, fieldnames)
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(content)
         elif isinstance(content, dict):
-            writer = csv.DictWriter(csvfile, content.keys())
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerow(content)
 
@@ -90,13 +92,3 @@ def _read_csv_content(path, column):
             return [item[column] for item in reader]
         else:
             return list(reader)
-
-
-def _get_content_fieldnames(content):
-    fieldnames = []
-    for item in content:
-        if isinstance(item, dict):
-            fieldnames.extend(item.keys())
-        else:
-            fieldnames.append('')
-    return set(fieldnames)
