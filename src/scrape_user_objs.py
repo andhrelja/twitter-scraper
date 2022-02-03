@@ -1,11 +1,9 @@
 import os
 import time
 import json
-import tweepy
 import queue
 import threading
 import datetime as dt
-import requests.exceptions
 from tqdm import tqdm
 
 import utils
@@ -22,54 +20,17 @@ if not os.path.exists(OUTPUT_DIR):
 USER_OBJS_CSV = os.path.join(OUTPUT_DIR, 'user-objs.csv')
 
 
-def get_twitter_lookup_users(conn_name, api, user_ids, retry_max=3, retry_delay=3):
-    retry_num = 0
-    while retry_num < retry_max:
-        try:
-            batch_users = api.lookup_users(user_id=user_ids)
-        except tweepy.errors.TwitterServerError: # 503
-            print("\nTwitterServerError: try #{}, {}s delay".format(retry_num+1, retry_delay))
-            time.sleep(retry_delay)
-            retry_num += 1
-        except tweepy.errors.TweepyException:
-            api = utils.reconnect_api(conn_name)
-            print("\nTweepyException: try #{}, {}s delay".format(retry_num+1, retry_delay))
-            time.sleep(retry_delay)
-            retry_num += 1
-        except requests.exceptions.ConnectionError:
-            api = utils.reconnect_api(conn_name)
-            print("\nConnectionError: try #{}, {}s delay".format(retry_num+1, retry_delay))
-            time.sleep(retry_delay)
-            retry_num += 1
-        else:
-            _content = [user._json for user in batch_users]
-            content = [
-                {
-                    'user_id': user.get('id'), 
-                    'location': user.get('location'),
-                    'screen_name': user.get('screen_name'), 
-                    'name': user.get('name'), 
-                    'statuses_count': user.get('statuses_count'), 
-                    'friends_count': user.get('friends_count'), 
-                    'followers_count': user.get('followers_count'),
-                    'description': user.get('description'),
-                    'created_at': user.get('created_at'), 
-                    'verified': user.get('verified'),
-                    'protected': user.get('protected')
-                } for user in _content
-            ]
-            return content
-
-
 def collect_user_objs(conn_name, api):
     global q, l
     while not q.empty():
+        pbar.update(1)
         user_ids = q.get()
-        user_objs = get_twitter_lookup_users(conn_name, api, user_ids)
+        user_objs = utils.get_twitter_lookup_users(conn_name, api, user_ids)
+        
         l.acquire()
         fileio.write_content(USER_OBJS_CSV, user_objs, 'csv')
         l.release()
-        pbar.update(1)
+        
 
 
 def get_collected_user_ids():

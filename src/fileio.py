@@ -43,6 +43,8 @@ def _write_csv_content(path, content):
 
 
 def _write_json_content(path, content):
+    if not isinstance(content, dict) and not isinstance(content, list):
+        content = [content]
     with open(path, 'w', encoding='utf-8') as jsonfile:
         json.dump(content, jsonfile, ensure_ascii=False, indent=2)
 

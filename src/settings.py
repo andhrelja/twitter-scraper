@@ -57,22 +57,16 @@ connections = {
         'access_key': '1488806279443267584-szOY2s3WLLLDRuxJGPo7FvuEJRAn7b',
         'access_secret': '9UFSArk8Hi7KE0sPN19P7a8H9WjfVP8BZ9mzNVVln9kjA',   
     },
-    #'SVanilija': {# AAAAAAAAAAAAAAAAAAAAAPQiYwEAAAAAu%2BQdk2jEy4HGgBPfHxk7i104aUA%3Dm6KfENsFD5NX2AI6RrslvRKsetg5ta3noMJsWQxXm6HTdIErqP
-    #    'consumer_key': 'JAmXbCuuF4QfzjdNoCp1cbCyf' ,
-    #    'consumer_secret': 'PWUL9v5sqcGiGnt9LhxI1JcKUv5O0PVHcoGXlTZXHm3ISZRG27',
-    #    'access_key': '1488631290781962249-1rrxclE8zD7p1RUNrsogSq5AbCeKHA',
-    #    'access_secret': 'qTxowHferosASMr8imLhmVcXLhmbDd8QTuCootbXY75E2',   
-    #},
     'SladoledC': {# AAAAAAAAAAAAAAAAAAAAACQjYwEAAAAAK4JlqtZKXs5aCgWOHtgLlTq2LCc%3D3gyOi7NOYN5ttmbVHTiy9PP5I9aSzJ7I09RnZL1XipPyXQ1oWQ
         'consumer_key': 'HYp0liFrU4PE7fcvtEU6Xb22I' ,
         'consumer_secret': 'tlC9v69Rev2aBHq2HfoAnFw3LOrlj9S4GGJupSQ4UVJvJxsotC',
         'access_key': '1488632889143144456-o410S6RSUtsdQMCqevJrEEa9TbfEjD',
         'access_secret': 'JyHqhzpRKQ1JcYrdJk82n1smy4wihQnBpJAZpidPy9Bvc', 
     },
-    #'SladoledP': {# AAAAAAAAAAAAAAAAAAAAAEIjYwEAAAAA8uOAx%2F%2FOsltfxLrg1cBblXnvjHg%3DqFxSEvMLpPo6eusGnL8rjyIv5bFQsxnNTY7lfY8vi0EsLUtpmx
-    #    'consumer_key': 'IjpnDAD4qu0vCeN1s0NRmamk7' ,
-    #    'consumer_secret': '1Kdf2KzWBd9RjQSMrn8zlSjWhcLoq70NdSQCoxOyWAPGfVn1yQ',
-    #    'access_key': '1488636618407825414-iHngfRQIPysaTMflzQCrtI5KbC6Kv5',
-    #    'access_secret': 'g5xwWPpoJrpdtC36uwFrOAB4PwBDQjIoNOiywJhAB37pp', 
-    #}
+    'PScrapic': {# AAAAAAAAAAAAAAAAAAAAACQjYwEAAAAAK4JlqtZKXs5aCgWOHtgLlTq2LCc%3D3gyOi7NOYN5ttmbVHTiy9PP5I9aSzJ7I09RnZL1XipPyXQ1oWQ
+        'consumer_key': 'DEkHAdYHrzKlUASVe8jzvzg3d' ,
+        'consumer_secret': 'VBavpBz2OhvY6IT01sfc9huZsTSULHN7vWFLMYnqlTG3v82Phe',
+        'access_key': '1489370296180224004-yomr0TnLaUJoiy4FVl7vAupx0VHqXt',
+        'access_secret': '8k6Xrvecrflogjxzo8AOXdRo5usUY2J3siSCSrArIBeeL', 
+    },
 }
