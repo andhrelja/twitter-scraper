@@ -24,7 +24,7 @@ def get_twitter_user_ids(conn_name, api, api_method_name, user_id, retry_max=3, 
     content = []
     
     method = getattr(api, api_method_name)
-    cursor = tweepy.Cursor(method=method, user_id=user_id)
+    cursor = tweepy.Cursor(method=method, user_id=user_id, count=5000)
 
     retry_num = 0
     while retry_num < retry_max:
@@ -81,18 +81,6 @@ def collect_user_ids(conn_name, api):
         fileio.write_content(os.path.join(INPUT_DIR, '{}.json'.format(user_id_str)), output_dict, 'json')
         fileio.write_content(settings.PROCESSED_USER_IDS, user_id, 'json')
         l.release()
-        
-
-
-def get_initial_user_ids():
-    baseline_user_ids = fileio.read_content(settings.BASELINE_USER_IDS, 'json')
-    missing_user_ids = fileio.read_content(settings.MISSING_USER_IDS, 'json')
-    processed_user_ids = fileio.read_content(settings.PROCESSED_USER_IDS, 'json')
-    
-    initial_user_ids = set(baseline_user_ids)
-    initial_user_ids.difference_update(missing_user_ids)
-    initial_user_ids.difference_update(processed_user_ids)
-    return initial_user_ids
 
 
 if __name__ == '__main__':
@@ -104,7 +92,8 @@ if __name__ == '__main__':
     threads = []
     apis = utils.get_api_connections()
     
-    initial_user_ids = get_initial_user_ids()
+    # initial_user_ids = utils.get_initial_user_ids()
+    initial_user_ids = utils.get_new_baseline_ids()
     for user_id in initial_user_ids:
         q.put(user_id)
     

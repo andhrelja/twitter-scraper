@@ -90,7 +90,8 @@ def _read_csv_content(path, column):
         return []
     with open(path, 'r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
+        content = list(reader)
         if column:
-            return [item[column] for item in reader]
+            return [item[column] for item in content]
         else:
-            return list(reader)
+            return content
