@@ -6,8 +6,7 @@ scrape_users/data/folowing_users_graph.gml
 
 src/test.py
 input/2022-02-01/
-output/2022-02-01/
-output/2022-02-02/
+output/
 
 
 # Byte-compiled / optimized / DLL files

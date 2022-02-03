@@ -8,7 +8,11 @@ BASELINE_USER_IDS = os.path.join(INPUT_DIR, 'baseline-user-ids.json')
 MISSING_USER_IDS = os.path.join(INPUT_DIR, 'missing-user-ids.json')
 PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
 
-USER_OBJS_FIELDNAMES = ['user_id', 'location', 'screen_name', 'name', 'statuses_count', 'friends_count', 'followers_count', 'description', 'created_at', 'verified']
+USER_OBJS_FIELDNAMES = [
+    'user_id', 'location', 'screen_name', 'name', 
+    'statuses_count', 'friends_count', 'followers_count', 
+    'description', 'created_at', 'verified', 'protected'
+]
 
 connections = {
     'IC': {

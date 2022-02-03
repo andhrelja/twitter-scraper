@@ -42,25 +42,22 @@ def get_twitter_lookup_users(conn_name, api, user_ids, retry_max=3, retry_delay=
             time.sleep(retry_delay)
             retry_num += 1
         else:
-            #_content = [user._json for user in batch_users]
-            content = []
-            for user in batch_users:
-                _user = user._json
-                if not str(_user.get('id')).isnumeric():
-                    breakpoint()
-                _content = {
-                    'user_id': _user.get('id'), 
-                    'location': _user.get('location'),
-                    'screen_name': _user.get('screen_name'), 
-                    'name': _user.get('name'), 
-                    'statuses_count': _user.get('statuses_count'), 
-                    'friends_count': _user.get('friends_count'), 
-                    'followers_count': _user.get('followers_count'),
-                    'description': _user.get('description'),
-                    'created_at': _user.get('created_at'), 
-                    'verified': _user.get('verified')
-                }
-                content.append(_content)
+            _content = [user._json for user in batch_users]
+            content = [
+                {
+                    'user_id': user.get('id'), 
+                    'location': user.get('location'),
+                    'screen_name': user.get('screen_name'), 
+                    'name': user.get('name'), 
+                    'statuses_count': user.get('statuses_count'), 
+                    'friends_count': user.get('friends_count'), 
+                    'followers_count': user.get('followers_count'),
+                    'description': user.get('description'),
+                    'created_at': user.get('created_at'), 
+                    'verified': user.get('verified'),
+                    'protected': user.get('protected')
+                } for user in _content
+            ]
             return content
 
 
@@ -86,14 +83,14 @@ def get_collected_user_ids():
             content.update(json.load(f))
     
     print("Appending friends and followers to user_id list...")
-    all_user_ids = set()
+    all_user_ids = set(fileio.read_content(settings.MISSING_USER_IDS, 'json'))
     for user_id, user_info in tqdm(list(content.items())):
         all_user_ids.add(user_id)
         all_user_ids = all_user_ids.union(user_info.get('friends'))
         all_user_ids = all_user_ids.union(user_info.get('followers'))
     
     collected_user_obj_ids = fileio.read_content(USER_OBJS_CSV, 'csv', column='user_id')
-    all_user_ids.difference_update(map(int, filter(lambda x: x.isnumeric(), collected_user_obj_ids)))
+    all_user_ids.difference_update(map(int, collected_user_obj_ids))
     return all_user_ids
 
 

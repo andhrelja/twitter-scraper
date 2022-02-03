@@ -47,9 +47,11 @@ def _write_json_content(path, content):
         json.dump(content, jsonfile, ensure_ascii=False, indent=2)
 
 
-def _append_csv_content(path, content, fieldnames):
+def _append_csv_content(path, content):
     if content is None:
         return
+    if path.endswith('user-objs.csv'):
+        fieldnames = settings.USER_OBJS_FIELDNAMES
     with open(path, 'a', encoding='utf-8', newline='') as csvfile:
         if isinstance(content, list):
             writer = csv.DictWriter(csvfile, fieldnames)
