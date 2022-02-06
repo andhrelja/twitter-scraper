@@ -47,7 +47,7 @@ def read_users_friends_followers(folder_name=None):
     return content
 
 
-def get_users_friends_followers_ids(folder_name):
+def get_users_friends_followers_ids(folder_name=None):
     users_friends_followers = read_users_friends_followers(folder_name)
     print("Collecting user's friends and follower IDs")
     users_friends_followers_ids = set(map(int, users_friends_followers.keys()))
