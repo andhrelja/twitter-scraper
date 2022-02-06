@@ -1,52 +1,81 @@
-import tweepy
+import json
+import os
+import time
+import queue
+import threading
+import datetime as dt
+from tqdm import tqdm
+
+import utils
+import fileio
+import settings
+
+TWEET_MODEL = lambda x: {
+    'id': x.get('id'),
+    'user_id': x.get('user', {}).get('id'),
+    'full_text': x.get('full_text'),
+    'created_at': x.get('created_at')
+}
 
 
-def get_all_tweets(screen_name, api):
+def collect_users_tweets(conn_name, api):
     #Twitter only allows access to a users most recent 3240 tweets with this method
     #initialize a list to hold all the tweepy Tweets
-    try:
-        alltweets = []  
-        
-        #make initial request for most recent tweets (200 is the maximum allowed count)
-        new_tweets = api.user_timeline(screen_name = screen_name,count=200, tweet_mode="extended")
-        
-        #save most recent tweets
-        alltweets.extend(new_tweets)
-        
-        #save the id of the oldest tweet less one
-        oldest = alltweets[-1].id - 1
-        
+    global q, l
+    while not q.empty():
+        pbar.update(1)
+        user_id = q.get()
+
+        all_user_tweets = []
+        max_id = None
+        new_tweets = [None]
         #keep grabbing tweets until there are no tweets left to grab
         while len(new_tweets) > 0:
-            #print(f"getting tweets before {oldest}")
-            
-            #all subsiquent requests use the max_id param to prevent duplicates
-            new_tweets = api.user_timeline(screen_name = screen_name,count=200,max_id=oldest, tweet_mode="extended")
-            
-            #save most recent tweets
-            alltweets.extend(new_tweets)
-            
-            #update the id of the oldest tweet less one
-            oldest = alltweets[-1].id - 1
-            
-            #print(f"...{len(alltweets)} tweets downloaded so far")
+            kwargs = dict(max_id=max_id, count=200, tweet_mode="extended")
+            new_tweets, no_tweets = utils.get_twitter_endpoint(conn_name, api, 'user_timeline', user_id, retry_max=5, retry_delay=3, **kwargs)
+            if new_tweets and new_tweets != [None] and not no_tweets:
+                new_tweets = [TWEET_MODEL(item._json) for item in new_tweets]
+                all_user_tweets.extend(new_tweets)
+                oldest_tweet = new_tweets[-1]
+                max_id = oldest_tweet['id']-1
+                if dt.datetime.strptime(oldest_tweet['created_at'], '%a %b %d %H:%M:%S %z %Y').year <= 2020:
+                    break
         
-        #transform the tweepy tweets into a 2D array that will populate the csv 
-        #outtweets = [[tweet.id_str, tweet.created_at, tweet.text] for tweet in alltweets]
-        
-        df_tweets_on_profile = pd.DataFrame()
-        
-        for tweet in alltweets:
-            json_str = json.dumps(tweet._json, ensure_ascii=False).encode('utf8')
-            jtweet = tweet._json
-            
-            date = jtweet['created_at'][-4:]   
-            if date == '2021' or date == '2022':
+        if len(all_user_tweets) > 0:
+            l.acquire()
+            try:
+                fileio.write_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), all_user_tweets, 'json')
+                fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
+            except json.decoder.JSONDecodeError:
+                print("\nJSONDecode error on {}.json".format(user_id))
+            l.release()
 
-                df_json = pd.json_normalize(jtweet)
-                df_tweets_on_profile = pd.concat([df_tweets_on_profile, df_json], axis=0) 
+
+if __name__ == '__main__':
+    if not os.path.exists(settings.USER_TWEETS_DIR):
+        os.mkdir(settings.USER_TWEETS_DIR)
     
-    except IndexError:
-        df_tweets_on_profile = pd.DataFrame()
-        
-    return df_tweets_on_profile
+    start_time = time.time()
+    
+    l = threading.Lock()
+    q = queue.Queue()
+    
+    threads = []
+    apis = utils.get_api_connections()
+    
+    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_TWEETS)
+    for user_id in baseline_user_ids:
+        q.put(user_id)
+    
+    print("{} - Collecting tweets for baseline_user_ids...".format(dt.datetime.now()))
+    pbar = tqdm(total=len(baseline_user_ids))
+    for conn_name, api in apis.items():
+        thread = threading.Thread(target=collect_users_tweets, args=(conn_name, api))
+        thread.start()
+        threads.append(thread)
+    
+    for thread in threads:
+        thread.join()
+    
+    end_time = time.time()
+    print("\n\nTime elapsed: {} min".format((end_time - start_time)/60))

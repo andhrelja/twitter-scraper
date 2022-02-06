@@ -1,6 +1,5 @@
 import os
 import time
-import json
 import queue
 import threading
 import datetime as dt
@@ -9,15 +8,6 @@ from tqdm import tqdm
 import utils
 import fileio
 import settings
-
-now = dt.datetime.now()
-folder_name = now.strftime('%Y-%m-%d')
-
-OUTPUT_DIR = os.path.join(settings.OUTPUT_DIR, folder_name)
-if not os.path.exists(OUTPUT_DIR):
-    os.mkdir(OUTPUT_DIR)
-
-USER_OBJS_CSV = os.path.join(OUTPUT_DIR, 'user-objs.csv')
 
 
 def collect_user_objs(conn_name, api):
@@ -28,34 +18,15 @@ def collect_user_objs(conn_name, api):
         user_objs = utils.get_twitter_lookup_users(conn_name, api, user_ids)
         
         l.acquire()
-        fileio.write_content(USER_OBJS_CSV, user_objs, 'csv')
+        fileio.write_content(os.path.join(settings.USER_OBJS_DIR, 'user-objs.csv'), user_objs, 'csv')
+        fileio.write_content(settings.PROCESSED_USER_OBJS, user_ids, 'json')
         l.release()
-        
-
-
-def get_collected_user_ids():
-    latest_scrape_date = max(filter(None, [item if os.path.isdir(os.path.join(settings.INPUT_DIR, item)) else None for item in os.listdir(settings.INPUT_DIR)]))
-    
-    print("Getting collected user ids for {}...".format(latest_scrape_date))
-    content = {}
-    for file_name in tqdm(os.listdir(os.path.join(settings.INPUT_DIR, latest_scrape_date))):
-        file_path = os.path.join(settings.INPUT_DIR, latest_scrape_date, file_name)
-        with open(file_path, 'r') as f:
-            content.update(json.load(f))
-    
-    print("Appending friends and followers to user_id list...")
-    all_user_ids = set(fileio.read_content(settings.MISSING_USER_IDS, 'json'))
-    for user_id, user_info in tqdm(list(content.items())):
-        all_user_ids.add(user_id)
-        all_user_ids = all_user_ids.union(user_info.get('friends'))
-        all_user_ids = all_user_ids.union(user_info.get('followers'))
-    
-    collected_user_obj_ids = fileio.read_content(USER_OBJS_CSV, 'csv', column='user_id')
-    all_user_ids.difference_update(map(int, collected_user_obj_ids))
-    return all_user_ids
 
 
 if __name__ == '__main__':
+    if not os.path.exists(settings.USER_OBJS_DIR):
+        os.mkdir(settings.USER_OBJS_DIR)
+    
     start_time = time.time()
     
     l = threading.Lock()
@@ -64,8 +35,11 @@ if __name__ == '__main__':
     threads = []
     apis = utils.get_api_connections()
     
-    collected_user_ids = get_collected_user_ids()
-    user_id_batches = utils.batches(list(collected_user_ids), 100)
+    baseline_user_ids = utils.get_baseline_user_ids(
+        processed_filepath=settings.PROCESSED_USER_OBJS, 
+        users_friends_followers=True
+    )
+    user_id_batches = utils.batches(list(baseline_user_ids), 100)
     for user_ids in user_id_batches:
         q.put(user_ids)
     

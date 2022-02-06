@@ -1,7 +1,10 @@
+import os
 import time
 import tweepy
 import requests.exceptions
+from tqdm import tqdm
 
+import fileio
 import settings
 
 
@@ -31,8 +34,45 @@ def batches(lst, n=100):
     return batches
 
 
+def read_users_friends_followers(folder_name=None):
+    print("Reading user's friends and followers")
+    if folder_name is not None:
+        user_ids_dir = settings.USER_IDS_DIR.replace(settings.folder_name, folder_name)
+    else:
+        user_ids_dir = settings.USER_IDS_DIR
+    content = {}
+    for fn in tqdm(os.listdir(user_ids_dir)):
+        file_content = fileio.read_content(os.path.join(user_ids_dir, fn), 'json')
+        content.update(file_content)
+    return content
 
-def get_twitter_endpoint(conn_name, api, method_name, user_id, retry_max=3, retry_delay=3):
+
+def get_users_friends_followers_ids(folder_name='2022-02-05'):
+    users_friends_followers = read_users_friends_followers(folder_name)
+    print("Collecting user's friends and follower IDs")
+    users_friends_followers_ids = set(map(int, users_friends_followers.keys()))
+    for _, item in tqdm(users_friends_followers.items()):
+        users_friends_followers_ids = users_friends_followers_ids.union(item['friends'])
+        users_friends_followers_ids = users_friends_followers_ids.union(item['followers'])
+    return users_friends_followers_ids
+
+
+def get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_IDS, users_friends_followers=False):
+    baseline_user_ids = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))
+    
+    if users_friends_followers:
+        users_friends_followers_ids = get_users_friends_followers_ids(folder_name='2022-02-05')
+        baseline_user_ids.difference_update(users_friends_followers_ids)
+        
+    missing_user_ids = set(fileio.read_content(settings.MISSING_USER_IDS, 'json'))
+    processed_user_ids = set(fileio.read_content(processed_filepath, 'json'))
+    
+    baseline_user_ids.difference_update(missing_user_ids)
+    baseline_user_ids.difference_update(processed_user_ids)
+    return baseline_user_ids
+
+
+def get_twitter_endpoint(conn_name, api, method_name, user_id, retry_max=3, retry_delay=3, **kwargs):
     """get_twitter_endpoint
     Generates a tweepy.API method using `api` and `conn_name`,
     requests, processes response and returns API content.
@@ -56,7 +96,7 @@ def get_twitter_endpoint(conn_name, api, method_name, user_id, retry_max=3, retr
     retry_num = 0
     while retry_num < retry_max:
         try:
-            content = method(user_id=user_id)
+            content = method(user_id=user_id, **kwargs)
             return content, None
         except tweepy.errors.NotFound: # 404
             return content, user_id

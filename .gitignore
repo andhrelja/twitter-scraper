@@ -5,8 +5,12 @@ scrape_tweets/new_update.csv
 scrape_users/data/folowing_users_graph.gml
 
 src/test.py
-input/2022-02-01/
-output/
+input/history/
+output/tweets/
+output/users/
+
+src/notebooks/*.csv
+src/notebooks/*.json
 
 
 # Byte-compiled / optimized / DLL files
