@@ -11,7 +11,7 @@ output/users/
 
 src/notebooks/*.csv
 src/notebooks/*.json
-
+git-pat.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

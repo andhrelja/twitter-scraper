@@ -37,7 +37,7 @@ if __name__ == '__main__':
     
     baseline_user_ids = utils.get_baseline_user_ids(
         processed_filepath=settings.PROCESSED_USER_OBJS, 
-        users_friends_followers=True
+        users_friends_followers=False
     )
     user_id_batches = utils.batches(list(baseline_user_ids), 100)
     for user_ids in user_id_batches:
