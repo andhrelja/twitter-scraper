@@ -47,7 +47,7 @@ def read_users_friends_followers(folder_name=None):
     return content
 
 
-def get_users_friends_followers_ids(folder_name='2022-02-05'):
+def get_users_friends_followers_ids(folder_name):
     users_friends_followers = read_users_friends_followers(folder_name)
     print("Collecting user's friends and follower IDs")
     users_friends_followers_ids = set(map(int, users_friends_followers.keys()))
@@ -61,7 +61,7 @@ def get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_IDS, users_
     baseline_user_ids = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))
     
     if users_friends_followers:
-        users_friends_followers_ids = get_users_friends_followers_ids(folder_name='2022-02-05')
+        users_friends_followers_ids = get_users_friends_followers_ids()
         baseline_user_ids.difference_update(users_friends_followers_ids)
         
     missing_user_ids = set(fileio.read_content(settings.MISSING_USER_IDS, 'json'))
