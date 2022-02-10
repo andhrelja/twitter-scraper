@@ -8,10 +8,13 @@ src/test.py
 input/history/
 output/tweets/
 output/users/
+output/models/
 
+src/model.py
 src/notebooks/*.csv
 src/notebooks/*.json
 git-pat.txt
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

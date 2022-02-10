@@ -1,6 +1,8 @@
 import os
 import datetime as dt
 
+from clean.users import OUTPUT
+
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
 
@@ -10,12 +12,13 @@ OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')
 
 BASELINE_USER_IDS = os.path.join(INPUT_DIR, 'baseline-user-ids.json')
 MISSING_USER_IDS = os.path.join(INPUT_DIR, 'missing-user-ids.json')
+
 PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
 PROCESSED_USER_OBJS = os.path.join(INPUT_DIR, 'processed-user-objs.json')
 PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
 
-USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'users', 'objs', folder_name)
 USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'users', 'ids', folder_name)
+USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'users', 'objs', folder_name)
 USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'tweets', folder_name)
 
 USER_OBJS_FIELDNAMES = [
@@ -23,6 +26,44 @@ USER_OBJS_FIELDNAMES = [
     'statuses_count', 'friends_count', 'followers_count', 
     'description', 'created_at', 'verified', 'protected'
 ]
+
+GRAPH_MODEL = os.path.join(OUTPUT_DIR, 'model', folder_name, 'graph.json')
+USER_MODEL = os.path.join(OUTPUT_DIR, 'model', folder_name, 'users.csv')
+TWEET_MODEL = os.path.join(OUTPUT_DIR, 'model', folder_name, 'tweets.csv')
+
+EDGES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges.csv')
+NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
+
+KEYWORDS = {
+    'is_covid': [
+      'alemka', 'markotic', 'markotić', 'beros', 'beroš', 'capak', 'hzjz',
+      
+      'antigensk', 'antimaskeri', 'antivakseri',
+      
+      'cijep', 'cijepiv', 'cijeplj', 'cijepljen', 'cjep', 'cjepiv', 'cjepljen',
+      
+      'booster doza', 'prva doza', 'druga doza', 'treca doza', 'treća doza',
+      'astra zeneca', 'biontech', 'curevac', 'inovio', 'janssen', 'johnson', 
+      'novavax', 'moderna', 'pfizer', 'vaxart',
+      
+      'sojevi koronavirusa', 'brazilski', 'britanski', 'ceski soj', 'delta', 
+      'indijski', 'juznoafricki', 'južnoafrički', 'lambda', 
+      'njujorski',  'njujorški', 'omikorn', 'omikron', 'novi soj', 'češki soj'
+      
+      'coron', 'corona', 'covid', 'covid-19', 'covid 19', 'koron', 'korona', 'kovid', 
+      'ncov', 'mutira', 'mutaci', 'n95', 'sars-cov-2', 'sarscov2', 'sputnik',
+      
+      'inkubacij', 'ljekov', 'obolje', 'novozaražen', 'nuspoj', 'patoge', 'regeneron', 
+      'medicin', 'infekc', 'dezinf', 'bolnic', 'dijagnost', 'doktor', 'epidem', 
+      'respir', 'respirator', 'simpto', 'rt pcr', 'terapij', 'viro', 'virus',
+      
+      'slusaj struku', 'slušaj struku', 'propusnic', 'ostani doma', 'ostanimo doma', 'zaraž', 
+      'festivala slobod',  'pcr', 'samoizola','samoizolacij', 'testira', 'zaraz',
+      'distanc', 'izolac', 'karant', 'lockd', 'mask', 'festival slobod', 
+      'ostanimo odgovorni', 'pandem', 'pandemij', 'stozer', 'stožer',
+    ]
+}
+
 
 connections = {
     'IC': {
