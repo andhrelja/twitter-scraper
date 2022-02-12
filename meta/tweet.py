@@ -11,7 +11,7 @@ TWEET_MODEL = {
 		'hashtags': [],
 		'user_mentions': [
 			{
-				'id': 2244994945
+				'id': int
 			}
 		],
 	},
@@ -26,7 +26,7 @@ TWEET_MODEL = {
 	'contributors': object,
 	'retweeted_status': {
  		'user': {
-			'id': str
+			'id': int
 	 	}
 	},
 	'is_quote_status': bool,

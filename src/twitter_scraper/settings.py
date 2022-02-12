@@ -4,7 +4,7 @@ import datetime as dt
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
 
-DEBUG = False
+DEBUG = True
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 

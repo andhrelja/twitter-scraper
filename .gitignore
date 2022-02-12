@@ -10,6 +10,7 @@ output/tweets/
 output/users/
 output/models/
 
+src/make_test.py
 src/twitter_scraper/model.py
 notebooks/*.csv
 notebooks/*.json
