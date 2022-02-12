@@ -4,15 +4,15 @@ scrape_tweets/all_new.csv
 scrape_tweets/new_update.csv
 scrape_users/data/folowing_users_graph.gml
 
-src/test.py
+debug/
 input/history/
 output/tweets/
 output/users/
 output/models/
 
-src/model.py
-src/notebooks/*.csv
-src/notebooks/*.json
+src/twitter_scraper/model.py
+notebooks/*.csv
+notebooks/*.json
 git-pat.txt
 
 
