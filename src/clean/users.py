@@ -1,12 +1,15 @@
 # %%
 import re
 import os
+import time
 import string
 import pandas as pd
-import datetime as dt
 
+import utils
 import utils.fileio as fileio
 from twitter_scraper import settings
+
+logger = utils.get_logger(__file__)
 
 USER_OBJS_CSV = os.path.join(settings.USER_OBJS_DIR, 'user-objs.csv')
 LOCATIONS_JSON = os.path.join(settings.INPUT_DIR, 'locations.json')
@@ -14,7 +17,7 @@ LOCATIONS_JSON = os.path.join(settings.INPUT_DIR, 'locations.json')
 locations = pd.read_json(LOCATIONS_JSON)[0]
 accepted_chars = string.ascii_lowercase + 'čšćžđ'
 
-
+# %%
 def get_user_df():
     #user_df = pd.read_csv('C:\\Users\\AndreaHrelja\\Documents\\Faks\\twitter_scraper\\output\\users\\objs\\2022-02-03\\user-objs.csv')
     user_df = pd.read_csv(USER_OBJS_CSV)
@@ -22,7 +25,6 @@ def get_user_df():
     user_df['created_at'] = pd.to_datetime(user_df['created_at'], format='%a %b %d %H:%M:%S %z %Y') # 30s
     return user_df
 
-# %%
 
 def clean_location(location):
     if location == '':
@@ -82,6 +84,7 @@ def transform_user_df(user_df):
 # %%
 
 def generate_edges_df(user_df):
+    logger.info("Creating Edges df, this may take a while")
     not_found = 0
     users_data = []
     total_users = len(user_df.user_id.unique())
@@ -90,7 +93,7 @@ def generate_edges_df(user_df):
         user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id))
         if os.path.exists(user_path):
             user = fileio.read_content(user_path, 'json')
-            for follower in user.get('followers', []):
+            for follower in user[str(user_id)].get('followers', []):
                 users_data.append({
                     'source': str(follower),
                     'target': str(user_id)
@@ -98,12 +101,13 @@ def generate_edges_df(user_df):
         else:
             not_found += 1
     
-    print("Found {}/{} users".format(total_users-not_found, total_users))
+    logger.info("Done creating Edges df - found {}/{} nodes".format(total_users-not_found, total_users))
     return pd.DataFrame(users_data)
 
 
 def users():
-    print("{} - Cleaning users ...".format(dt.datetime.now()))
+    logger.info("Cleaning Users")
+    start_time = time.time()
     
     edges_graph_dir, _ = os.path.split(settings.EDGES_CSV)
     users_csv_dir, _ = os.path.split(settings.USERS_CSV)
@@ -115,6 +119,16 @@ def users():
     user_df = get_user_df()
     user_df = transform_user_df(user_df)
     user_df.to_csv(settings.USERS_CSV, index=False)
+    logger.info("Saved user model: {}".format(settings.USERS_CSV))
     
     edges_df = generate_edges_df(user_df)
     edges_df.to_csv(settings.EDGES_CSV, index=False)
+    logger.info("Saved graph edges: {}".format(settings.EDGES_CSV))
+    logger.info("Done cleaning Users")
+    
+    end_time = time.time()
+    logger.info("Time elapsed: {} min".format((end_time - start_time)/60))
+
+# %%
+if __name__ == '__main__':
+    users()

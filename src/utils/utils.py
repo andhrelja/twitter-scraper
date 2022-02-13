@@ -1,8 +1,27 @@
 import os
-from tqdm import tqdm
+import sys
+import logging
 
 from . import fileio
 from twitter_scraper import settings
+
+
+def get_logger(logger_name, **kwargs):
+    path, logger_filename = os.path.split(logger_name)
+    _, logger_module = os.path.split(path)
+    logger_name = '{}.{}'.format(logger_module, logger_filename.replace('.py', ''))
+    logging.basicConfig(
+        format='[%(levelname)s] %(asctime)s %(name)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=logging.INFO,
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler(os.path.join(settings.LOGS_DIR, '{}.log'.format(settings.folder_name)))
+        ],
+        **kwargs
+    )
+
+    return logging.getLogger(logger_name)
 
 
 def batches(lst, n=100):
@@ -20,39 +39,14 @@ def get_tweet_max_id(user_id):
     return None
 
 
-def _read_users_friends_followers(folder_name=None):
-    print("Reading user's friends and followers")
-    if folder_name is not None:
-        user_ids_dir = settings.USER_IDS_DIR.replace(settings.folder_name, folder_name)
-    else:
-        user_ids_dir = settings.USER_IDS_DIR
-    content = {}
-    for fn in tqdm(os.listdir(user_ids_dir)):
-        file_content = fileio.read_content(os.path.join(user_ids_dir, fn), 'json')
-        content.update(file_content)
-    return content
-
-
-def get_users_friends_followers_ids(folder_name=None):
-    users_friends_followers = _read_users_friends_followers(folder_name)
-    print("Collecting user's friends and follower IDs")
-    users_friends_followers_ids = set(map(int, users_friends_followers.keys()))
-    for _, item in tqdm(users_friends_followers.items()):
-        users_friends_followers_ids = users_friends_followers_ids.union(item['friends'])
-        users_friends_followers_ids = users_friends_followers_ids.union(item['followers'])
-    return users_friends_followers_ids
-
-
-def get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_IDS, users_friends_followers=False):
-    baseline_user_ids = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))
-    
-    if users_friends_followers:
-        users_friends_followers_ids = get_users_friends_followers_ids()
-        baseline_user_ids.difference_update(users_friends_followers_ids)
-        
+def get_baseline_user_ids(processed_filepath=None):
+    baseline_user_ids = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))       
     missing_user_ids = set(fileio.read_content(settings.MISSING_USER_IDS, 'json'))
-    processed_user_ids = set(fileio.read_content(processed_filepath, 'json'))
     
     baseline_user_ids.difference_update(missing_user_ids)
+    if processed_filepath is None:
+        return baseline_user_ids
+    
+    processed_user_ids = set(fileio.read_content(processed_filepath, 'json'))
     baseline_user_ids.difference_update(processed_user_ids)
     return baseline_user_ids

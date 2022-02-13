@@ -4,16 +4,18 @@ import datetime as dt
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
 
-DEBUG = True
+DEBUG = False
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 INPUT_DIR = os.path.join(ROOT_DIR, 'input')
 OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')
+LOGS_DIR = os.path.join(ROOT_DIR, 'logs')
 if DEBUG:
     INPUT_DIR = os.path.join(ROOT_DIR, 'debug', 'input')
     OUTPUT_DIR = os.path.join(ROOT_DIR, 'debug', 'output')
+    LOGS_DIR = os.path.join(ROOT_DIR, 'debug', 'logs')
 
 BASELINE_USER_IDS = os.path.join(INPUT_DIR, 'baseline-user-ids.json')
 MISSING_USER_IDS = os.path.join(INPUT_DIR, 'missing-user-ids.json')
@@ -31,6 +33,7 @@ TWEETS_CSV = os.path.join(OUTPUT_DIR, 'model', folder_name, 'tweets.csv')
 
 EDGES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges.csv')
 NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
+
 
 KEYWORDS = {
     'is_covid': [

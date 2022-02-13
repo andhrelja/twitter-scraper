@@ -1,4 +1,3 @@
-import json
 import os
 import time
 import queue
@@ -10,43 +9,46 @@ import utils
 import utils.fileio as fileio
 from twitter_scraper import settings
 
+logger = utils.get_logger(__file__)
+
+l = threading.Lock()
+q = queue.Queue()
+
+baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_TWEETS)
+
+flatten_dictlist = lambda dictlist, colname: [_dict.get(colname) for _dict in dictlist]
 SCRAPE_TWEET = lambda x: {
     'id':               x.get('id'),
     'user_id':          x.get('user', {}).get('id'),
     'full_text':        x.get('full_text', x.get('text')),
     'created_at':       x.get('created_at'),
-    'hashtags':         x.get('entities', {}).get('hashtags', []),
-    'user_mentions':    [user.get('id') for user in x.get('entities', {}).get('user_mentions', [])],
+    'hashtags':         flatten_dictlist(x.get('entities', {}).get('hashtags', []), 'text'),
+    'user_mentions':    flatten_dictlist(x.get('entities', {}).get('user_mentions', []), 'id'),#[user.get('id') for user in x.get('entities', {}).get('user_mentions', [])],
     'retweet_user':     x.get('retweeted_status', {}).get('user', {}).get('id'),
     'retweet_count':    x.get('retweet_count'),
-	# 'in_reply_to_status_id':      x.get('in_reply_to_status_id'),
-	# 'in_reply_to_status_id_str':  x.get('in_reply_to_status_id_str'),
-	# 'in_reply_to_user_id':        x.get('in_reply_to_user_id'),
-	# 'in_reply_to_user_id_str':    x.get('in_reply_to_user_id_str'),
-	# 'in_reply_to_screen_name':    x.get('in_reply_to_screen_name'),
+	'in_reply_to_status_id':      x.get('in_reply_to_status_id'),
+	'in_reply_to_status_id_str':  x.get('in_reply_to_status_id_str'),
+	'in_reply_to_user_id':        x.get('in_reply_to_user_id'),
+	'in_reply_to_user_id_str':    x.get('in_reply_to_user_id_str'),
+	'in_reply_to_screen_name':    x.get('in_reply_to_screen_name'),
 	'geo':              x.get('geo'),
 	'coordinates':      x.get('coordinates'),
 	# 'place':          x.get('place'),
 	# 'contributors':   x.get('contributors'),
 	# 'is_quote_status': x.get('is_quote_status'),
-	# 'favorite_count': x.get('favorite_count'),
+	'favorite_count':   x.get('favorite_count'),
 	# 'favorited':      x.get('favorited'),
 	# 'retweeted':      x.get('retweeted'),
 	# 'possibly_sensitive': x.get('possibly_sensitive'),
 	# 'lang': x.get('lang')
 }
-
-baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_TWEETS)
-pbar = tqdm(total=len(baseline_user_ids))
-
-l = threading.Lock()
-q = queue.Queue()
     
 
-def collect_users_tweets(conn_name, api):
-    #Twitter only allows access to a users most recent 3240 tweets with this method
-    #initialize a list to hold all the tweepy Tweets
-    global q, l, pbar
+def collect_users_tweets(conn_name, api, pbar):
+    # Twitter only allows access to 
+    # a users most recent 3240 tweets with this method
+    global q, l
+    
     while not q.empty():
         pbar.update(1)
         user_id = q.get()
@@ -70,35 +72,47 @@ def collect_users_tweets(conn_name, api):
         
         if len(all_user_tweets) > 0:
             l.acquire()
-            try:
-                fileio.write_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), all_user_tweets, 'json')
-                fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
-            except json.decoder.JSONDecodeError:
-                print("\nJSONDecode error on {}.json".format(user_id))
+            fileio.write_content(
+                os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 
+                all_user_tweets, 'json'
+            )
+            fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
             l.release()
 
 
 def tweets(apis):
-    global q, l, pbar
-    
+    global q, baseline_user_ids, pbar
+    start_time = time.time()
     if not os.path.exists(settings.USER_TWEETS_DIR):
         os.mkdir(settings.USER_TWEETS_DIR)
+
+    if settings.DEBUG:
+        limit = 10
+        baseline_user_ids = list(baseline_user_ids)[:limit]
     
-    start_time = time.time()
-        
     threads = []
-    
     for user_id in baseline_user_ids:
         q.put(user_id)
     
-    print("{} - Scraping Tweets ...".format(dt.datetime.now()))
+    logger.info("Scraping Tweets")
+    pbar = tqdm(total=len(baseline_user_ids))
+    
     for conn_name, api in apis.items():
-        thread = threading.Thread(target=collect_users_tweets, args=(conn_name, api))
+        thread = threading.Thread(
+            target=collect_users_tweets, 
+            args=(conn_name, api, pbar)
+        )
         thread.start()
         threads.append(thread)
     
     for thread in threads:
         thread.join()
     
+    pbar.close()
     end_time = time.time()
-    print("\n\nTime elapsed: {} min".format((end_time - start_time)/60))
+    logger.info("Time elapsed: {} min".format((end_time - start_time)/60))
+
+
+if __name__ == '__main__':
+    apis = utils.get_api_connections()
+    tweets(apis)
