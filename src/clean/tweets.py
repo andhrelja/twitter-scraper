@@ -40,7 +40,6 @@ CLEAN_TWEET = lambda x: {
 	# 'lang': x.get('lang')
 }
 
-user_df = pd.read_csv(settings.USERS_CSV, encoding='utf-8', index_col='user_id')
 
 def get_tweets_df():
     logger.info("Reading Tweets df, this may take a while")
@@ -79,6 +78,7 @@ def get_tweets_df():
 
 def get_nodes_df(tweets_df):
     logger.info("Creating Nodes df, this may take a while")
+    user_df = pd.read_csv(settings.USERS_CSV, encoding='utf-8', index_col='user_id')
     nodes_df = tweets_df.groupby('user_id').agg(total_tweets=('user_id', 'size')).join(user_df, how='inner')
     nodes_df['covid_tweets']    = tweets_df[tweets_df['is_covid'] == True].groupby('user_id').size()
     nodes_df['is_covid']        = nodes_df['covid_tweets'].transform(lambda x: x > 0)
