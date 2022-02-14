@@ -157,6 +157,6 @@ def user_ids(apis):
 
 
 if __name__ == '__main__':
-    apis = utils.get_api_connections()
-    user_ids(apis)
-    #update_baseline()
+    #apis = utils.get_api_connections()
+    #user_ids(apis)
+    update_baseline()

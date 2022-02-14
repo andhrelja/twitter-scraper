@@ -1,4 +1,5 @@
 .vscode/
+nohup.out
 
 scrape_tweets/collected_data
 scrape_tweets/preproc_2021

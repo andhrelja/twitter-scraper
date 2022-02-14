@@ -105,7 +105,7 @@ def generate_edges_df(user_df):
     return pd.DataFrame(users_data)
 
 
-def users():
+def users(edges=True, update_baseline=False):
     logger.info("Cleaning Users")
     start_time = time.time()
     
@@ -121,14 +121,20 @@ def users():
     user_df.to_csv(settings.USERS_CSV, index=False)
     logger.info("Saved user model: {}".format(settings.USERS_CSV))
     
-    edges_df = generate_edges_df(user_df)
-    edges_df.to_csv(settings.EDGES_CSV, index=False)
-    logger.info("Saved graph edges: {}".format(settings.EDGES_CSV))
-    logger.info("Done cleaning Users")
+    if update_baseline:
+        baseline = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))
+        baseline = baseline.union(user_df.user_id.values)
+        fileio.write_content(settings.BASELINE_USER_IDS, baseline, 'json')
+
+    if edges:
+        edges_df = generate_edges_df(user_df)
+        edges_df.to_csv(settings.EDGES_CSV, index=False)
+        logger.info("Saved graph edges: {}".format(settings.EDGES_CSV))
+        logger.info("Done cleaning Users")
     
     end_time = time.time()
     logger.info("Time elapsed: {} min".format((end_time - start_time)/60))
 
 # %%
 if __name__ == '__main__':
-    users()
+    users(edges=False, update_baseline=True)
