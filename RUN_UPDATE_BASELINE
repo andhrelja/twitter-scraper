@@ -1,0 +1,2 @@
+python -m scrape.user_ids
+python -m clean.users
