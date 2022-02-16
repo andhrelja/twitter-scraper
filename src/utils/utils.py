@@ -31,14 +31,6 @@ def batches(lst, n=100):
     return batches
 
 
-def get_tweet_max_id(user_id):
-    user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
-    if user_tweets:
-        latest_tweet = max(user_tweets, key=lambda x: x['id'])
-        return latest_tweet['id']
-    return None
-
-
 def get_baseline_user_ids(processed_filepath=None):
     baseline_user_ids = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))       
     missing_user_ids = set(fileio.read_content(settings.MISSING_USER_IDS, 'json'))

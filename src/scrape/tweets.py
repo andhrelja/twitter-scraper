@@ -42,7 +42,15 @@ SCRAPE_TWEET = lambda x: {
 	# 'possibly_sensitive': x.get('possibly_sensitive'),
 	# 'lang': x.get('lang')
 }
-    
+
+
+def get_tweet_max_id(user_id):
+    user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
+    if user_tweets:
+        latest_tweet = max(user_tweets, key=lambda x: x['id'])
+        return latest_tweet['id']
+    return None
+
 
 def collect_users_tweets(conn_name, api, pbar):
     # Twitter only allows access to 
@@ -54,7 +62,7 @@ def collect_users_tweets(conn_name, api, pbar):
         user_id = q.get()
 
         all_user_tweets = []
-        max_id = utils.get_tweet_max_id(user_id)
+        max_id = get_tweet_max_id(user_id)
         #keep grabbing tweets until there are no tweets left to grab
         while True:
             tweepy_kwargs = dict(max_id=max_id, count=200, tweet_mode="extended")
@@ -70,14 +78,13 @@ def collect_users_tweets(conn_name, api, pbar):
             else:
                 break
         
-        if len(all_user_tweets) > 0:
-            l.acquire()
-            fileio.write_content(
-                os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 
-                all_user_tweets, 'json'
-            )
-            fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
-            l.release()
+        l.acquire()
+        fileio.write_content(
+            os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 
+            all_user_tweets, 'json'
+        )
+        fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
+        l.release()
 
 
 def tweets(apis):
@@ -86,9 +93,9 @@ def tweets(apis):
     if not os.path.exists(settings.USER_TWEETS_DIR):
         os.mkdir(settings.USER_TWEETS_DIR)
 
-    if settings.DEBUG:
-        limit = 10
-        baseline_user_ids = list(baseline_user_ids)[:limit]
+    # if settings.DEBUG:
+    #     limit = 10
+    #     baseline_user_ids = list(baseline_user_ids)[:limit]
     
     threads = []
     for user_id in baseline_user_ids:

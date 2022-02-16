@@ -129,9 +129,9 @@ def user_ids(apis):
     if not os.path.exists(settings.USER_IDS_DIR):
         os.mkdir(settings.USER_IDS_DIR)
     
-    if settings.DEBUG:
-        limit = 10
-        baseline_user_ids = list(baseline_user_ids)[:limit]
+    # if settings.DEBUG:
+    #     limit = 10
+    #     baseline_user_ids = list(baseline_user_ids)[:limit]
     
     threads = []
     for user_id in baseline_user_ids:

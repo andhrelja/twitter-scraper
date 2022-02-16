@@ -16,7 +16,8 @@ logger.info("---------------------- CLEAN ----------------------")
 clean.users()
 clean.tweets()
 
-#logger.info("----------------- UPDATE BASELINE -----------------")
-#scrape.update_baseline()
+# logger.info("----------------- UPDATE BASELINE -----------------")
+# scrape.update_baseline()
+# clean.update_baseline()
 
 logger.info("----------------------- DONE -----------------------")

@@ -122,5 +122,5 @@ def reconnect_api(conn_name):
     auth = tweepy.OAuthHandler(conn_details['consumer_key'], conn_details['consumer_secret'])
     auth.set_access_token(conn_details['access_key'], conn_details['access_secret'])
     api = tweepy.API(auth, wait_on_rate_limit=True)
-    logger.info('{} API successfully connected!'.format(conn_name))
+    logger.info('Reconnect: {} API successfully connected!'.format(conn_name))
     return api

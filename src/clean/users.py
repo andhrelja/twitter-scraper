@@ -83,36 +83,19 @@ def transform_user_df(user_df):
 
 # %%
 
-def generate_edges_df(user_df):
-    logger.info("Creating Edges df, this may take a while")
-    not_found = 0
-    users_data = []
-    total_users = len(user_df.user_id.unique())
-    
-    for user_id in user_df.user_id.unique():
-        user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id))
-        if os.path.exists(user_path):
-            user = fileio.read_content(user_path, 'json')
-            for follower in user[str(user_id)].get('followers', []):
-                users_data.append({
-                    'source': str(follower),
-                    'target': str(user_id)
-                })
-        else:
-            not_found += 1
-    
-    logger.info("Done creating Edges df - found {}/{} nodes".format(total_users-not_found, total_users))
-    return pd.DataFrame(users_data)
+
+def update_baseline():
+    user_df = get_user_df()
+    baseline = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))
+    baseline = baseline.union(user_df.user_id.values)
+    fileio.write_content(settings.BASELINE_USER_IDS, list(baseline), 'json', overwrite=True)
 
 
-def users(edges=True, update_baseline=False):
+def users():
     logger.info("Cleaning Users")
     start_time = time.time()
     
-    edges_graph_dir, _ = os.path.split(settings.EDGES_CSV)
     users_csv_dir, _ = os.path.split(settings.USERS_CSV)
-    if not os.path.exists(edges_graph_dir):
-        os.mkdir(edges_graph_dir)
     if not os.path.exists(users_csv_dir):
         os.mkdir(users_csv_dir)
     
@@ -121,20 +104,10 @@ def users(edges=True, update_baseline=False):
     user_df.to_csv(settings.USERS_CSV, index=False)
     logger.info("Saved user model: {}".format(settings.USERS_CSV))
     
-    if update_baseline:
-        baseline = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))
-        baseline = baseline.union(user_df.user_id.values)
-        fileio.write_content(settings.BASELINE_USER_IDS, baseline, 'json')
-
-    if edges:
-        edges_df = generate_edges_df(user_df)
-        edges_df.to_csv(settings.EDGES_CSV, index=False)
-        logger.info("Saved graph edges: {}".format(settings.EDGES_CSV))
-        logger.info("Done cleaning Users")
-    
     end_time = time.time()
     logger.info("Time elapsed: {} min".format((end_time - start_time)/60))
 
 # %%
 if __name__ == '__main__':
-    users(edges=False, update_baseline=True)
+    users(edges=False)
+    update_baseline()

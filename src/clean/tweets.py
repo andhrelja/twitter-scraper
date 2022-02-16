@@ -7,6 +7,7 @@ import pandas as pd
 import datetime as dt
 
 import utils
+import utils.fileio as fileio
 from twitter_scraper import settings
 
 logger = utils.get_logger(__file__)
@@ -16,7 +17,8 @@ MAX_DATE = dt.datetime(2022, 1, 31, 0, 0, 0, 0, pytz.UTC)
 
 CLEAN_TWEET = lambda x: {
     'id':               str(x.get('id')),
-    'user_id':          str(x.get('user_id')),
+    'user_id':          x.get('user_id'),
+    'user_id_str':      str(x.get('user_id')),
     'full_text':        x.get('full_text'),
     'created_at':       x.get('created_at'),
     'hashtags':         x.get('hashtags'),
@@ -40,7 +42,7 @@ CLEAN_TWEET = lambda x: {
 	# 'lang': x.get('lang')
 }
 
-
+# %%
 def get_tweets_df():
     logger.info("Reading Tweets df, this may take a while")
     
@@ -67,6 +69,7 @@ def get_tweets_df():
         tweets_df['is_covid_2'] = tweets_df['full_text_nospace'].fillna('').transform(lambda x: any(tag in x.lower()
                                                             for tag in settings.KEYWORDS['is_covid']))
         tweets_df['is_covid'] = tweets_df['is_covid_1'] | tweets_df['is_covid_2']
+        tweets_df = tweets_df[list(CLEAN_TWEET({}).keys()) + ['week', 'month', 'is_covid']]
     else:
         tweets_df = pd.read_csv(settings.TWEETS_CSV)
         tweets_df['created_at'] = pd.to_datetime(tweets_df['created_at'], format='%Y-%m-%d %H:%M:%S%z') # 30s
@@ -74,7 +77,6 @@ def get_tweets_df():
     logger.info("Done reading Tweets df")
     return tweets_df
 
-# %%
 
 def get_nodes_df(tweets_df):
     logger.info("Creating Nodes df, this may take a while")
@@ -82,7 +84,7 @@ def get_nodes_df(tweets_df):
     nodes_df = tweets_df.groupby('user_id').agg(total_tweets=('user_id', 'size')).join(user_df, how='inner')
     nodes_df['covid_tweets']    = tweets_df[tweets_df['is_covid'] == True].groupby('user_id').size()
     nodes_df['is_covid']        = nodes_df['covid_tweets'].transform(lambda x: x > 0)
-    nodes_df['covid_tweets']    = nodes_df['covid_tweets'].fillna(0)
+    nodes_df['covid_tweets']    = nodes_df['covid_tweets'].fillna(0).astype(int)
     nodes_df['covid_pct']       = nodes_df['covid_tweets'] / nodes_df['total_tweets']
     nodes_df                    = nodes_df.reset_index(drop=False)
     nodes_df['user_id']         = nodes_df['user_id'].astype(str)
@@ -90,17 +92,45 @@ def get_nodes_df(tweets_df):
     return nodes_df
 
 
+def get_edges_df(nodes_df):
+    logger.info("Creating Edges df, this may take a while")
+    not_found = 0
+    users_data = []
+    total_users = len(nodes_df.user_id.unique())
+    
+    for user_id in nodes_df.user_id.unique():
+        user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id))
+        if os.path.exists(user_path):
+            user = fileio.read_content(user_path, 'json')
+            for follower in user[str(user_id)].get('followers', []):
+                if follower in nodes_df.user_id.unique():
+                    users_data.append({
+                        'source': str(follower),
+                        'target': str(user_id)
+                    })
+        else:
+            not_found += 1
+    
+    found = total_users-not_found
+    edges_df = pd.DataFrame(users_data, columns=['source', 'target'])
+    logger.info("Done creating Edges df:\n\t- found {}/{} nodes\n\t- found edges for {}/{} nodes".format(found, total_users, len(edges_df.source.unique()), found))
+    return edges_df
+
+
 # %%
 def tweets():
     logger.info("Cleaning Tweets")
     start_time = time.time()
     
-    nodes_graph_dir, _ = os.path.split(settings.NODES_CSV)
     tweets_csv_dir, _ = os.path.split(settings.TWEETS_CSV)
-    if not os.path.exists(nodes_graph_dir):
-        os.mkdir(nodes_graph_dir)
+    nodes_graph_dir, _ = os.path.split(settings.NODES_CSV)
+    edges_graph_dir, _ = os.path.split(settings.EDGES_CSV)
     if not os.path.exists(tweets_csv_dir):
         os.mkdir(tweets_csv_dir)
+    if not os.path.exists(nodes_graph_dir):
+        os.mkdir(nodes_graph_dir)
+    if not os.path.exists(edges_graph_dir):
+        os.mkdir(edges_graph_dir)
     
     tweets_df = get_tweets_df()
     tweets_df.to_csv(settings.TWEETS_CSV, encoding='utf-8', index=False)
@@ -109,6 +139,10 @@ def tweets():
     nodes_df = get_nodes_df(tweets_df)
     nodes_df.to_csv(settings.NODES_CSV, encoding='utf-8', index=False)
     logger.info("Saved graph nodes: {}".format(settings.NODES_CSV))
+    
+    edges_df = get_edges_df(nodes_df)
+    edges_df.to_csv(settings.EDGES_CSV, index=False)
+    logger.info("Saved graph edges: {}".format(settings.EDGES_CSV))
     
     logger.info("Done cleaning Tweets")
     end_time = time.time()

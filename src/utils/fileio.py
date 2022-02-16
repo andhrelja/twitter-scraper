@@ -5,12 +5,18 @@ import logging
 
 logger = logging.getLogger(__file__)
 
-def write_content(path, content, file_type='csv', fieldnames=None):
+def write_content(path, content, file_type='csv', fieldnames=None, overwrite=False):
     if os.path.isfile(path):
-        if file_type == 'csv':
-            _append_csv_content(path, content, fieldnames)
-        elif file_type == 'json':
-            _append_json_content(path, content)
+        if overwrite:
+            if file_type == 'csv':
+                _write_csv_content(path, content, fieldnames)
+            elif file_type == 'json':
+                _write_json_content(path, content)
+        else:
+            if file_type == 'csv':
+                _append_csv_content(path, content, fieldnames)
+            elif file_type == 'json':
+                _append_json_content(path, content)
     else:
         if file_type == 'csv':
             _write_csv_content(path, content, fieldnames)
