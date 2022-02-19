@@ -25,12 +25,12 @@ PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
 PROCESSED_USER_OBJS = os.path.join(INPUT_DIR, 'processed-user-objs.json')
 PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
 
-USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'users', 'ids', folder_name)
-USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'users', 'objs', folder_name)
-USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'tweets', folder_name)
+USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids')
+USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs', folder_name)
+USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'tweets', folder_name)
 
-USERS_CSV = os.path.join(OUTPUT_DIR, 'models', 'user', folder_name, 'users.csv')
-TWEETS_CSV = os.path.join(OUTPUT_DIR, 'models', 'tweet', folder_name, 'tweets.csv')
+USERS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'user', folder_name, 'users.csv')
+TWEETS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'tweet', folder_name, 'tweets.csv')
 
 EDGES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges.csv')
 NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')

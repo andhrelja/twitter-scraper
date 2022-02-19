@@ -65,10 +65,9 @@ NODE_DTYPE = {
     'is_covid':         'bool',
 }
 
-user_df = pd.read_csv(settings.USERS_CSV, encoding='utf-8', index_col='user_id')
 
 # %%
-def get_tweets_df():
+def get_tweets_df(user_df):
     if not os.path.exists(settings.TWEETS_CSV):
         logger.info("Reading raw Tweet json, this may take a while")
         data = []
@@ -107,7 +106,7 @@ def get_tweets_df():
     return tweets_df[TWEET_DTYPE.keys()].astype(TWEET_DTYPE)
 
 
-def get_nodes_df(tweets_df):
+def get_nodes_df(tweets_df, user_df):
     nodes_df = tweets_df.groupby('user_id').agg(total_tweets=('user_id', 'size')).join(user_df, how='inner')
     nodes_df['covid_tweets']    = tweets_df[tweets_df['is_covid'] == True].groupby('user_id').size()
     nodes_df['is_covid']        = nodes_df['covid_tweets'].transform(lambda x: x > 0)
@@ -127,13 +126,14 @@ def tweets(nodes=True):
     utils.mkdir(nodes_graph_dir)
 
     logger.info("Cleaning Tweets")
-    tweets_df = get_tweets_df()
+    user_df = pd.read_csv(settings.USERS_CSV, encoding='utf-8', index_col='user_id')
+    tweets_df = get_tweets_df(user_df)
     logger.info("Done cleaning Tweets")
     logger.info("Tweet model saved: {}".format(settings.TWEETS_CSV))
     
     if nodes:
         logger.info("Creating Nodes df, this may take a while")
-        nodes_df = get_nodes_df(tweets_df)
+        nodes_df = get_nodes_df(tweets_df, user_df)
         nodes_df.to_csv(settings.NODES_CSV, encoding='utf-8', index=False, quoting=csv.QUOTE_NONNUMERIC)
         logger.info("Done creating Nodes df")
     logger.info("Graph nodes saved: {}".format(settings.NODES_CSV))
