@@ -1,21 +1,8 @@
 .vscode/
-nohup.out
+nohup*
+temp*
 
-scrape_tweets/collected_data
-scrape_tweets/preproc_2021
-scrape_tweets/all_new.csv
-scrape_tweets/new_update.csv
-scrape_users/data/folowing_users_graph.gml
-
-debug/
-input/history/
-input/processed-user-objs.json
-input/processed-user-tweets.json
-output/tweets/
-output/users/
-output/models/
-output/graph/
-
+data/output/
 src/make_test.py
 src/twitter_scraper/model.py
 notebooks/*.csv

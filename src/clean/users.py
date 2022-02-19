@@ -48,6 +48,11 @@ USER_DTYPE = {
     'clean_location':   'string',
 }
 
+EDGE_DTYPE = {
+    'source': 'int',
+    'target': 'int',
+}
+
 # %%
 def get_users_df():
     #users_df = pd.read_csv('C:\\Users\\AndreaHrelja\\Documents\\Faks\\twitter_scraper\\output\\users\\objs\\2022-02-03\\user-objs.csv')
@@ -109,7 +114,7 @@ def transform_users_df(users_df):
         & (users_df['followers_count'] > 10)
         #& (users_df['followers_count'] < 5000)
     ].sort_values(by='followers_count')
-    return users_df.astype(USER_DTYPE)
+    return users_df[USER_DTYPE.keys()].astype(USER_DTYPE)
 
 
 def get_edges_df(nodes_df):
@@ -132,7 +137,7 @@ def get_edges_df(nodes_df):
     
     found = total_users-not_found
     edges_df = pd.DataFrame(users_data, columns=['source', 'target'])
-    return edges_df, found, total_users
+    return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 
 # %%
 def update_baseline():
@@ -159,7 +164,7 @@ def users(edges=False):
     
     if edges:
         logger.info("Creating Edges df, this may take a while")
-        edges_df, found, total_users = get_edges_df(users_df)
+        edges_df, total_users, found = get_edges_df(users_df)
         edges_df.to_csv(settings.EDGES_CSV, index=False)
         logger.info("Done creating Edges df:\n\t- found {}/{} nodes\n\t- found edges for {}/{} nodes".format(found, total_users, len(edges_df.source.unique()), found))
     logger.info("Graph edges saved: {}".format(settings.EDGES_CSV))
