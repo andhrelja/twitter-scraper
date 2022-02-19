@@ -10,8 +10,8 @@ DEBUG = False
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
-INPUT_DIR = os.path.join(ROOT_DIR, 'input')
-OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')
+INPUT_DIR = os.path.join(ROOT_DIR, 'data', 'input')
+OUTPUT_DIR = os.path.join(ROOT_DIR, 'data', 'output')
 LOGS_DIR = os.path.join(ROOT_DIR, 'logs')
 if DEBUG:
     INPUT_DIR = os.path.join(ROOT_DIR, 'debug', 'input')
