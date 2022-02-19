@@ -21,6 +21,7 @@ SCRAPE_USER = lambda x: {
     'name':             x.get('name'),
     'screen_name':      x.get('screen_name'),
     'location':         x.get('location'),
+    "profile_location": x.get('profile_location'),
     'derived':          x.get('derived'),
     'url':              x.get('url'),
     'description':      x.get('description'),

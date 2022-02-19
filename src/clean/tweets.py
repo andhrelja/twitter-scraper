@@ -65,6 +65,10 @@ NODE_DTYPE = {
     'is_covid':         'bool',
 }
 
+EDGE_DTYPE = {
+    'source': 'int',
+    'target': 'int',
+}
 
 # %%
 def get_tweets_df(user_df):
@@ -113,17 +117,38 @@ def get_nodes_df(tweets_df, user_df):
     nodes_df['covid_tweets']    = nodes_df['covid_tweets'].fillna(0).astype(int)
     nodes_df['covid_pct']       = nodes_df['covid_tweets'] / nodes_df['total_tweets']
     nodes_df                    = nodes_df.reset_index(drop=False)
-    nodes_df['user_id_str']     = nodes_df['user_id'].astype(str)
     return nodes_df[NODE_DTYPE.keys()].astype(NODE_DTYPE)
 
+
+def get_edges_df(nodes_df):
+    not_found = 0
+    users_data = []
+    total_users = len(nodes_df.user_id.unique())
+    
+    for user_id in tqdm(nodes_df.user_id.unique()):
+        user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id))
+        if os.path.exists(user_path):
+            user = fileio.read_content(user_path, 'json')
+            for follower in user[str(user_id)].get('followers', []):
+                if follower in nodes_df.user_id.unique():
+                    users_data.append({
+                        'source': int(follower),
+                        'target': int(user_id)
+                    })
+        else:
+            not_found += 1
+    
+    found = total_users-not_found
+    edges_df = pd.DataFrame(users_data, columns=['source', 'target'])
+    return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
+
 # %%
-def tweets(nodes=True):
+def tweets(nodes=True, edges=True):
     start_time = time.time()
     
-    tweets_csv_dir, _ = os.path.split(settings.TWEETS_CSV)
-    nodes_graph_dir, _ = os.path.split(settings.NODES_CSV)
-    utils.mkdir(tweets_csv_dir)
-    utils.mkdir(nodes_graph_dir)
+    utils.mkdir(os.path.dirname(settings.TWEETS_CSV))
+    utils.mkdir(os.path.dirname(settings.NODES_CSV))
+    utils.mkdir(os.path.dirname(settings.EDGES_CSV))
 
     logger.info("Cleaning Tweets")
     user_df = pd.read_csv(settings.USERS_CSV, encoding='utf-8', index_col='user_id')
@@ -137,10 +162,17 @@ def tweets(nodes=True):
         nodes_df.to_csv(settings.NODES_CSV, encoding='utf-8', index=False, quoting=csv.QUOTE_NONNUMERIC)
         logger.info("Done creating Nodes df")
     logger.info("Graph nodes saved: {}".format(settings.NODES_CSV))
+
+    if edges:
+        logger.info("Creating Edges df, this may take a while")
+        edges_df, total_users, found = get_edges_df(nodes_df)
+        edges_df.to_csv(settings.EDGES_CSV, index=False)
+        logger.info("Done creating Edges df:\n\t- found {}/{} nodes\n\t- found edges for {}/{} nodes".format(found, total_users, len(edges_df.source.unique()), found))
+    logger.info("Graph edges saved: {}".format(settings.EDGES_CSV))
     
     end_time = time.time()
     logger.info("Time elapsed: {} min".format((end_time - start_time)/60))
     
 # %%
 if __name__ == '__main__':
-    tweets(nodes=True)
+    tweets(nodes=True, edges=True)

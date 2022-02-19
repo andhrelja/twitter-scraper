@@ -1,5 +1,6 @@
 # %%
 import re
+import csv
 import os
 import time
 import string
@@ -24,7 +25,7 @@ USER_DTYPE = {
     'name':             'string',
     'screen_name':      'string',
     'location':         'string',
-    "profile_location": 'object',
+    # "profile_location": 'object',
     # 'derived':          'string',
     # 'url':              'string',
     'description':      'string',
@@ -48,18 +49,13 @@ USER_DTYPE = {
     'clean_location':   'string',
 }
 
-EDGE_DTYPE = {
-    'source': 'int',
-    'target': 'int',
-}
-
 # %%
 def get_users_df():
     #users_df = pd.read_csv('C:\\Users\\AndreaHrelja\\Documents\\Faks\\twitter_scraper\\output\\users\\objs\\2022-02-03\\user-objs.csv')
-    users_df = pd.read_csv(USER_OBJS_CSV)
+    users_df = pd.read_csv(USER_OBJS_CSV, dtype=USER_DTYPE)
     users_df = users_df[users_df['protected'] == False]
     users_df['created_at'] = pd.to_datetime(users_df['created_at'], format='%a %b %d %H:%M:%S %z %Y') # 30s
-    users_df['location'] = users_df['location'].transform(lambda x: x.replace(re.search(r'[ ]+', x).group(), ' ') if re.search(r'[ ]+', x) else x)
+    users_df['location'] = users_df['location'].fillna('').transform(lambda x: x.replace(re.search(r'[ ]+', x).group(), ' ').strip() if re.search(r'[ ]+', x) else x)
     return users_df
 
 
@@ -79,7 +75,7 @@ def clean_location(location):
     
         for char in location.lower():
             if char not in accepted_chars + ' ':
-                new_location = new_location.replace(char, '')
+                new_location = new_location.replace(char, ' ')
         
         if name in location.lower():
             new_location = new_location.replace(name, '')
@@ -98,7 +94,7 @@ def is_croatian(location):
     
     cro_locations = ('croa', 'hrvat')
     
-    if location.lower() in locations:
+    if location.lower() in (loc.lower() for loc in locations):
         return True
     else:
         return any(cro_loc in location.lower() for cro_loc in cro_locations)
@@ -116,29 +112,6 @@ def transform_users_df(users_df):
     ].sort_values(by='followers_count')
     return users_df[USER_DTYPE.keys()].astype(USER_DTYPE)
 
-
-def get_edges_df(nodes_df):
-    not_found = 0
-    users_data = []
-    total_users = len(nodes_df.user_id.unique())
-    
-    for user_id in tqdm(nodes_df.user_id.unique()):
-        user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id))
-        if os.path.exists(user_path):
-            user = fileio.read_content(user_path, 'json')
-            for follower in user[str(user_id)].get('followers', []):
-                if follower in nodes_df.user_id.unique():
-                    users_data.append({
-                        'source': int(follower),
-                        'target': int(user_id)
-                    })
-        else:
-            not_found += 1
-    
-    found = total_users-not_found
-    edges_df = pd.DataFrame(users_data, columns=['source', 'target'])
-    return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
-
 # %%
 def update_baseline():
     users_df = get_users_df()
@@ -147,32 +120,22 @@ def update_baseline():
     fileio.write_content(settings.BASELINE_USER_IDS, list(baseline), 'json', overwrite=True)
 
 
-def users(edges=False):
+def users():
     start_time = time.time()
     
-    edges_graph_dir, _ = os.path.split(settings.EDGES_CSV)
-    users_csv_dir, _ = os.path.split(settings.USERS_CSV)
-    utils.mkdir(users_csv_dir)
-    utils.mkdir(edges_graph_dir)
+    utils.mkdir(os.path.dirname(settings.USERS_CSV))
 
     logger.info("Cleaning Users")
     users_df = get_users_df()
     users_df = transform_users_df(users_df)
-    users_df.to_csv(settings.USERS_CSV, index=False)
+    users_df.to_csv(settings.USERS_CSV, index=False, quoting=csv.QUOTE_NONNUMERIC)
     logger.info("Done cleaning Users")
     logger.info("User model saved: {}".format(settings.USERS_CSV))
-    
-    if edges:
-        logger.info("Creating Edges df, this may take a while")
-        edges_df, total_users, found = get_edges_df(users_df)
-        edges_df.to_csv(settings.EDGES_CSV, index=False)
-        logger.info("Done creating Edges df:\n\t- found {}/{} nodes\n\t- found edges for {}/{} nodes".format(found, total_users, len(edges_df.source.unique()), found))
-    logger.info("Graph edges saved: {}".format(settings.EDGES_CSV))
 
     end_time = time.time()
     logger.info("Time elapsed: {} min".format((end_time - start_time)/60))
 
 # %%
 if __name__ == '__main__':
-    users(edges=False)
+    users()
     #update_baseline()
