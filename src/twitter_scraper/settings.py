@@ -3,8 +3,9 @@ import datetime as dt
 
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
+#folder_name = '2022-02-14'
 
-DEBUG = True
+DEBUG = False
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -28,8 +29,8 @@ USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'users', 'ids', folder_name)
 USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'users', 'objs', folder_name)
 USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'tweets', folder_name)
 
-USERS_CSV = os.path.join(OUTPUT_DIR, 'model', folder_name, 'users.csv')
-TWEETS_CSV = os.path.join(OUTPUT_DIR, 'model', folder_name, 'tweets.csv')
+USERS_CSV = os.path.join(OUTPUT_DIR, 'models', 'user', folder_name, 'users.csv')
+TWEETS_CSV = os.path.join(OUTPUT_DIR, 'models', 'tweet', folder_name, 'tweets.csv')
 
 EDGES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges.csv')
 NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')

@@ -1,6 +1,8 @@
 import os
 import sys
 import logging
+import numpy as np
+import pandas as pd
 
 from . import fileio
 from twitter_scraper import settings
@@ -42,3 +44,7 @@ def get_baseline_user_ids(processed_filepath=None):
     processed_user_ids = set(fileio.read_content(processed_filepath, 'json'))
     baseline_user_ids.difference_update(processed_user_ids)
     return baseline_user_ids
+
+def mkdir(path):
+    if not os.path.exists(path):
+        os.mkdir(path)

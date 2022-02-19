@@ -13,8 +13,8 @@ scrape.user_objs(apis)
 scrape.tweets(apis)
 
 logger.info("---------------------- CLEAN ----------------------")
-clean.users()
-clean.tweets()
+clean.users(edges=True)
+clean.tweets(nodes=True)
 
 # logger.info("----------------- UPDATE BASELINE -----------------")
 # scrape.update_baseline()

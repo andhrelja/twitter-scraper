@@ -13,7 +13,7 @@ input/processed-user-objs.json
 input/processed-user-tweets.json
 output/tweets/
 output/users/
-output/model/
+output/models/
 output/graph/
 
 src/make_test.py

@@ -126,8 +126,7 @@ def user_ids(apis):
     # 15 000 users in 28h
     global q, baseline_user_ids
     start_time = time.time()
-    if not os.path.exists(settings.USER_IDS_DIR):
-        os.mkdir(settings.USER_IDS_DIR)
+    utils.mkdir(settings.USER_IDS_DIR)
     
     # if settings.DEBUG:
     #     limit = 10

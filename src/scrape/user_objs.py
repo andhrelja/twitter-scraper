@@ -17,27 +17,27 @@ baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROC
 
 SCRAPE_USER = lambda x: {
     'user_id':          x.get('id'),
-    #'id_str':          x.get('id_str'),
+    'user_id_str':      x.get('id_str'),
     'name':             x.get('name'),
     'screen_name':      x.get('screen_name'),
     'location':         x.get('location'),
-    #'derived':         x.get('derived'),
-    #'url':             x.get('url'),
-    #'description':     x.get('description'),
+    'derived':          x.get('derived'),
+    'url':              x.get('url'),
+    'description':      x.get('description'),
     'protected':        x.get('protected'),
     'verified':         x.get('verified'),
     'followers_count':  x.get('followers_count'),
     'friends_count':    x.get('friends_count'),
-    #'listed_count':    x.get('listed_count'),
-    #'favourites_count': x.get('favourites_count'),
+    'listed_count':     x.get('listed_count'),
+    'favourites_count': x.get('favourites_count'),
     'statuses_count':   x.get('statuses_count'),
     'created_at':       x.get('created_at'),
-    #'profile_banner_url':      x.get('profile_banner_url'),
-    #'profile_image_url_https': x.get('profile_image_url_https'),
-    #'default_profile':         x.get('default_profile'),
-    #'default_profile_image':   x.get('default_profile_image'),
-    #'withheld_in_countries':   x.get('withheld_in_countries'),
-    #'withheld_scope':          x.get('withheld_scope'),
+    'profile_banner_url':      x.get('profile_banner_url'),
+    'profile_image_url_https': x.get('profile_image_url_https'),
+    'default_profile':         x.get('default_profile'),
+    'default_profile_image':   x.get('default_profile_image'),
+    'withheld_in_countries':   x.get('withheld_in_countries'),
+    'withheld_scope':          x.get('withheld_scope'),
 }
 
 
@@ -62,8 +62,7 @@ def collect_user_objs(conn_name, api, pbar):
 def user_objs(apis):
     global q, baseline_user_ids
     start_time = time.time()
-    if not os.path.exists(settings.USER_OBJS_DIR):
-        os.mkdir(settings.USER_OBJS_DIR)
+    utils.mkdir(settings.USER_OBJS_DIR)
 
     threads = []
     user_id_batches = utils.batches(list(baseline_user_ids), 100)
