@@ -2,7 +2,6 @@
 import os
 import time
 import pandas as pd
-import networkx as nx
 from tqdm import tqdm
 
 import utils
@@ -14,8 +13,8 @@ from graph.nodes import NODE_DTYPE
 logger = utils.get_logger(__file__)
 
 EDGE_DTYPE = {
-    'source': 'int',
-    'target': 'int',
+    'source': 'int64',
+    'target': 'int64',
 }
 
 # %%
@@ -23,37 +22,39 @@ def get_user_followers_edges_df(nodes_df):
     not_found = []
     users_data = []
     
-    for user_id in tqdm(nodes_df.user_id.unique()):
-        user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id))
+    for user_id_str in tqdm(nodes_df.user_id_str.unique()):
+        user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id_str))
         if os.path.exists(user_path):
             user = fileio.read_content(user_path, 'json')
-            for follower in user[str(user_id)].get('followers', []):
-                if follower in nodes_df.user_id.unique():
+            for follower in user[user_id_str].get('followers', []):
+                if str(follower) in nodes_df.user_id_str.unique():
                     users_data.append({
                         'source': int(follower),
-                        'target': int(user_id)
+                        'target': int(user_id_str)
                     })
         else:
-            not_found.append(user_id)
+            not_found.append(user_id_str)
     
-    total_users = len(nodes_df.user_id.unique())
+    total_users = len(nodes_df.user_id_str.unique())
     found = total_users - len(not_found)
+    
     edges_df = pd.DataFrame(users_data, columns=['source', 'target'])
     return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 
 
 def get_user_mentions_edges_df(nodes_df, tweets_df):
-    nodes_df = nodes_df.set_index('user_id')
+    nodes_df = nodes_df.set_index('user_id_str')
     tweets_df['user_mentions'] = tweets_df['user_mentions'].apply(eval)
-    nodes_df['user_mentions'] = tweets_df[['user_id', 'user_mentions']].groupby('user_id').sum()
+    nodes_df['user_mentions'] = tweets_df[['user_id_str', 'user_mentions']].groupby('user_id').sum()
     nodes_df = nodes_df.reset_index()
+    edges_df = nodes_df[['user_id_str', 'user_mentions']].rename(columns={'user_id_str': 'source', 'user_mentions': 'target'})
+    edges_df = edges_df.explode('target').reset_index(drop=True)
     
     total_users = len(nodes_df)
     not_found = len(nodes_df[nodes_df['user_mentions'].isna()])
     found = total_users - not_found
-    edges_df = nodes_df[['user_id', 'user_mentions']].rename(columns={'user_id': 'source', 'user_mentions': 'target'})
-    edges_df = edges_df.explode('target').reset_index(drop=True)
-    # Create self loops for users who don't have a `user mention``
+    
+    # Create self loops for users who don't have a `user mention`
     edges_df.loc[edges_df['target'].isna(), 'target'] = edges_df['source']
     return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 

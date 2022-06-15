@@ -20,6 +20,7 @@ flatten_dictlist = lambda dictlist, colname: [_dict.get(colname) for _dict in di
 SCRAPE_TWEET = lambda x: {
     'id':               x.get('id'),
     'user_id':          x.get('user', {}).get('id'),
+    'user_id_str':      x.get('user', {}).get('id_str'),
     'full_text':        x.get('full_text', x.get('text')),
     'created_at':       x.get('created_at'),
     'hashtags':         flatten_dictlist(x.get('entities', {}).get('hashtags', []), 'text'),

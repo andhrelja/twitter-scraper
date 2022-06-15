@@ -19,12 +19,13 @@ MAX_DATE = dt.datetime(2022, 1, 31, 0, 0, 0, 0, dt.timezone.utc)
 TWEET_DTYPE = {
     'id':               'string',
     'user_id':          'int',
+    'user_id_str':      'string',
     'full_text':        'string',
     'created_at':       'datetime64[ns, UTC]',
     'hashtags':         'object',
     'user_mentions':    'object',
-    'retweet_user':     'object',
-    # 'retweet_user_str': 'string',
+    # 'retweet_user':     'object',
+    'retweet_user_str': 'string',
 	#'in_reply_to_status_id':      pd.Int64Dtype(),
 	'in_reply_to_status_id_str':  'string',
 	#'in_reply_to_user_id':        pd.Int64Dtype(),
@@ -64,13 +65,13 @@ def get_tweets_df(user_df):
                                                             for tag in settings.KEYWORDS['is_covid']))
         
         tweets_df['is_covid'] = tweets_df['is_covid_1'] | tweets_df['is_covid_2']
-        return tweets_df[TWEET_DTYPE.keys()].astype(TWEET_DTYPE)        
-
+        return tweets_df[TWEET_DTYPE.keys()]
+    
     if not os.path.exists(settings.TWEETS_CSV):
         logger.info("Reading raw Tweet json, this may take a while")
         data = []
 
-        for user_id in tqdm(user_df.user_id.unique()):
+        for user_id in tqdm(user_df.user_id_str.unique()):
             fn = '{}.json'.format(user_id)
             content = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, fn), 'json')
             data += content
@@ -78,10 +79,10 @@ def get_tweets_df(user_df):
         logger.info("Transforming Tweet data, this may take a while")
         tweets_df = pd.DataFrame(data)
         tweets_df['created_at'] = pd.to_datetime(tweets_df['created_at'], format='%a %b %d %H:%M:%S %z %Y')
-        tweets_df = tweets_df[
-            (tweets_df['created_at'] > MIN_DATE)
-            & (tweets_df['created_at'] < MAX_DATE)
-        ]
+        # tweets_df = tweets_df[
+        #     (tweets_df['created_at'] > MIN_DATE)
+        #     & (tweets_df['created_at'] < MAX_DATE)
+        # ]
         
         tweets_df = transform(tweets_df)
         

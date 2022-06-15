@@ -71,6 +71,12 @@ KEYWORDS = {
 }
 
 connections = {
+    'Carlos': {
+        'consumer_key': 'r1tcZ5XPtMLzBhwNEZjhHb3vV',
+        'consumer_secret': '7cGo82YQGOYGi3iJ1LJ9YeMP4GA6paIe2kabLLeicjMrUUhXxs',
+        'access_key': '166318369-AhoqOVupAsjj0EnrVtHY6Pg3izqremykKLvZpjBV',
+        'access_secret': 'kRCuZRn0j0Iowqd7VBCTQRgYuM5ZpwAc6ViEzmwJtFPcS',
+    },
     'IC': {
         'consumer_key': 'D1cFTRrLpIpJT136NfBo2A0u9' ,
         'consumer_secret': '3n6YDxzye30OahadlibPcZoh8H6yWB9FQ2x4JfNo4UR0k7m5xH',
@@ -83,12 +89,7 @@ connections = {
         'access_key': '1316409694760689666-YSi25euJltCKcDWI1XeM24LUiK4uG5',
         'access_secret': 'cb3MG4RJeFkwt2FmHhgIH0V7OfijuN3MxXCcA1P3ntKlP',
     },
-    'Carlos': {
-        'consumer_key': 'r1tcZ5XPtMLzBhwNEZjhHb3vV',
-        'consumer_secret': '7cGo82YQGOYGi3iJ1LJ9YeMP4GA6paIe2kabLLeicjMrUUhXxs',
-        'access_key': '166318369-AhoqOVupAsjj0EnrVtHY6Pg3izqremykKLvZpjBV',
-        'access_secret': 'kRCuZRn0j0Iowqd7VBCTQRgYuM5ZpwAc6ViEzmwJtFPcS',
-    },
+    
     'andhrelja': {# AAAAAAAAAAAAAAAAAAAAABQAYwEAAAAAtdo8GPg%2BU8LkZch6B6kvkZAxTlE%3DxinBDLcs1zGPI4OEytAVCzYucBTAf8V4q0KBjEGWHtDqgUKAMn
         'consumer_key': 'Bf4MSXC7sM3f4uzLOTIJTwFUR' ,
         'consumer_secret': 'EEEW1hrODIsC4b9aSSA8yu0egSTap9TBr2DuuIMbkcLTEQkwSN',

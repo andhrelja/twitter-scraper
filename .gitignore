@@ -7,9 +7,6 @@ data/
 debug/
 logs/
 
-data/input/history/
-data/output/
-
 src/make_test.py
 src/twitter_scraper/model.py
 

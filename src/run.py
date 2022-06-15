@@ -6,7 +6,7 @@ logger = utils.get_logger(__file__)
 import scrape
 import clean
 import graph
-# import twitter_scraper
+from twitter_scraper import update_baseline
 
 
 logger.info("---------------------- SCRAPE ----------------------")
@@ -20,13 +20,13 @@ clean.tweets()
 
 logger.info("---------------------- GRAPH ----------------------")
 graph.nodes()
-graph.edges(user_followers=True, user_mentions=True)
+graph.edges(user_followers=True, user_mentions=False)
 
-# logger.info("----------------- UPDATE BASELINE -----------------")
-# twitter_scraper.update_baseline(
-#     archive=True, 
-#     clean=True, 
-#     update=True
-# )
+logger.info("----------------- UPDATE BASELINE -----------------")
+update_baseline.update_baseline(
+    archive=True, 
+    clean=True, 
+    update=True
+)
 
 logger.info("----------------------- DONE -----------------------")

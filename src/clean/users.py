@@ -91,11 +91,11 @@ def transform_users_df(users_df):
     users_df = users_df[
         (users_df['is_croatian'] == True)
         & (users_df['protected'] == False)
-        & (users_df['statuses_count'] > 10)
+        # & (users_df['statuses_count'] > 10)
         & (users_df['friends_count'] > 10)
-        & (users_df['friends_count'] < 5000)
-        & (users_df['followers_count'] > 10)
-        #& (users_df['followers_count'] < 5000)
+        # & (users_df['friends_count'] < 5000)
+        # & (users_df['followers_count'] > 10)
+        & (users_df['followers_count'] < 5000)
     ].sort_values(by='followers_count')
     
     return users_df[USER_DTYPE.keys()].astype(USER_DTYPE)

@@ -3,11 +3,8 @@ import os
 import csv
 import time
 import pandas as pd
-import networkx as nx
-from tqdm import tqdm
 
 import utils
-from utils import fileio
 from twitter_scraper import settings
 from clean.tweets import TWEET_DTYPE
 from clean.users import USER_DTYPE
@@ -36,8 +33,8 @@ NODE_DTYPE = {
 
 # %%
 def get_nodes_df(tweets_df, user_df):
-    nodes_df = tweets_df.groupby('user_id').agg(total_tweets=('user_id', 'size')).join(user_df.set_index('user_id'), how='inner')
-    nodes_df['covid_tweets']    = tweets_df[tweets_df['is_covid'] == True].groupby('user_id').size()
+    nodes_df = tweets_df.groupby('user_id_str').agg(total_tweets=('user_id_str', 'size')).join(user_df.set_index('user_id_str'), how='inner')
+    nodes_df['covid_tweets']    = tweets_df[tweets_df['is_covid'] == True].groupby('user_id_str').size()
     nodes_df['is_covid']        = nodes_df['covid_tweets'].transform(lambda x: x > 0)
     nodes_df['covid_tweets']    = nodes_df['covid_tweets'].fillna(0).astype(int)
     nodes_df['covid_pct']       = nodes_df['covid_tweets'] / nodes_df['total_tweets']
