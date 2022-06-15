@@ -1,23 +1,30 @@
+from email.mime import base
 import os
+import json
 import random
 
-from utils import fileio
-from twitter_scraper.settings import ROOT_DIR
 
-INPUT_DIR = os.path.join(ROOT_DIR, 'input')
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+INPUT_DIR = os.path.join(ROOT_DIR, 'data', 'input')
 DEBUG_INPUT_DIR = os.path.join(ROOT_DIR, 'debug', 'input')
 
 def sample_user_friends():
     
     return
 
-def sample_baseline(sample_size=10):
-    baseline_user_ids = fileio.read_content(os.path.join(INPUT_DIR, 'baseline-user-ids.json'), 'json')
+def sample_baseline(sample_size=100):
+    with open(os.path.join(INPUT_DIR, 'baseline-user-ids.json'), 'r', encoding='utf-8') as f:
+        baseline_user_ids = json.load(f)
+        print("Read {} baseline IDs".format(len(baseline_user_ids)))
+    
     sample = set()
     while len(sample) < sample_size:
         sample.add(random.choice(baseline_user_ids))
-    fileio.write_content(os.path.join(DEBUG_INPUT_DIR, 'baseline-user-ids.json'), list(sample), 'json')
+    
+    with open(os.path.join(DEBUG_INPUT_DIR, 'baseline-user-ids.json'), 'w', encoding='utf-8') as f:
+        json.dump(list(sample), f)
+        print("Wrote {} baseline IDs".format(len(sample)))
 
 
 if __name__ == '__main__':
-    sample_baseline(10)
+    sample_baseline(100)

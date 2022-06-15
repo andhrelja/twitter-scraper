@@ -3,9 +3,9 @@ import datetime as dt
 
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
-#folder_name = '2022-02-14'
+# folder_name = '2022-02-19'
 
-DEBUG = False
+DEBUG = True
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -18,22 +18,26 @@ if DEBUG:
     OUTPUT_DIR = os.path.join(ROOT_DIR, 'debug', 'output')
     LOGS_DIR = os.path.join(ROOT_DIR, 'debug', 'logs')
 
+# Input
 BASELINE_USER_IDS = os.path.join(INPUT_DIR, 'baseline-user-ids.json')
 MISSING_USER_IDS = os.path.join(INPUT_DIR, 'missing-user-ids.json')
-
 PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
 PROCESSED_USER_OBJS = os.path.join(INPUT_DIR, 'processed-user-objs.json')
 PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
 
+# Scrape
 USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids')
 USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs', folder_name)
 USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'tweets', folder_name)
 
+# Clean
 USERS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'user', folder_name, 'users.csv')
 TWEETS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'tweet', folder_name, 'tweets.csv')
 
-EDGES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges.csv')
+# Graph
 NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
+EDGES_MENTIONS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-mentions.csv')
+EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-followers.csv')
 
 
 KEYWORDS = {

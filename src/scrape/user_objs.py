@@ -42,10 +42,9 @@ SCRAPE_USER = lambda x: {
 }
 
 
-def collect_user_objs(conn_name, api, pbar):
+def __collect_user_objs(conn_name, api, pbar):
     global q, l
     while not q.empty():
-        pbar.update(1)
         user_ids = q.get()
         user_objs = utils.get_twitter_lookup_users(conn_name, api, user_ids)
         user_objs = [SCRAPE_USER(user._json) for user in user_objs]
@@ -58,24 +57,27 @@ def collect_user_objs(conn_name, api, pbar):
         )
         fileio.write_content(settings.PROCESSED_USER_OBJS, user_ids, 'json')
         l.release()
+        pbar.update(1)
 
 
 def user_objs(apis):
     global q, baseline_user_ids
+
     start_time = time.time()
+    user_id_batches = utils.batches(list(baseline_user_ids), 100)
+    threads = []
+
     utils.mkdir(settings.USER_OBJS_DIR)
 
-    threads = []
-    user_id_batches = utils.batches(list(baseline_user_ids), 100)
     for user_ids in user_id_batches:
         q.put(user_ids)
     
     logger.info("Scraping User objects")
+
     pbar = tqdm(total=len(user_id_batches))
-    
     for conn_name, api in apis.items():
         thread = threading.Thread(
-            target=collect_user_objs, 
+            target=__collect_user_objs, 
             args=(conn_name, api, pbar)
         )
         thread.start()
@@ -83,10 +85,10 @@ def user_objs(apis):
     
     for thread in threads:
         thread.join()
-    
     pbar.close()
+    
     end_time = time.time()
-    logger.info("Time elapsed: {} min".format((end_time - start_time)/60))
+    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
 
 
 if __name__ == '__main__':

@@ -1,16 +1,20 @@
 .vscode/
 nohup*
 temp*
+git-pat.txt
 
+data/
 debug/
 logs/
 
+data/input/history/
 data/output/
+
 src/make_test.py
 src/twitter_scraper/model.py
+
 notebooks/*.csv
 notebooks/*.json
-git-pat.txt
 
 
 # Byte-compiled / optimized / DLL files

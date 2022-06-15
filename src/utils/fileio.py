@@ -3,7 +3,10 @@ import csv
 import json
 import logging
 
-logger = logging.getLogger(__file__)
+path, logger_filename = os.path.split(__file__)
+_, logger_module = os.path.split(path)
+logger_name = '{}.{}'.format(logger_module, logger_filename.replace('.py', ''))
+logger = logging.getLogger(logger_name)
 
 def write_content(path, content, file_type='csv', fieldnames=None, overwrite=False):
     if os.path.isfile(path):
@@ -84,11 +87,12 @@ def _append_json_content(path, content):
 
 
 def _read_json_content(path, column=None):
-    if not os.path.isfile(path):
-        logger.warning("Empty File: {}".format(path))
-        return []
     with open(path, 'r', encoding='utf-8') as jsonfile:
-        content = json.load(jsonfile)
+        try:
+            content = json.load(jsonfile)
+        except json.decoder.JSONDecodeError:
+            logger.error("JSONDecode error on {}.json".format(path))
+            return []
     if column:
         return [item[column] for item in content]
     else:
@@ -96,9 +100,6 @@ def _read_json_content(path, column=None):
 
 
 def _read_csv_content(path, column):
-    if not os.path.isfile(path):
-        logger.warning("Empty File: {}".format(path))
-        return []
     with open(path, 'r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         content = list(reader)

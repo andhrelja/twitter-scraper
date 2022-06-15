@@ -25,6 +25,7 @@ SCRAPE_TWEET = lambda x: {
     'hashtags':         flatten_dictlist(x.get('entities', {}).get('hashtags', []), 'text'),
     'user_mentions':    flatten_dictlist(x.get('entities', {}).get('user_mentions', []), 'id'),
     'retweet_user':     x.get('retweeted_status', {}).get('user', {}).get('id'),
+    'retweet_user_str': str(x.get('retweeted_status', {}).get('user', {}).get('id')),
     'retweet_count':    x.get('retweet_count'),
 	'in_reply_to_status_id':      x.get('in_reply_to_status_id'),
 	'in_reply_to_status_id_str':  x.get('in_reply_to_status_id_str'),
@@ -52,13 +53,12 @@ def get_tweet_max_id(user_id):
     return None
 
 
-def collect_users_tweets(conn_name, api, pbar):
+def __collect_users_tweets(conn_name, api, pbar):
     # Twitter only allows access to 
     # a users most recent 3240 tweets with this method
     global q, l
     
     while not q.empty():
-        pbar.update(1)
         user_id = q.get()
 
         all_user_tweets = []
@@ -66,14 +66,23 @@ def collect_users_tweets(conn_name, api, pbar):
         #keep grabbing tweets until there are no tweets left to grab
         while True:
             tweepy_kwargs = dict(max_id=max_id, count=200, tweet_mode="extended")
-            new_tweets, no_tweets = utils.get_twitter_endpoint(conn_name, api, 'user_timeline', user_id, retry_max=5, retry_delay=3, **tweepy_kwargs)
+            new_tweets, no_tweets = utils.get_twitter_endpoint(
+                conn_name, api, 
+                'user_timeline', 
+                user_id, 
+                retry_max=5, 
+                retry_delay=3, 
+                **tweepy_kwargs
+            )
+
             if new_tweets and not no_tweets:
                 new_tweets = [SCRAPE_TWEET(item._json) for item in new_tweets]
-                #new_tweets = [item._json for item in new_tweets]
                 all_user_tweets.extend(new_tweets)
                 oldest_tweet = new_tweets[-1]
                 max_id = oldest_tweet['id']-1
-                if dt.datetime.strptime(oldest_tweet['created_at'], '%a %b %d %H:%M:%S %z %Y').year <= 2020:
+
+                created_at = dt.datetime.strptime(oldest_tweet['created_at'], '%a %b %d %H:%M:%S %z %Y')
+                if created_at <= dt.datetime(2020, 1, 1, 0, 0, 0, 0, tzinfo=dt.timezone.utc):
                     break
             else:
                 break
@@ -85,27 +94,26 @@ def collect_users_tweets(conn_name, api, pbar):
         )
         fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
         l.release()
+        pbar.update(1)
 
 
 def tweets(apis):
     global q, baseline_user_ids, pbar
+    
     start_time = time.time()
+    threads = []
+
     utils.mkdir(settings.USER_TWEETS_DIR)
 
-    # if settings.DEBUG:
-    #     limit = 10
-    #     baseline_user_ids = list(baseline_user_ids)[:limit]
-    
-    threads = []
     for user_id in baseline_user_ids:
         q.put(user_id)
     
     logger.info("Scraping Tweets")
+
     pbar = tqdm(total=len(baseline_user_ids))
-    
     for conn_name, api in apis.items():
         thread = threading.Thread(
-            target=collect_users_tweets, 
+            target=__collect_users_tweets, 
             args=(conn_name, api, pbar)
         )
         thread.start()
@@ -113,10 +121,10 @@ def tweets(apis):
     
     for thread in threads:
         thread.join()
-    
     pbar.close()
+
     end_time = time.time()
-    logger.info("Time elapsed: {} min".format((end_time - start_time)/60))
+    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
 
 
 if __name__ == '__main__':
