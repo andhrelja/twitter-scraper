@@ -1,4 +1,3 @@
-from email.mime import base
 import os
 import json
 import random
@@ -22,9 +21,9 @@ def sample_baseline(sample_size=100):
         sample.add(random.choice(baseline_user_ids))
     
     with open(os.path.join(DEBUG_INPUT_DIR, 'baseline-user-ids.json'), 'w', encoding='utf-8') as f:
-        json.dump(list(sample), f)
+        json.dump(list(sample), f, indent=2)
         print("Wrote {} baseline IDs".format(len(sample)))
 
 
 if __name__ == '__main__':
-    sample_baseline(100)
+    sample_baseline(10)

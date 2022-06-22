@@ -63,11 +63,12 @@ def __collect_users_tweets(conn_name, api, pbar):
         user_id = q.get()
 
         all_user_tweets = []
-        max_id = get_tweet_max_id(user_id)
+        since_id = get_tweet_max_id(user_id)
+        max_id = None
         #keep grabbing tweets until there are no tweets left to grab
         while True:
-            tweepy_kwargs = dict(max_id=max_id, count=200, tweet_mode="extended")
-            new_tweets, no_tweets = utils.get_twitter_endpoint(
+            tweepy_kwargs = dict(since_id=since_id, max_id=max_id, count=200, tweet_mode="extended")
+            new_tweets, _ = utils.get_twitter_endpoint(
                 conn_name, api, 
                 'user_timeline', 
                 user_id, 
@@ -75,8 +76,10 @@ def __collect_users_tweets(conn_name, api, pbar):
                 retry_delay=3, 
                 **tweepy_kwargs
             )
-
-            if new_tweets and not no_tweets:
+            
+            if len(new_tweets) == 0:
+                break
+            else:
                 new_tweets = [SCRAPE_TWEET(item._json) for item in new_tweets]
                 all_user_tweets.extend(new_tweets)
                 oldest_tweet = new_tweets[-1]
@@ -85,15 +88,13 @@ def __collect_users_tweets(conn_name, api, pbar):
                 created_at = dt.datetime.strptime(oldest_tweet['created_at'], '%a %b %d %H:%M:%S %z %Y')
                 if created_at <= dt.datetime(2020, 1, 1, 0, 0, 0, 0, tzinfo=dt.timezone.utc):
                     break
-            else:
-                break
         
         l.acquire()
         fileio.write_content(
             os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 
             all_user_tweets, 'json'
         )
-        fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
+        # fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
         l.release()
         pbar.update(1)
 

@@ -13,20 +13,27 @@ logger.info("---------------------- SCRAPE ----------------------")
 scrape.user_ids(apis)
 scrape.user_objs(apis)
 scrape.tweets(apis)
+logger.info("-------------------- END SCRAPE --------------------")
+
 
 logger.info("---------------------- CLEAN ----------------------")
 clean.users()
 clean.tweets()
+logger.info("-------------------- END CLEAN --------------------")
+
 
 logger.info("---------------------- GRAPH ----------------------")
 graph.nodes()
-graph.edges(user_followers=True, user_mentions=False)
+graph.edges(user_followers=True, user_mentions=True)
+logger.info("-------------------- END GRAPH --------------------")
 
-logger.info("----------------- UPDATE BASELINE -----------------")
-update_baseline.update_baseline(
-    archive=True, 
-    clean=True, 
-    update=True
-)
+
+# logger.info("----------------- UPDATE BASELINE -----------------")
+# update_baseline.update_baseline(
+#     archive=True, 
+#     clean=True, 
+#     update=True
+# )
+# logger.info("--------------- END UPDATE BASELINE ---------------")
 
 logger.info("----------------------- DONE -----------------------")

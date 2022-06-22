@@ -15,7 +15,7 @@ USER_OBJS_CSV = os.path.join(settings.USER_OBJS_DIR, 'user-objs.csv')
 LOCATIONS_JSON = os.path.join(settings.INPUT_DIR, 'locations.json')
 
 USER_DTYPE = {
-    'user_id':          'int',
+    'user_id':          'int64',
     'user_id_str':      'string',
     'name':             'string',
     'screen_name':      'string',

@@ -27,17 +27,17 @@ PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
 
 # Scrape
 USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids')
-USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs', folder_name)
-USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'tweets', folder_name)
+USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs')
+USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'tweets')
 
 # Clean
 USERS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'user', folder_name, 'users.csv')
 TWEETS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'tweet', folder_name, 'tweets.csv')
 
 # Graph
-NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
-EDGES_MENTIONS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-mentions.csv')
-EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-followers.csv')
+NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', 'nodes.csv')
+EDGES_MENTIONS_CSV = os.path.join(OUTPUT_DIR, 'graph', 'edges-mentions.csv')
+EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', 'edges-followers.csv')
 
 
 KEYWORDS = {
@@ -61,7 +61,7 @@ KEYWORDS = {
       
       'inkubacij', 'ljekov', 'obolje', 'novozaražen', 'nuspoj', 'patoge', 'regeneron', 
       'medicin', 'infekc', 'dezinf', 'bolnic', 'dijagnost', 'doktor', 'epidem', 
-      'respir', 'respirator', 'simpto', 'rt pcr', 'terapij', 'viro', 'virus',
+      'respir', 'respirator', 'simpto', 'rt pcr', 'terapij', 'virus', # 'viro',
       
       'slusaj struku', 'slušaj struku', 'propusnic', 'ostani doma', 'ostanimo doma', 'zaraž', 
       'festivala slobod',  'pcr', 'samoizola','samoizolacij', 'testira', 'zaraz',

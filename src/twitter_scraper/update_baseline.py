@@ -36,7 +36,7 @@ def clean_baseline():
     users_df = pd.read_csv(settings.USERS_CSV, dtype=USER_DTYPE)
     users_df = users_df[users_df['is_croatian'] == True]
     baseline_user_ids = set(fileio.read_content(settings.BASELINE_USER_IDS, 'json'))
-    baseline_user_ids = baseline_user_ids.union(users_df.user_id_str.values)
+    baseline_user_ids = baseline_user_ids.union(users_df.user_id.values)
     fileio.write_content(settings.BASELINE_USER_IDS, list(baseline_user_ids), 'json', overwrite=True)
 
 

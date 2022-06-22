@@ -12,7 +12,7 @@ from clean.users import USER_DTYPE
 logger = utils.get_logger(__file__)
 
 NODE_DTYPE = {
-    'user_id':          'int',
+    'user_id':          'int64',
     'user_id_str':      'string',
     'followers_count':  'int',
     'friends_count':    'int',

@@ -28,7 +28,7 @@ def __collect_user_ids(conn_name, api, pbar):
             fileio.write_content(settings.MISSING_USER_IDS, int(missing_user), 'json')
             l.release()
             pbar.update(1)
-            continue        
+            continue
         follower_ids, _ = utils.get_twitter_endpoint(conn_name, api, 'get_follower_ids', user_id)
         
         user_id_str = str(user_id)
@@ -42,8 +42,8 @@ def __collect_user_ids(conn_name, api, pbar):
         }
         
         l.acquire()
-        fileio.write_content(os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id_str)), output_dict, 'json')
-        fileio.write_content(settings.PROCESSED_USER_IDS, user_id, 'json')
+        fileio.write_content(os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id_str)), output_dict, 'json', overwrite=True)
+        # fileio.write_content(settings.PROCESSED_USER_IDS, user_id, 'json')
         l.release()
         pbar.update(1)
 
