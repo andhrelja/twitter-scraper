@@ -4,7 +4,6 @@ temp*
 git-pat.txt
 
 data/
-debug/
 logs/
 
 src/make_test.py
