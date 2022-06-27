@@ -5,7 +5,7 @@ now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
 # folder_name = '2022-02-19'
 
-DEBUG = True
+DEBUG = False
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 

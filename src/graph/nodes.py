@@ -49,8 +49,7 @@ def nodes():
     
     logger.info("START - Creating Graph data")
     user_df = pd.read_csv(settings.USERS_CSV, dtype=USER_DTYPE)
-    tweets_df = pd.read_csv(settings.TWEETS_CSV)
-    tweets_df = tweets_df.astype(TWEET_DTYPE)
+    tweets_df = pd.read_csv(settings.TWEETS_CSV, dtype=TWEET_DTYPE)
 
     logger.info("Creating Nodes df, this may take a while")
     nodes_df = get_nodes_df(tweets_df, user_df)

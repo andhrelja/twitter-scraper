@@ -22,7 +22,7 @@ TWEET_DTYPE = {
     'user_id':          'int64',
     'user_id_str':      'string',
     'full_text':        'string',
-    'created_at':       'datetime64[ns, UTC]',
+    'created_at':       'object',
     'hashtags':         'object',
     'user_mentions':    'object',
     # 'retweet_user':     'object',
