@@ -49,7 +49,13 @@ def __collect_user_ids(conn_name, api, pbar):
 
 
 def user_ids(apis):
+    # 15 requests per connection
+    # 15 min wait until new requests are available
+    # 15*9=135 users per connection
+    # 135 users / 3 sec
     # 15 000 users in 28h
+    # 35 000 users in 65h
+    
     global q, baseline_user_ids
 
     start_time = time.time()

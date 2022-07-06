@@ -1,19 +1,17 @@
 import utils
-
-apis = utils.get_api_connections()
-logger = utils.get_logger(__file__)
-
 import scrape
 import clean
 import graph
 from twitter_scraper import update_baseline
 
+logger = utils.get_logger(__file__)
+apis = utils.get_api_connections()
 
-logger.info("---------------------- SCRAPE ----------------------")
-scrape.user_ids(apis)
+# logger.info("---------------------- SCRAPE ----------------------")
+# scrape.user_ids(apis)
 scrape.user_objs(apis)
-scrape.tweets(apis)
-logger.info("-------------------- END SCRAPE --------------------")
+# scrape.tweets(apis)
+# logger.info("-------------------- END SCRAPE --------------------")
 
 
 logger.info("---------------------- CLEAN ----------------------")
