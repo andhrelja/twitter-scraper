@@ -10,7 +10,7 @@ apis = utils.get_api_connections()
 # logger.info("---------------------- SCRAPE ----------------------")
 # scrape.user_ids(apis)
 scrape.user_objs(apis)
-# scrape.tweets(apis)
+scrape.tweets(apis)
 # logger.info("-------------------- END SCRAPE --------------------")
 
 

@@ -17,7 +17,7 @@ q = queue.Queue()
 baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_TWEETS)
 
 flatten_dictlist = lambda dictlist, colname: [_dict.get(colname) for _dict in dictlist]
-SCRAPE_TWEET = lambda x: {
+SCRAPE_TWEET = lambda x, api=None: {
     'id':               x.get('id'),
     'user_id':          x.get('user', {}).get('id'),
     'user_id_str':      x.get('user', {}).get('id_str'),
@@ -28,6 +28,7 @@ SCRAPE_TWEET = lambda x: {
     'retweet_user':     x.get('retweeted_status', {}).get('user', {}).get('id'),
     'retweet_user_str': str(x.get('retweeted_status', {}).get('user', {}).get('id')),
     'retweet_count':    x.get('retweet_count'),
+    'retweeter_ids':    api.get_retweeter_ids(x.get('id')),
 	'in_reply_to_status_id':      x.get('in_reply_to_status_id'),
 	'in_reply_to_status_id_str':  x.get('in_reply_to_status_id_str'),
 	'in_reply_to_user_id':        x.get('in_reply_to_user_id'),
@@ -80,7 +81,7 @@ def __collect_users_tweets(conn_name, api, pbar):
             if len(new_tweets) == 0:
                 break
             else:
-                new_tweets = [SCRAPE_TWEET(item._json) for item in new_tweets]
+                new_tweets = [SCRAPE_TWEET(item._json, api) for item in new_tweets]
                 all_user_tweets.extend(new_tweets)
                 oldest_tweet = new_tweets[-1]
                 max_id = oldest_tweet['id']-1
