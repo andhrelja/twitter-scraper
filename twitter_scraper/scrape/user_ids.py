@@ -1,6 +1,17 @@
 """
+****************
 User IDs Scraper
--------
+****************
+
+Input
+------
+
+``~/data/input/baseline-user-ids.json``
+
+Output
+------
+
+``~/data/output/scrape/users/ids/<user-id>.json``
 
 Uses `followers/ids <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids>`_ 
 and `friends/ids <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids>`_ 
@@ -36,17 +47,6 @@ By collecting followers and friends data, this module creates a graph node simil
             ]
         }
     }
-
-
-Input
-------
-
-``~/data/input/baseline-user-ids.json``
-
-Output
-------
-
-``~/data/output/scrape/users/ids/<user-id>.json``
 
 """
 import os

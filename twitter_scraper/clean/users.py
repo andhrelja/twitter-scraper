@@ -1,3 +1,63 @@
+"""
+*************
+Users Cleaner
+*************
+
+Input
+------
+
+``~/data/output/scrape/users/objs/user-objs.csv``
+
+Output
+------
+
+``~/data/output/clean/user/YYYY-MM-DD/users.csv``
+
+
+Filter Users based on:
+* protected = False
+* is_croatian = True
+* statuses_count > 10
+* friends_count > 10
+* friends_count < 5000
+* followers_count > 10
+* followers_count < 5000
+
+Conforms User data to the following :py:mod:pandas schema:
+
+.. code-block:: python
+
+    USER_DTYPE = {
+        'user_id':          'int64',
+        'user_id_str':      'string',
+        'name':             'string',
+        'screen_name':      'string',
+        'location':         'string',
+        # "profile_location": 'object',
+        # 'derived':          'string',
+        # 'url':              'string',
+        'description':      'string',
+        'protected':        'boolean',
+        'verified':         'boolean',
+        'followers_count':  'int',
+        'friends_count':    'int',
+        'listed_count':     'int',
+        'favourites_count': 'int',
+        'statuses_count':   'int',
+        'created_at':       'str',
+        # 'profile_banner_url':      'string',
+        # 'profile_image_url_https': 'string',
+        # 'default_profile':         'object',
+        # 'default_profile_image':   'string',
+        # 'withheld_in_countries':   'object',
+        # 'withheld_scope':          'object',
+
+        ### Custom columns
+        'is_croatian':      'bool',
+        'clean_location':   'string',
+    }
+
+"""
 # %%
 import re
 import csv

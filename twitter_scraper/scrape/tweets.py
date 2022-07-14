@@ -1,6 +1,18 @@
 """
+**************
 Tweets Scraper
--------
+**************
+
+Input
+------
+
+``~/data/input/baseline-user-ids.json`` #1 
+
+Output
+------
+
+``~/data/output/scrape/users/ids/<user-id>.json``
+
 
 Uses `user_timeline <https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline>`_ to collect tweets for a given user ID.
 
@@ -43,17 +55,6 @@ is transformed using the following mapping:
         'possibly_sensitive':   x.get('possibly_sensitive'),
         'lang':                 x.get('lang')
     }
-
-Input
-------
-
-``~/data/input/baseline-user-ids.json`` #1 
-
-Output
-------
-
-``~/data/output/scrape/users/ids/<user-id>.json``
-
 
 """
 

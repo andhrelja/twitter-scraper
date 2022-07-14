@@ -2,86 +2,86 @@
 
 ## Scrapers
 
-The :mod:twitter_scraper.scrape module consists from three sub-modules.
+The :py:mod:twitter_scraper.scrape module consists from three sub-modules.
 The following modules collect data using their respected Twitter endpoints:
 
 
-1. :mod:twitter_scraper.scrape.tweets
+1. :py:mod:twitter_scraper.scrape.tweets
 
     
         * [statuses/user_timeline](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline)
 
-    > 
-    >         * loads history using Tweet IDs: `since_id=None, max_id=None`
+
+                * loads history using Tweet IDs: `since_id=None, max_id=None`
 
 
-    >         * loads incremental using Tweet IDs: `since_id=max_latest_id, max_id=None`
+                * loads incremental using Tweet IDs: `since_id=max_latest_id, max_id=None`
 
 
-    >         * limit: 
+                * limit: 
 
 
-    >                 * 900 requests / 15 mins (using 9 threads = **8100 requests / 15 mins**)
+                        * 900 requests / 15 mins (using 9 threads = **8100 requests / 15 mins**)
 
 
-    >                 * 3200 of a user’s most recent Tweets
+                        * 3200 of a user’s most recent Tweets
 
 
-    >         * output: `~/data/output/scrape/tweets/<user-id>.json`
+                * output: `~/data/output/scrape/tweets/<user-id>.json`
 
 
-2. :mod:twitter_scraper.scrape.user_ids
+2. :py:mod:twitter_scraper.scrape.user_ids
 
     
         * [followers/ids](https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids)
 
-    > 
-    >         * loads all follower ids for every baseline User ID (~/data/input/baseline-user-ids.json\`\`)
+
+                * loads all follower ids for every baseline User ID (~/data/input/baseline-user-ids.json\`\`)
 
 
-    >         * limit: 15 requests / 15 mins (using 9 threads = **135 requests / 15 mins**)
+                * limit: 15 requests / 15 mins (using 9 threads = **135 requests / 15 mins**)
 
 
-    >         * output: `~/data/output/scrape/users/ids/<user-id>.json`
+                * output: `~/data/output/scrape/users/ids/<user-id>.json`
 
 
         * [friends/ids](https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids)
 
-    > 
-    >         * loads all friend ids for every baseline User ID (~/data/input/baseline-user-ids.json\`\`)
+
+                * loads all friend ids for every baseline User ID (~/data/input/baseline-user-ids.json\`\`)
 
 
-    >         * limit: 15 requests / 15 mins (using 9 threads = **135 requests / 15 mins**)
+                * limit: 15 requests / 15 mins (using 9 threads = **135 requests / 15 mins**)
 
 
-    >         * finds missing User IDs (~/data/input/missing-user-ids.json\`\`)
+                * finds missing User IDs (~/data/input/missing-user-ids.json\`\`)
 
 
-    >         * output: `~/data/output/scrape/users/ids/<user-id>.csv`
+                * output: `~/data/output/scrape/users/ids/<user-id>.csv`
 
 
-3. :mod:twitter_scraper.scrape.user_objs
+3. :py:mod:twitter_scraper.scrape.user_obj
 
-> 
->     * [users/show](https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show)
-
-
->             * loads all user objects for every baseline User ID (~/data/input/baseline-user-ids.json\`\`)
+    
+        * [users/show](https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show)
 
 
->             * limit: 15 requests / 15 mins (using 9 threads = **135 requests / 15 mins**)
+                * loads all user objects for every baseline User ID (~/data/input/baseline-user-ids.json\`\`)
 
 
->             * filter missing User IDs (~/data/input/missing-user-ids.json\`\`)
+                * limit: 15 requests / 15 mins (using 9 threads = **135 requests / 15 mins**)
 
 
->             * filter processed User IDs (~/data/input/processed-user-ids.json\`\`)
+                * filter missing User IDs (~/data/input/missing-user-ids.json\`\`)
 
 
->             * output: 
+                * filter processed User IDs (~/data/input/processed-user-ids.json\`\`)
 
 
->                     * `~/data/input/processed-user-ids.json`
+                * output: 
 
 
->                     * `~/data/output/scrape/users/objs/user-objs.csv`
+                        * `~/data/input/processed-user-ids.json`
+
+
+                        * `~/data/output/scrape/users/objs/user-objs.csv`

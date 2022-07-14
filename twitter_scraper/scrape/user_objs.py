@@ -1,6 +1,17 @@
 """
+************
 User Scraper
--------
+************
+
+Input
+------
+
+``~/data/input/baseline-user-ids.json``
+
+Output
+------
+
+``~/data/output/scrape/users/objs/user-objs.csv``
 
 Uses `users/show <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show>`_ 
 to collect User object for a given user ID.
@@ -41,16 +52,6 @@ is transformed using the following mapping:
         'withheld_in_countries':   x.get('withheld_in_countries'),
         'withheld_scope':          x.get('withheld_scope'),
     }
-
-Input
-------
-
-``~/data/input/baseline-user-ids.json``
-
-Output
-------
-
-``~/data/output/scrape/users/objs/user-objs.csv``
 
 """
 import os
