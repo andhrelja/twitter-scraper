@@ -76,12 +76,11 @@
 <h2>Scrapers<a class="headerlink" href="#scrapers" title="Permalink to this heading"></a></h2>
 <p>The :mod:twitter_scraper.scrape module consists from three sub-modules.
 The following modules collect data using their respected Twitter endpoints:</p>
-<ol class="arabic">
-<li><dl>
-<dt>:mod:twitter_scraper.scrape.tweets</dt><dd><ul>
-<li><p><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline">statuses/user_timeline</a></p>
-<blockquote>
-<div><ul class="simple">
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>:mod:twitter_scraper.scrape.tweets</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline">statuses/user_timeline</a></dt><dd><ul>
 <li><p>loads history using Tweet IDs: <code class="docutils literal notranslate"><span class="pre">since_id=None,</span> <span class="pre">max_id=None</span></code></p></li>
 <li><p>loads incremental using Tweet IDs: <code class="docutils literal notranslate"><span class="pre">since_id=max_latest_id,</span> <span class="pre">max_id=None</span></code></p></li>
 <li><dl class="simple">
@@ -94,40 +93,40 @@ The following modules collect data using their respected Twitter endpoints:</p>
 </li>
 <li><p>output: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/tweets/&lt;user-id&gt;.json</span></code></p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><dl>
-<dt>:mod:twitter_scraper.scrape.user_ids</dt><dd><ul>
-<li><p><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids">followers/ids</a></p>
-<blockquote>
-<div><ul class="simple">
+<li><dl class="simple">
+<dt>:mod:twitter_scraper.scrape.user_ids</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids">followers/ids</a></dt><dd><ul>
 <li><p>loads all follower ids for every baseline User ID (~/data/input/baseline-user-ids.json``)</p></li>
 <li><p>limit: 15 requests / 15 mins (using 9 threads = <strong>135 requests / 15 mins</strong>)</p></li>
 <li><p>output: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/users/ids/&lt;user-id&gt;.json</span></code></p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </li>
-<li><p><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids">friends/ids</a></p>
-<blockquote>
-<div><ul class="simple">
+<li><dl class="simple">
+<dt><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids">friends/ids</a></dt><dd><ul>
 <li><p>loads all friend ids for every baseline User ID (~/data/input/baseline-user-ids.json``)</p></li>
 <li><p>limit: 15 requests / 15 mins (using 9 threads = <strong>135 requests / 15 mins</strong>)</p></li>
 <li><p>finds missing User IDs (~/data/input/missing-user-ids.json``)</p></li>
 <li><p>output: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/users/ids/&lt;user-id&gt;.csv</span></code></p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p>:mod:twitter_scraper.scrape.user_objs</p>
-<blockquote>
-<div><ul class="simple">
+<li><dl class="simple">
+<dt>:mod:twitter_scraper.scrape.user_obj</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show">users/show</a></dt><dd><ul>
 <li><p>loads all user objects for every baseline User ID (~/data/input/baseline-user-ids.json``)</p></li>
@@ -147,7 +146,8 @@ The following modules collect data using their respected Twitter endpoints:</p>
 </dl>
 </li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </li>
 </ol>
 </section>
