@@ -4,10 +4,10 @@ import csv
 import time
 import pandas as pd
 
-import utils
+from twitter_scraper import utils
 from twitter_scraper import settings
-from clean.tweets import TWEET_DTYPE
-from clean.users import USER_DTYPE
+from twitter_scraper.clean.tweets import TWEET_DTYPE
+from twitter_scraper.clean.users import USER_DTYPE
 
 logger = utils.get_logger(__file__)
 

@@ -2,12 +2,21 @@
 nohup*
 temp*
 git-pat.txt
+rm-csv-json.sh
 
 data/
 logs/
 
-src/make_test.py
-src/twitter_scraper/model.py
+
+docs/make.bat
+docs/Makefile
+docs/source*
+
+docs/build/doctrees
+docs/build/html/*
+!docs/build/html/index.html
+!docs/build/html/modules.html
+!docs/build/html/usage.html
 
 notebooks/*.csv
 notebooks/*.json
@@ -23,7 +32,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+# build/
 develop-eggs/
 dist/
 downloads/

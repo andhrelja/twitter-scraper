@@ -3,7 +3,7 @@ import numpy as np
 
 TWEET_MODEL = {
 	'created_at': str,
-	'id': int,
+	'id': np.int64,
 	'id_str': str,
 	'text': str,
 	'truncated': bool,
@@ -11,9 +11,14 @@ TWEET_MODEL = {
 		'hashtags': [],
 		'user_mentions': [
 			{
-				'id': int
+				'id': np.int64
 			}
 		],
+		'urls': [
+			{
+				'expanded_url': str
+			}
+		]
 	},
 	'in_reply_to_status_id': bool,
 	'in_reply_to_status_id_str': bool,
@@ -26,7 +31,7 @@ TWEET_MODEL = {
 	'contributors': object,
 	'retweeted_status': {
  		'user': {
-			'id': int
+			'id': np.int64
 	 	}
 	},
 	'is_quote_status': bool,

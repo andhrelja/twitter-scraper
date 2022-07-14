@@ -5,18 +5,18 @@ import pandas as pd
 import datetime as dt
 from tqdm import tqdm
 
-import utils
-from utils import fileio
+from twitter_scraper import utils
+from twitter_scraper.utils import fileio
 from twitter_scraper import settings
-from clean.tweets import TWEET_DTYPE
-from graph.nodes import NODE_DTYPE
+from twitter_scraper.clean.tweets import TWEET_DTYPE
+from twitter_scraper.graph.nodes import NODE_DTYPE
 
 logger = utils.get_logger(__file__)
 
 EDGE_DTYPE = {
     'source': 'int64',
     'target': 'int64',
-    'edge_dttm': 'datetime64[ns, UTC]'
+    'timestamp': 'int64'
 }
 
 # %%
@@ -48,32 +48,31 @@ def get_user_followers_edges_df(nodes_df):
     if os.path.isfile(settings.EDGES_FOLLOWERS_CSV):
         existing_edges_df = pd.read_csv(settings.EDGES_FOLLOWERS_CSV, index_col=['source', 'target'])
         edges_df = existing_edges_df.join(new_edges_df, how='right')
-        edges_df['edge_dttm'] = edges_df['edge_dttm'].fillna(dt.datetime.now(dt.timezone.utc))
+        edges_df['timestamp'] = edges_df['edge_dttm'].fillna(int(dt.datetime.now(dt.timezone.utc).timestamp()))
     else:
         edges_df = new_edges_df
-        edges_df['edge_dttm'] = dt.datetime.now(dt.timezone.utc)
+        edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
     edges_df = edges_df.reset_index(drop=False)
-    edges_df['edge_dttm'] = pd.to_datetime(edges_df['edge_dttm'], utc=True)
     return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 
 
 def get_user_mentions_edges_df(nodes_df, tweets_df):
-    nodes_df = nodes_df.set_index('user_id_str')
+    nodes_df = nodes_df.set_index('user_id')
     tweets_df['user_mentions'] = tweets_df['user_mentions'].apply(eval)
-    nodes_df['user_mentions'] = tweets_df[['user_id_str', 'user_mentions']].groupby('user_id_str').agg(user_mentions=('user_mentions', sum))
+    nodes_df['user_mentions'] = tweets_df[['user_id', 'user_mentions']].groupby('user_id').agg(user_mentions=('user_mentions', sum))
     nodes_df = nodes_df.reset_index()
-    edges_df = nodes_df[['user_id_str', 'user_mentions']].rename(columns={'user_id_str': 'source', 'user_mentions': 'target'})
+    edges_df = nodes_df[['user_id', 'user_mentions']].rename(columns={'user_id': 'source', 'user_mentions': 'target'})
     edges_df = edges_df.explode('target').reset_index(drop=True)
     # TODO: implement baseline creation from missing users
-    edges_df = edges_df.loc[edges_df['target'].isin(nodes_df['user_id_str'])]
+    edges_df = edges_df.loc[edges_df['target'].isin(nodes_df['user_id'])]
     
-    total_users = len(nodes_df.user_id_str.unique())
+    total_users = len(nodes_df.user_id.unique())
     not_found = total_users - len(edges_df.source.unique())
     found = total_users - not_found
     
     # Create self loops for users who don't have a `user mention`
     edges_df.loc[edges_df['target'].isna(), 'target'] = edges_df['source']
-    edges_df['edge_dttm'] = pd.Timestamp.now(dt.timezone.utc)
+    edges_df['timestamp'] = dt.datetime.now(dt.timezone.utc).timestamp()
     return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 
 
@@ -115,14 +114,14 @@ def user_mentions_edges():
     start_time = time.time()
     
     utils.mkdir(os.path.dirname(settings.TWEETS_CSV))
-    NODES_DF = pd.read_csv(settings.NODES_CSV, dtype=NODE_DTYPE)
+    nodes_df = pd.read_csv(settings.NODES_CSV, dtype=NODE_DTYPE)
 
     logger.info("START - Creating User Mentions Edges, this may take a while")
 
     tweets_df = pd.read_csv(settings.TWEETS_CSV)
     tweets_df = tweets_df.astype(TWEET_DTYPE)
 
-    edges_df, total_users, found = get_user_mentions_edges_df(NODES_DF, tweets_df)
+    edges_df, total_users, found = get_user_mentions_edges_df(nodes_df, tweets_df)
     if edges_df.empty:
         logger.warning("No Edges were found, inspect baseline-user-ids.json:\n"
             "\t- found {}/{} nodes\n"

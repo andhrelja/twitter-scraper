@@ -3,7 +3,7 @@ import datetime as dt
 
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
-# folder_name = '2022-02-19'
+folder_name = '2022-07-12'
 
 DEBUG = False
 

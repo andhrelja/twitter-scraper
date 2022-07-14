@@ -6,7 +6,7 @@ import time
 import string
 import pandas as pd
 
-import utils
+from twitter_scraper import utils
 from twitter_scraper import settings
 
 logger = utils.get_logger(__file__)

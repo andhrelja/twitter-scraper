@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 
-from utils import fileio
+from . import fileio
 from twitter_scraper import settings
 
 
@@ -10,14 +10,15 @@ def get_logger(logger_name, **kwargs):
     path, logger_filename = os.path.split(logger_name)
     _, logger_module = os.path.split(path)
     logger_name = '{}.{}'.format(logger_module, logger_filename.replace('.py', ''))
+    handlers = [logging.StreamHandler(sys.stdout)]
+    logger_filepath = os.path.join(settings.LOGS_DIR, '{}.log'.format(settings.folder_name))
+    if os.path.isfile(logger_filepath):
+        handlers.append(logging.FileHandler(logger_filepath))
     logging.basicConfig(
         format='[%(levelname)s] %(asctime)s %(name)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
         level=logging.INFO,
-        handlers=[
-            logging.StreamHandler(sys.stdout),
-            logging.FileHandler(os.path.join(settings.LOGS_DIR, '{}.log'.format(settings.folder_name)))
-        ],
+        handlers=handlers,
         **kwargs
     )
 

@@ -1,11 +1,66 @@
+"""
+User Scraper
+-------
+
+Uses `users/show <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show>`_ 
+to collect User object for a given user ID.
+
+Applies transformations to API response data. Original tweet JSON:
+
+.. code-block:: json
+
+.. include:: twitter_scraper/meta/user.json
+    :literal:
+
+is transformed using the following mapping:
+
+.. code-block:: python
+
+    SCRAPE_USER = lambda x: {
+        'user_id':          x.get('id'),
+        'user_id_str':      x.get('id_str'),
+        'name':             x.get('name'),
+        'screen_name':      x.get('screen_name'),
+        'location':         x.get('location'),
+        "profile_location": x.get('profile_location'),
+        'derived':          x.get('derived'),
+        'url':              x.get('url'),
+        'description':      x.get('description'),
+        'protected':        x.get('protected'),
+        'verified':         x.get('verified'),
+        'followers_count':  x.get('followers_count'),
+        'friends_count':    x.get('friends_count'),
+        'listed_count':     x.get('listed_count'),
+        'favourites_count': x.get('favourites_count'),
+        'statuses_count':   x.get('statuses_count'),
+        'created_at':       x.get('created_at'),
+        'profile_banner_url':      x.get('profile_banner_url'),
+        'profile_image_url_https': x.get('profile_image_url_https'),
+        'default_profile':         x.get('default_profile'),
+        'default_profile_image':   x.get('default_profile_image'),
+        'withheld_in_countries':   x.get('withheld_in_countries'),
+        'withheld_scope':          x.get('withheld_scope'),
+    }
+
+Input
+------
+
+``~/data/input/baseline-user-ids.json``
+
+Output
+------
+
+``~/data/output/scrape/users/objs/user-objs.csv``
+
+"""
 import os
 import time
 import queue
 import threading
 from tqdm import tqdm
 
-import utils
-import utils.fileio as fileio
+from twitter_scraper import utils
+from twitter_scraper.utils import fileio
 from twitter_scraper import settings
 
 logger = utils.get_logger(__file__)

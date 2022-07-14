@@ -6,8 +6,8 @@ import pandas as pd
 import datetime as dt
 from tqdm import tqdm
 
-import utils
-from utils import fileio
+from twitter_scraper import utils
+from twitter_scraper.utils import fileio
 from twitter_scraper import settings
 
 logger = utils.get_logger(__file__)
