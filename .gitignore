@@ -4,7 +4,11 @@ temp*
 git-pat.txt
 rm-csv-json.sh
 
-data/
+data/input/history*
+data/output/scrape/tweets/*
+data/output/scrape/users/ids/*
+data/output/clean/user/*
+data/output/clean/tweet/*
 logs/
 
 

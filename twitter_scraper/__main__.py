@@ -13,7 +13,7 @@ scrape.user_objs(apis)
 logger.info("------------------ clean.users ------------------")
 clean.users()
 logger.info("----------------- scrape.user_ids ----------------")
-scrape.user_ids(apis)
+# scrape.user_ids(apis)
 
 logger.info("******************** END USERS ********************")
 
