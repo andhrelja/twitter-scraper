@@ -1,27 +1,18 @@
 """
-************
-User Scraper
-************
+scrape.user_objs
+================
 
-Input
-------
+**Input**: ``~/data/input/baseline-user-ids.json``
 
-``~/data/input/baseline-user-ids.json``
-
-Output
-------
-
-``~/data/output/scrape/users/objs/user-objs.csv``
+**Output**: ``~/data/output/scrape/users/objs/user-objs.csv``
 
 Uses `users/show <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show>`_ 
 to collect User object for a given user ID.
 
 Applies transformations to API response data. Original tweet JSON:
 
-.. code-block:: json
-
-.. include:: twitter_scraper/meta/user.json
-    :literal:
+.. literalinclude:: _static/user.json
+    :language: json
 
 is transformed using the following mapping:
 

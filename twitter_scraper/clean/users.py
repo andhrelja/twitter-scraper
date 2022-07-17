@@ -1,20 +1,14 @@
 """
-*************
-Users Cleaner
-*************
+clean.users
+===========
 
-Input
-------
+**Input**: ``~/data/output/scrape/users/objs/user-objs.csv``
 
-``~/data/output/scrape/users/objs/user-objs.csv``
-
-Output
-------
-
-``~/data/output/clean/user/YYYY-MM-DD/users.csv``
+**Output**: ``~/data/output/clean/user/YYYY-MM-DD/users.csv``
 
 
 Filter Users based on:
+
 * protected = False
 * is_croatian = True
 * statuses_count > 10
@@ -23,7 +17,7 @@ Filter Users based on:
 * followers_count > 10
 * followers_count < 5000
 
-Conforms User data to the following :py:mod:pandas schema:
+Conforms User data to the following :module:pandas schema:
 
 .. code-block:: python
 
@@ -68,6 +62,7 @@ import pandas as pd
 
 from twitter_scraper import utils
 from twitter_scraper import settings
+from twitter_scraper.utils import fileio
 
 logger = utils.get_logger(__file__)
 
@@ -148,17 +143,37 @@ def transform_users_df(users_df):
     users_df['location'] = users_df['location'].fillna('').transform(lambda x: re.sub(r'\s+', ' ', x).strip())
     users_df['is_croatian'] = users_df['location'].transform(is_croatian)
     users_df['clean_location'] = users_df.loc[users_df['is_croatian'] == True, 'location'].transform(clean_location)
-    users_df = users_df[
-        (users_df['is_croatian'] == True)
-        & (users_df['protected'] == False)
-        # & (users_df['statuses_count'] > 10)
-        & (users_df['friends_count'] > 10)
-        # & (users_df['friends_count'] < 5000)
-        # & (users_df['followers_count'] > 10)
-        & (users_df['followers_count'] < 5000)
-    ].sort_values(by='followers_count')
-    
+
+    if settings.DEBUG:
+        filters = ((users_df['protected'] == False)
+            & (users_df['is_croatian'] == True)
+            # & (users_df['statuses_count'] > 10)
+            # & (users_df['friends_count'] > 10)
+            # & (users_df['friends_count'] < 5000)
+            # & (users_df['followers_count'] > 10)
+            & (users_df['followers_count'] < 5000)
+        )
+    else:
+        filters = ((users_df['protected'] == False)
+            & (users_df['is_croatian'] == True)
+            & (users_df['statuses_count'] > 10)
+            & (users_df['friends_count'] > 10)
+            & (users_df['friends_count'] < 5000)
+            & (users_df['followers_count'] > 10)
+            # & (users_df['followers_count'] < 5000)
+        ) 
+    users_df = users_df[filters].sort_values(by='followers_count')
     return users_df[USER_DTYPE.keys()].astype(USER_DTYPE)
+
+# %%
+
+def update_filtered_baseline(users_df):
+    archive_baseline_len = len(utils.get_baseline_user_ids())
+    baseline_user_ids = list(map(int, users_df.user_id.values))
+    utils.archive_baseline(prefix='clean.users')
+    fileio.write_content(settings.BASELINE_USER_IDS, baseline_user_ids, 'json', overwrite=True)
+    logger.info("Filtered baseline from {:,} to {:,} records".format(archive_baseline_len, len(baseline_user_ids)))
+    
 
 # %%
 def users():
@@ -171,7 +186,9 @@ def users():
     users_df = transform_users_df(users_df)
 
     users_df.to_csv(settings.USERS_CSV, index=False, quoting=csv.QUOTE_NONNUMERIC)
-    logger.info("Wrote User model")
+    logger.info("Wrote clean User model to {}".format(settings.USERS_CSV))
+
+    update_filtered_baseline(users_df)
 
     end_time = time.time()
     logger.info("User model saved: {}".format(settings.USERS_CSV))

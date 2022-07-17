@@ -1,17 +1,10 @@
 """
-****************
-User IDs Scraper
-****************
+scrape.user_ids
+===============
 
-Input
-------
+**Input**: ``~/data/input/baseline-user-ids.json``
 
-``~/data/input/baseline-user-ids.json``
-
-Output
-------
-
-``~/data/output/scrape/users/ids/<user-id>.json``
+**Output**: ``~/data/output/scrape/users/ids/<user-id>.json``
 
 Uses `followers/ids <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids>`_ 
 and `friends/ids <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids>`_ 

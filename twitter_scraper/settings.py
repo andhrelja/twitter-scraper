@@ -3,11 +3,11 @@ import datetime as dt
 
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
-folder_name = '2022-07-12'
+# folder_name = '2022-07-12'
 
 DEBUG = False
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 INPUT_DIR = os.path.join(ROOT_DIR, 'data', 'input')
@@ -35,9 +35,10 @@ USERS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'user', folder_name, 'users.csv')
 TWEETS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'tweet', folder_name, 'tweets.csv')
 
 # Graph
-NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', 'nodes.csv')
-EDGES_MENTIONS_CSV = os.path.join(OUTPUT_DIR, 'graph', 'edges-mentions.csv')
-EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', 'edges-followers.csv')
+NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
+EDGES_MENTIONS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-mentions.csv')
+EDGES_RETWEETS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-retweets.csv')
+EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-followers.csv')
 
 
 KEYWORDS = {
@@ -64,7 +65,7 @@ KEYWORDS = {
       'respir', 'respirator', 'simpto', 'rt pcr', 'terapij', 'virus', # 'viro',
       
       'slusaj struku', 'slušaj struku', 'propusnic', 'ostani doma', 'ostanimo doma', 'zaraž', 
-      'festivala slobod',  'pcr', 'samoizola','samoizolacij', 'testira', 'zaraz',
+      'festivala slobod',  'pcr', 'samoizola','samoizolacij', 'zaraz', #'testira',
       'distanc', 'izolac', 'karant', 'lockd', 'mask', 'festival slobod', 
       'ostanimo odgovorni', 'pandem', 'pandemij', 'stozer', 'stožer',
     ]

@@ -1,22 +1,14 @@
 """
-**************
-Tweets Cleaner
-**************
+clean.tweets
+============
 
-Input
-------
+**Input**: ``~/data/output/scrape/tweets/<user-id>.json``
 
-``~/data/output/scrape/tweets/<user-id>.json``
-
-Output
-------
-
-``~/data/output/clean/tweet/YYYY-MM-DD/tweets.csv``
-
+**Output**: ``~/data/output/clean/tweet/YYYY-MM-DD/tweets.csv``
 
 Filter Tweets from 2021-08-01 onwards.
 
-Conforms Tweet data to the following :py:mod:pandas schema:
+Conforms Tweet data to the following :module:pandas schema:
 
 .. code-block:: python
 
@@ -81,7 +73,7 @@ TWEET_DTYPE = {
     'created_at':       'object',
     'hashtags':         'object',
     'user_mentions':    'object',
-    'retweet_from_user_id':     'int64',
+    'retweet_from_user_id':     pd.Int64Dtype(),
     'retweet_from_user_id_str': 'string',
 	#'in_reply_to_status_id':      pd.Int64Dtype(),
 	# 'in_reply_to_status_id_str':  'string',
@@ -113,15 +105,18 @@ def get_tweets_df(user_df):
         tweets_df['week']  = tweets_df['created_at'].dt.strftime('%Y-%W')
         tweets_df['month'] = tweets_df['created_at'].dt.strftime('%Y-%m')
         
-        tweets_df['full_text'] = tweets_df['full_text'].fillna('')
+        tweets_df['hashtags']   = tweets_df['hashtags'].transform(lambda x: [item.lower() for item in x])
+        tweets_df['full_text']  = tweets_df['full_text'].fillna('')
         tweets_df['full_text_nospace'] = tweets_df['full_text'].str.replace(' ', '')
         
         tweets_df['is_covid_1'] = tweets_df['full_text'].transform(lambda x: any(tag in x.lower()
                                                             for tag in settings.KEYWORDS['is_covid']))
         tweets_df['is_covid_2'] = tweets_df['full_text_nospace'].transform(lambda x: any(tag.replace(' ', '') in x.lower()
                                                             for tag in settings.KEYWORDS['is_covid']))
+        tweets_df['is_covid_3'] = tweets_df['hashtags'].transform(lambda x: any(tag in x
+                                                            for tag in settings.KEYWORDS['is_covid']))    
         
-        tweets_df['is_covid'] = tweets_df['is_covid_1'] | tweets_df['is_covid_2']
+        tweets_df['is_covid'] = tweets_df['is_covid_1'] | tweets_df['is_covid_2'] | tweets_df['is_covid_3']
         return tweets_df[TWEET_DTYPE.keys()]
     
     logger.info("Reading raw Tweet json, this may take a while")

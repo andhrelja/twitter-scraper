@@ -2,36 +2,52 @@ from . import utils
 from . import scrape
 from . import clean
 from . import graph
-from .utils import update_baseline
 
 logger = utils.get_logger(__file__)
 apis = utils.get_api_connections()
 
-# logger.info("---------------------- SCRAPE ----------------------")
-# scrape.user_ids(apis)
-# scrape.user_objs(apis)
-# scrape.tweets(apis)
-# logger.info("-------------------- END SCRAPE --------------------")
+logger.info("********************** USERS **********************")
+
+logger.info("---------------- scrape.user_objs ---------------")
+scrape.user_objs(apis)
+logger.info("------------------ clean.users ------------------")
+clean.users()
+logger.info("----------------- scrape.user_ids ----------------")
+scrape.user_ids(apis)
+
+logger.info("******************** END USERS ********************")
 
 
-# logger.info("---------------------- CLEAN ----------------------")
-# clean.users()
-# clean.tweets()
-# logger.info("-------------------- END CLEAN --------------------")
+logger.info("********************** TWEETS **********************")
+
+logger.info("------------------ scrape.tweets -----------------")
+scrape.tweets(apis)
+logger.info("------------------ clean.tweets ------------------")
+clean.tweets()
+
+logger.info("******************** END TWEETS ********************")
 
 
-logger.info("---------------------- GRAPH ----------------------")
+logger.info("********************** GRAPH **********************")
+
+logger.info("------------------ graph.nodes ------------------")
 graph.nodes()
-graph.edges(user_followers=True, user_mentions=True)
-logger.info("-------------------- END GRAPH --------------------")
+logger.info("------------------ graph.edges ------------------")
+graph.edges(user_followers=True, user_mentions=True, user_retweets=True)
+
+logger.info("******************** END GRAPH ********************")
 
 
-# logger.info("----------------- UPDATE BASELINE -----------------")
-# update_baseline.update_baseline(
-#     archive=True, 
-#     clean=True, 
-#     update=True
-# )
-# logger.info("--------------- END UPDATE BASELINE ---------------")
+logger.info("****************** UPDATE BASELINE ******************")
 
-logger.info("----------------------- DONE -----------------------")
+logger.info("--------------- utils.update_baseline ---------------")
+utils.update_baseline(
+    archive=True, 
+    user_friends=True,
+    user_mentions=True,
+    user_retweets=True
+)
+
+logger.info("**************** END UPDATE BASELINE ****************")
+
+logger.info("********************** DONE **********************")

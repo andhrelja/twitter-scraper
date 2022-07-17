@@ -22,37 +22,38 @@ EDGE_DTYPE = {
 # %%
 def get_user_followers_edges_df(nodes_df):
     not_found = []
-    users_data = []
+    users_friends = {}
 
     for user_id_str in tqdm(nodes_df.user_id_str.unique()):
         user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id_str))
         if os.path.exists(user_path):
-            user = fileio.read_content(user_path, 'json')
-            for follower in user[user_id_str]['followers']:
-                if str(follower) in nodes_df.user_id_str.unique():
-                    users_data.append({
-                        'source': int(follower),
-                        'target': int(user_id_str)
-                    })
+            user_ids_content = fileio.read_content(user_path, 'json')
+            users_friends[user_id_str] = user_ids_content[user_id_str]['friends']
         else:
             not_found.append(user_id_str)
-    
-    if len(users_data) == 0:
+
+    if not users_friends:
         return pd.DataFrame([]), 0, 0
-    
+
+    users_data = []
+    for user_id_str, friends_ids in users_friends.items():
+        for friend_id in friends_ids:
+            users_data.append((friend_id, int(user_id_str)))
+
     total_users = len(nodes_df.user_id_str.unique())
     found = total_users - len(not_found)
     
-    new_edges_df = pd.DataFrame(users_data)
-    new_edges_df = new_edges_df.set_index(['source', 'target'])
-    if os.path.isfile(settings.EDGES_FOLLOWERS_CSV):
-        existing_edges_df = pd.read_csv(settings.EDGES_FOLLOWERS_CSV, index_col=['source', 'target'])
-        edges_df = existing_edges_df.join(new_edges_df, how='right')
-        edges_df['timestamp'] = edges_df['edge_dttm'].fillna(int(dt.datetime.now(dt.timezone.utc).timestamp()))
-    else:
-        edges_df = new_edges_df
-        edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
-    edges_df = edges_df.reset_index(drop=False)
+    edges_df = pd.DataFrame(users_data, columns=['source', 'target'])
+    edges_df = edges_df[(edges_df['source'].isin(nodes_df.user_id.unique())) & (edges_df['target'].isin(nodes_df.user_id.unique()))]
+    # new_edges_df = new_edges_df.set_index(['source', 'target'])
+    # if os.path.isfile(settings.EDGES_FOLLOWERS_CSV):
+    #     existing_edges_df = pd.read_csv(settings.EDGES_FOLLOWERS_CSV, index_col=['source', 'target'])
+    #     edges_df = existing_edges_df.join(new_edges_df, how='right')
+    #     edges_df['timestamp'] = edges_df['timestamp'].fillna(int(dt.datetime.now(dt.timezone.utc).timestamp()))
+    # else:
+    #     edges_df = new_edges_df
+    #     edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
+    # edges_df = edges_df.reset_index(drop=False)
     return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 
 
@@ -63,8 +64,7 @@ def get_user_mentions_edges_df(nodes_df, tweets_df):
     nodes_df = nodes_df.reset_index()
     edges_df = nodes_df[['user_id', 'user_mentions']].rename(columns={'user_id': 'source', 'user_mentions': 'target'})
     edges_df = edges_df.explode('target').reset_index(drop=True)
-    # TODO: implement baseline creation from missing users
-    edges_df = edges_df.loc[edges_df['target'].isin(nodes_df['user_id'])]
+    edges_df = edges_df.loc[(edges_df['target'].isin(nodes_df['user_id'])) & (edges_df['source'] != edges_df['target'])]
     
     total_users = len(nodes_df.user_id.unique())
     not_found = total_users - len(edges_df.source.unique())
@@ -72,6 +72,19 @@ def get_user_mentions_edges_df(nodes_df, tweets_df):
     
     # Create self loops for users who don't have a `user mention`
     edges_df.loc[edges_df['target'].isna(), 'target'] = edges_df['source']
+    edges_df['timestamp'] = dt.datetime.now(dt.timezone.utc).timestamp()
+    return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
+
+
+def get_user_retweets_edges_df(nodes_df, tweets_df):
+    edges_df = tweets_df[['user_id', 'retweet_from_user_id']].rename(columns={'user_id': 'target', 'retweet_from_user_id': 'source'})
+    edges_df = edges_df.dropna()
+    edges_df = edges_df.loc[edges_df['source'].isin(nodes_df['user_id'])]
+    
+    total_users = len(nodes_df.user_id.unique())
+    not_found = total_users - len(edges_df.source.unique())
+    found = total_users - not_found
+    
     edges_df['timestamp'] = dt.datetime.now(dt.timezone.utc).timestamp()
     return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 
@@ -106,7 +119,7 @@ def user_followers_edges():
         )
 
     end_time = time.time()
-    logger.info("END - Done creating Graph data")
+    logger.info("END - Done creating User Followers Edges")
     logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
 
 
@@ -142,18 +155,54 @@ def user_mentions_edges():
         )
 
     end_time = time.time()
-    logger.info("END - Done creating Graph data")
+    logger.info("END - Done creating User Mentions Edges")
     logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
 
 
-def edges(user_followers=True, user_mentions=True):
+def user_retweets_edges():
+    start_time = time.time()
+    
+    utils.mkdir(os.path.dirname(settings.TWEETS_CSV))
+    nodes_df = pd.read_csv(settings.NODES_CSV, dtype=NODE_DTYPE)
+
+    logger.info("START - Creating User Retweets Edges, this may take a while")
+
+    tweets_df = pd.read_csv(settings.TWEETS_CSV)
+    tweets_df = tweets_df.astype(TWEET_DTYPE)
+
+    edges_df, total_users, found = get_user_retweets_edges_df(nodes_df, tweets_df)
+    if edges_df.empty:
+        logger.warning("No Edges were found, inspect baseline-user-ids.json:\n"
+            "\t- found {}/{} nodes\n"
+            "\t- found edges for {}/{} nodes".format(
+                found, total_users,
+                0, found
+            )
+        )
+    else:
+        edges_df.to_csv(settings.EDGES_RETWEETS_CSV, index=False)
+        logger.info("Wrote Edges df: {}\n"
+            "\t- found {}/{} nodes\n"
+            "\t- found edges for {}/{} nodes".format(
+                settings.EDGES_RETWEETS_CSV,
+                found, total_users,
+                len(edges_df.source.unique()), found
+            )
+        )
+
+    end_time = time.time()
+    logger.info("END - Done creating User Retweets Edges")
+    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+
+
+def edges(user_followers=True, user_mentions=True, user_retweets=True):
     if user_followers:
         user_followers_edges()
     if user_mentions:
         user_mentions_edges()
+    if user_retweets:
+        user_retweets_edges()
 
 # %%
 if __name__ == '__main__':
-    #user_followers_edges()
-    user_mentions_edges()
-# %%
+    edges(user_followers=True, user_mentions=True, user_retweets=True)

@@ -1,27 +1,18 @@
 """
-**************
-Tweets Scraper
-**************
+scrape.tweets
+=============
 
-Input
-------
+**Input**: ``~/data/input/baseline-user-ids.json`` #1 
 
-``~/data/input/baseline-user-ids.json`` #1 
-
-Output
-------
-
-``~/data/output/scrape/users/ids/<user-id>.json``
+**Output**: ``~/data/output/scrape/users/ids/<user-id>.json``
 
 
 Uses `user_timeline <https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline>`_ to collect tweets for a given user ID.
 
 Applies transformations to API response data. Original tweet JSON:
 
-.. code-block:: json
-
-.. include:: twitter_scraper/meta/tweet.json
-    :literal:
+.. literalinclude:: _static/tweet.json
+    :language: json
 
 is transformed using the following mapping:
 
@@ -127,15 +118,15 @@ def get_tweet_max_id(user_id: int):
 
 
 def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
-    """Collects tweets for all user IDs read from ``baseline-user-ids.json`` using :py:mod:queue.
-    This function is ran on multiple threads. The number of running threads matches the number of available Twitter API connections in :py:mod:twitter_scraper.settings.
+    """Collects tweets for all user IDs read from ``baseline-user-ids.json`` using :module:queue.
+    This function is ran on multiple threads. The number of running threads matches the number of available Twitter API connections in :module:twitter_scraper.settings.
     Retrieves all the user's tweets filtered by ``since_id`` and ``max_id``, applies the ``SCRAPE_TWEET`` transformation and appends the tweets to ``<user_id>.json``.
 
-    :param conn_name: Twitter API connection name (:py:mod:twitter_scraper.settings)
+    :param conn_name: Twitter API connection name (:module:twitter_scraper.settings)
     :type conn_name: str
     :param api: :py:class:tweepy.API object used to call Twitter API endpoints
     :type api: tweepy.API
-    :param pbar: :py:mod:tqdm progress bar instance - total number of available user IDs, gets updated after a user's tweets are scraped
+    :param pbar: :module:tqdm progress bar instance - total number of available user IDs, gets updated after a user's tweets are scraped
     :type pbar: tqdm.tqdm
     """
     # Twitter only allows access to 
@@ -186,7 +177,7 @@ def tweets(apis: List[dict]):
     """
     1. Creates tweet scrape directory
     2. Enqueues user IDs from ``baseline-user-ids.json``
-    3. Starts a :py:func:__collect_user_tweets thread for each connection in :py:mod:twitter_scraper.settings
+    3. Starts a :py:func:__collect_user_tweets thread for each connection in :module:twitter_scraper.settings
     4. Waits until all threads complete executing
 
     :param apis: list of dictionaries: ``[{connection_name: tweepy.API}]``

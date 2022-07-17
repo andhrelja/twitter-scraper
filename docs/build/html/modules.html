@@ -41,6 +41,12 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#scrapers">Scrapers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scrape-user-ids">scrape.user_ids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scrape-user-objs">scrape.user_objs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scrape-tweets">scrape.tweets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cleaners">Cleaners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clean-tweets">clean.tweets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clean-users">clean.users</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
@@ -74,11 +80,11 @@
 <span id="modules"></span><h1>Modules<a class="headerlink" href="#module-twitter_scraper.scrape" title="Permalink to this heading"></a></h1>
 <section id="scrapers">
 <h2>Scrapers<a class="headerlink" href="#scrapers" title="Permalink to this heading"></a></h2>
-<p>The :py:mod:twitter_scraper.scrape module consists from three sub-modules.
+<p>The :module:twitter_scraper.scrape module consists from three sub-modules.
 The following modules collect data using their respected Twitter endpoints:</p>
 <ol class="arabic simple">
 <li><dl class="simple">
-<dt>:py:mod:twitter_scraper.scrape.tweets</dt><dd><ul class="simple">
+<dt>:module:twitter_scraper.scrape.tweets</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline">statuses/user_timeline</a></dt><dd><ul>
 <li><p>loads history using Tweet IDs: <code class="docutils literal notranslate"><span class="pre">since_id=None,</span> <span class="pre">max_id=None</span></code></p></li>
@@ -101,7 +107,7 @@ The following modules collect data using their respected Twitter endpoints:</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>:py:mod:twitter_scraper.scrape.user_ids</dt><dd><ul class="simple">
+<dt>:module:twitter_scraper.scrape.user_ids</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids">followers/ids</a></dt><dd><ul>
 <li><p>loads all follower ids for every baseline User ID (~/data/input/baseline-user-ids.json``)</p></li>
@@ -126,7 +132,7 @@ The following modules collect data using their respected Twitter endpoints:</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>:py:mod:twitter_scraper.scrape.user_obj</dt><dd><ul class="simple">
+<dt>:module:twitter_scraper.scrape.user_obj</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt><a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show">users/show</a></dt><dd><ul>
 <li><p>loads all user objects for every baseline User ID (~/data/input/baseline-user-ids.json``)</p></li>
@@ -150,6 +156,406 @@ The following modules collect data using their respected Twitter endpoints:</p>
 </dl>
 </li>
 </ol>
+</section>
+<span class="target" id="module-twitter_scraper.scrape.user_ids"></span><section id="scrape-user-ids">
+<h2>scrape.user_ids<a class="headerlink" href="#scrape-user-ids" title="Permalink to this heading"></a></h2>
+<p><strong>Input</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/input/baseline-user-ids.json</span></code></p>
+<p><strong>Output</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/users/ids/&lt;user-id&gt;.json</span></code></p>
+<p>Uses <a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids">followers/ids</a> 
+and <a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids">friends/ids</a> 
+to collect follower and friend IDs for a given User ID.</p>
+<p>This data is later used to generate Graph edges by :mod:twitter_scraper.graph.edges.</p>
+<p>By collecting followers and friends data, this module creates a graph node similar to the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;&lt;user-id&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;friends_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;followers_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;friends&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="mi">848904702</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">219350809</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">536230802</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">3028905893</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">214826344</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">2801523007</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">1008662348</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">614676639</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;followers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="mi">91446501</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">214826344</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">269747126</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">219350809</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">536230802</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">848904702</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<span class="target" id="module-twitter_scraper.scrape.user_objs"></span><section id="scrape-user-objs">
+<h2>scrape.user_objs<a class="headerlink" href="#scrape-user-objs" title="Permalink to this heading"></a></h2>
+<p><strong>Input</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/input/baseline-user-ids.json</span></code></p>
+<p><strong>Output</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/users/objs/user-objs.csv</span></code></p>
+<p>Uses <a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show">users/show</a> 
+to collect User object for a given user ID.</p>
+<p>Applies transformations to API response data. Original tweet JSON:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6253282</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;id_str&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6253282&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Twitter API&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;screen_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TwitterAPI&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;San Francisco, CA&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_location&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The Real Twitter API. Tweets about API changes, service issues and our Developer Platform. Don&#39;t get an answer? It&#39;s on my website.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https:\/\/t.co\/8IkCzCDr19&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;entities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="nt">&quot;urls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"></span>
+<span class="w">				</span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https:\/\/t.co\/8IkCzCDr19&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">				</span><span class="nt">&quot;expanded_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https:\/\/developer.twitter.com&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">				</span><span class="nt">&quot;display_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;developer.twitter.com&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">				</span><span class="nt">&quot;indices&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">					</span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">					</span><span class="mi">23</span><span class="w"></span>
+<span class="w">				</span><span class="p">]</span><span class="w"></span>
+<span class="w">			</span><span class="p">}]</span><span class="w"></span>
+<span class="w">		</span><span class="p">},</span><span class="w"></span>
+<span class="w">		</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="nt">&quot;urls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">},</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;protected&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;followers_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6133636</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;friends_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;listed_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12936</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Wed May 23 06:01:13 +0000 2007&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;favourites_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;utc_offset&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;time_zone&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;geo_enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;verified&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;statuses_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3656</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;lang&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;contributors_enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;is_translator&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;is_translation_enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_background_color&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_background_image_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_background_image_url_https&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_background_tile&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_image_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_image_url_https&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https:\/\/pbs.twimg.com\/profile_images\/942858479592554497\/BbazLO9L_normal.jpg&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_banner_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_link_color&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_sidebar_border_color&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_sidebar_fill_color&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_text_color&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;profile_use_background_image&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;has_extended_profile&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;default_profile&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;default_profile_image&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;following&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;follow_request_sent&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;notifications&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">	</span><span class="nt">&quot;translator_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>is transformed using the following mapping:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCRAPE_USER</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;user_id&#39;</span><span class="p">:</span>          <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;user_id_str&#39;</span><span class="p">:</span>      <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id_str&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span>             <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;screen_name&#39;</span><span class="p">:</span>      <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;screen_name&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;location&#39;</span><span class="p">:</span>         <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">),</span>
+    <span class="s2">&quot;profile_location&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;profile_location&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;derived&#39;</span><span class="p">:</span>          <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;derived&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;url&#39;</span><span class="p">:</span>              <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;description&#39;</span><span class="p">:</span>      <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;protected&#39;</span><span class="p">:</span>        <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;protected&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;verified&#39;</span><span class="p">:</span>         <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;verified&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;followers_count&#39;</span><span class="p">:</span>  <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;followers_count&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;friends_count&#39;</span><span class="p">:</span>    <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;friends_count&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;listed_count&#39;</span><span class="p">:</span>     <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;listed_count&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;favourites_count&#39;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;favourites_count&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;statuses_count&#39;</span><span class="p">:</span>   <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;statuses_count&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;created_at&#39;</span><span class="p">:</span>       <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;created_at&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;profile_banner_url&#39;</span><span class="p">:</span>      <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;profile_banner_url&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;profile_image_url_https&#39;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;profile_image_url_https&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;default_profile&#39;</span><span class="p">:</span>         <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_profile&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;default_profile_image&#39;</span><span class="p">:</span>   <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_profile_image&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;withheld_in_countries&#39;</span><span class="p">:</span>   <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;withheld_in_countries&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;withheld_scope&#39;</span><span class="p">:</span>          <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;withheld_scope&#39;</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<span class="target" id="module-twitter_scraper.scrape.tweets"></span><section id="scrape-tweets">
+<h2>scrape.tweets<a class="headerlink" href="#scrape-tweets" title="Permalink to this heading"></a></h2>
+<p><strong>Input</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/input/baseline-user-ids.json</span></code> #1</p>
+<p><strong>Output</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/users/ids/&lt;user-id&gt;.json</span></code></p>
+<p>Uses <a class="reference external" href="https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline">user_timeline</a> to collect tweets for a given user ID.</p>
+<p>Applies transformations to API response data. Original tweet JSON:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Thu Apr 06 15:28:43 +0000 2017&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">850007368138018817</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;id_str&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;850007368138018817&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RT @TwitterDev: 1/ Today we’re sharing our vision for the future of the Twitter API platform!nhttps://t.co/XweGngmxlP&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;truncated&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;entities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;hashtags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;toninopiculaljudina&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drugihashtag&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;user_mentions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2244994945</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">837333540</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;urls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;extended_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://www.sphinx-doc.org/en/master/usage/restructuredtext/roles.html#role-download&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;a href=\&quot;http://twitter.com\&quot; rel=\&quot;nofollow\&quot;&gt;Twitter Web Client&lt;/a&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;in_reply_to_status_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;in_reply_to_status_id_str&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;in_reply_to_user_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;in_reply_to_user_id_str&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;in_reply_to_screen_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;geo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;place&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;contributors&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;retweeted_status&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">850006245121695744</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;entities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;hashtags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;toninopiculaljudina&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drugihashtag&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">],</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;user_mentions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;a href=\&quot;http://twitter.com\&quot; rel=\&quot;nofollow\&quot;&gt;Twitter Web Client&lt;/a&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;in_reply_to_status_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;in_reply_to_status_id_str&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;in_reply_to_user_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;in_reply_to_user_id_str&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;in_reply_to_screen_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2244994945</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;geo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;place&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;contributors&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;is_quote_status&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;retweet_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">284</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;favorite_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">399</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;favorited&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;retweeted&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;possibly_sensitive&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;lang&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;en&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;is_quote_status&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;retweet_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">284</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;favorite_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;favorited&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;retweeted&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;possibly_sensitive&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;lang&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;en&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>is transformed using the following mapping:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCRAPE_TWEET</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="kc">None</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span>                   <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;user_id&#39;</span><span class="p">:</span>              <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;user_id_str&#39;</span><span class="p">:</span>          <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id_str&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;full_text&#39;</span><span class="p">:</span>            <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;full_text&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)),</span>
+    <span class="s1">&#39;created_at&#39;</span><span class="p">:</span>           <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;created_at&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;hashtags&#39;</span><span class="p">:</span>             <span class="n">flatten_dictlist</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;entities&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hashtags&#39;</span><span class="p">,</span> <span class="p">[]),</span> <span class="s1">&#39;text&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;user_mentions&#39;</span><span class="p">:</span>        <span class="n">flatten_dictlist</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;entities&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_mentions&#39;</span><span class="p">,</span> <span class="p">[]),</span> <span class="s1">&#39;id&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;retweet_count&#39;</span><span class="p">:</span>        <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retweet_count&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;retweeter_ids&#39;</span><span class="p">:</span>        <span class="p">[],</span><span class="c1"># api.get_retweeter_ids(x.get(&#39;id&#39;)),</span>
+    <span class="s1">&#39;retweet_from_user_id&#39;</span><span class="p">:</span>         <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retweeted_status&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;retweet_from_user_id_str&#39;</span><span class="p">:</span>     <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retweeted_status&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)),</span>
+    <span class="s1">&#39;in_reply_to_status_id&#39;</span><span class="p">:</span>        <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;in_reply_to_status_id&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;in_reply_to_status_id_str&#39;</span><span class="p">:</span>    <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;in_reply_to_status_id_str&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;in_reply_to_user_id&#39;</span><span class="p">:</span>          <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;in_reply_to_user_id&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;in_reply_to_user_id_str&#39;</span><span class="p">:</span>      <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;in_reply_to_user_id_str&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;in_reply_to_screen_name&#39;</span><span class="p">:</span>      <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;in_reply_to_screen_name&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;geo&#39;</span><span class="p">:</span>                  <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;geo&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span>          <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coordinates&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;place&#39;</span><span class="p">:</span>                <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;contributors&#39;</span><span class="p">:</span>         <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;contributors&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;is_quote_status&#39;</span><span class="p">:</span>      <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;is_quote_status&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;favorite_count&#39;</span><span class="p">:</span>       <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;favorite_count&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;favorited&#39;</span><span class="p">:</span>            <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;favorited&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;retweeted&#39;</span><span class="p">:</span>            <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retweeted&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;possibly_sensitive&#39;</span><span class="p">:</span>   <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;possibly_sensitive&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;lang&#39;</span><span class="p">:</span>                 <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lang&#39;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="twitter_scraper.scrape.tweets.get_tweet_max_id">
+<span class="sig-prename descclassname"><span class="pre">twitter_scraper.scrape.tweets.</span></span><span class="sig-name descname"><span class="pre">get_tweet_max_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#twitter_scraper.scrape.tweets.get_tweet_max_id" title="Permalink to this definition"></a></dt>
+<dd><p>Reads the user’s scraped tweet JSON and returns the latest tweet ID. 
+Latest tweet ID value is used as <code class="docutils literal notranslate"><span class="pre">since_id</span></code> for incremental loads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_id</strong> (<em>int</em>) – User ID</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Latest tweet ID if exists, else None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[int, NoneType]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="twitter_scraper.scrape.tweets.tweets">
+<span class="sig-prename descclassname"><span class="pre">twitter_scraper.scrape.tweets.</span></span><span class="sig-name descname"><span class="pre">tweets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#twitter_scraper.scrape.tweets.tweets" title="Permalink to this definition"></a></dt>
+<dd><ol class="arabic simple">
+<li><p>Creates tweet scrape directory</p></li>
+<li><p>Enqueues user IDs from <code class="docutils literal notranslate"><span class="pre">baseline-user-ids.json</span></code></p></li>
+<li><p>Starts a :py:func:__collect_user_tweets thread for each connection in :module:twitter_scraper.settings</p></li>
+<li><p>Waits until all threads complete executing</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>apis</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – list of dictionaries: <code class="docutils literal notranslate"><span class="pre">[{connection_name:</span> <span class="pre">tweepy.API}]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<span class="target" id="module-twitter_scraper.clean"></span><section id="cleaners">
+<h2>Cleaners<a class="headerlink" href="#cleaners" title="Permalink to this heading"></a></h2>
+<p>The :module:twitter_scraper.clean module consists from three sub-modules.
+The following modules clean the collected data output by :module:twitter_scraper.scrape</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>:module:twitter_scraper.clean.tweets</dt><dd><ul class="simple">
+<li><p>input: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/tweets/&lt;user-id&gt;.json</span></code></p></li>
+<li><p>output: <code class="docutils literal notranslate"><span class="pre">~/data/output/clean/tweet/YYYY-MM-DD/tweets.csv</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>:module:twitter_scraper.clean.users</dt><dd><ul class="simple">
+<li><p>input: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/users/objs/user-objs.csv</span></code></p></li>
+<li><p>output: <code class="docutils literal notranslate"><span class="pre">~/data/output/clean/user/YYY-MM-DD/users.csv</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<span class="target" id="module-twitter_scraper.clean.tweets"></span><section id="clean-tweets">
+<h2>clean.tweets<a class="headerlink" href="#clean-tweets" title="Permalink to this heading"></a></h2>
+<p><strong>Input</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/tweets/&lt;user-id&gt;.json</span></code></p>
+<p><strong>Output</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/output/clean/tweet/YYYY-MM-DD/tweets.csv</span></code></p>
+<p>Filter Tweets from 2021-08-01 onwards.</p>
+<p>Conforms Tweet data to the following :module:pandas schema:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TWEET_DTYPE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span>               <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;user_id&#39;</span><span class="p">:</span>          <span class="s1">&#39;int64&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;user_id_str&#39;</span><span class="p">:</span>      <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;full_text&#39;</span><span class="p">:</span>        <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;created_at&#39;</span><span class="p">:</span>       <span class="s1">&#39;object&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hashtags&#39;</span><span class="p">:</span>         <span class="s1">&#39;object&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;user_mentions&#39;</span><span class="p">:</span>    <span class="s1">&#39;object&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;retweet_from_user_id&#39;</span><span class="p">:</span>     <span class="s1">&#39;int64&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;retweet_from_user_id_str&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="c1">#&#39;in_reply_to_status_id&#39;:      pd.Int64Dtype(),</span>
+    <span class="c1"># &#39;in_reply_to_status_id_str&#39;:  &#39;string&#39;,</span>
+    <span class="c1">#&#39;in_reply_to_user_id&#39;:        pd.Int64Dtype(),</span>
+    <span class="c1"># &#39;in_reply_to_user_id_str&#39;:    &#39;string&#39;,</span>
+    <span class="c1"># &#39;in_reply_to_screen_name&#39;:    &#39;string&#39;,</span>
+    <span class="s1">&#39;geo&#39;</span><span class="p">:</span>              <span class="s1">&#39;object&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span>      <span class="s1">&#39;object&#39;</span><span class="p">,</span>
+    <span class="c1"># &#39;place&#39;:          &#39;object&#39;,</span>
+    <span class="c1"># &#39;contributors&#39;:   &#39;object&#39;,</span>
+    <span class="c1"># &#39;is_quote_status&#39;: &#39;bool&#39;,</span>
+    <span class="s1">&#39;retweet_count&#39;</span><span class="p">:</span>    <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;favorite_count&#39;</span><span class="p">:</span>   <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+    <span class="c1"># &#39;favorited&#39;:      &#39;bool&#39;,</span>
+    <span class="c1"># &#39;retweeted&#39;:      &#39;bool&#39;,</span>
+    <span class="c1"># &#39;possibly_sensitive&#39;: &#39;bool&#39;,</span>
+    <span class="c1"># &#39;lang&#39;: &#39;string&#39;,</span>
+
+    <span class="c1">### Custom columns</span>
+    <span class="s1">&#39;week&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;is_covid&#39;</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<span class="target" id="module-twitter_scraper.clean.users"></span><section id="clean-users">
+<h2>clean.users<a class="headerlink" href="#clean-users" title="Permalink to this heading"></a></h2>
+<p><strong>Input</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/output/scrape/users/objs/user-objs.csv</span></code></p>
+<p><strong>Output</strong>: <code class="docutils literal notranslate"><span class="pre">~/data/output/clean/user/YYYY-MM-DD/users.csv</span></code></p>
+<p>Filter Users based on:</p>
+<ul class="simple">
+<li><p>protected = False</p></li>
+<li><p>is_croatian = True</p></li>
+<li><p>statuses_count &gt; 10</p></li>
+<li><p>friends_count &gt; 10</p></li>
+<li><p>friends_count &lt; 5000</p></li>
+<li><p>followers_count &gt; 10</p></li>
+<li><p>followers_count &lt; 5000</p></li>
+</ul>
+<p>Conforms User data to the following :module:pandas schema:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">USER_DTYPE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;user_id&#39;</span><span class="p">:</span>          <span class="s1">&#39;int64&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;user_id_str&#39;</span><span class="p">:</span>      <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span>             <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;screen_name&#39;</span><span class="p">:</span>      <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;location&#39;</span><span class="p">:</span>         <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="c1"># &quot;profile_location&quot;: &#39;object&#39;,</span>
+    <span class="c1"># &#39;derived&#39;:          &#39;string&#39;,</span>
+    <span class="c1"># &#39;url&#39;:              &#39;string&#39;,</span>
+    <span class="s1">&#39;description&#39;</span><span class="p">:</span>      <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;protected&#39;</span><span class="p">:</span>        <span class="s1">&#39;boolean&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;verified&#39;</span><span class="p">:</span>         <span class="s1">&#39;boolean&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;followers_count&#39;</span><span class="p">:</span>  <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;friends_count&#39;</span><span class="p">:</span>    <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;listed_count&#39;</span><span class="p">:</span>     <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;favourites_count&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;statuses_count&#39;</span><span class="p">:</span>   <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;created_at&#39;</span><span class="p">:</span>       <span class="s1">&#39;str&#39;</span><span class="p">,</span>
+    <span class="c1"># &#39;profile_banner_url&#39;:      &#39;string&#39;,</span>
+    <span class="c1"># &#39;profile_image_url_https&#39;: &#39;string&#39;,</span>
+    <span class="c1"># &#39;default_profile&#39;:         &#39;object&#39;,</span>
+    <span class="c1"># &#39;default_profile_image&#39;:   &#39;string&#39;,</span>
+    <span class="c1"># &#39;withheld_in_countries&#39;:   &#39;object&#39;,</span>
+    <span class="c1"># &#39;withheld_scope&#39;:          &#39;object&#39;,</span>
+
+    <span class="c1">### Custom columns</span>
+    <span class="s1">&#39;is_croatian&#39;</span><span class="p">:</span>      <span class="s1">&#39;bool&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;clean_location&#39;</span><span class="p">:</span>   <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </section>
 </section>
 

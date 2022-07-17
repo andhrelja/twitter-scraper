@@ -8,6 +8,6 @@ setup(
       'twitter_scraper.graph',
       'twitter_scraper.utils'
    ],
-   package_data='twitter_scraper/meta',
+   # package_data='twitter_scraper/meta',
    package_dir={'twitter_scraper':'twitter_scraper'}
 )
