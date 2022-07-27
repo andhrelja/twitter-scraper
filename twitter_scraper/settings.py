@@ -25,7 +25,7 @@ PROCESSED_USER_OBJS = os.path.join(INPUT_DIR, 'processed-user-objs.json')
 PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
 STOP_WORDS_HRV = os.path.join(INPUT_DIR, 'stop_words_hrv.json')
 STOP_WORDS_ENG = os.path.join(INPUT_DIR, 'stop_words_eng.json')
-
+EMOJI_SENTIMENT_DATA = os.path.join(INPUT_DIR, 'Emoji_Sentiment_Data_v1.0.csv')
 
 # Scrape
 USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids')
