@@ -1,47 +1,3 @@
-"""
-scrape.user_ids
-===============
-
-**Input**: ``~/data/input/baseline-user-ids.json``
-
-**Output**: ``~/data/output/scrape/users/ids/<user-id>.json``
-
-Uses `followers/ids <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids>`_ 
-and `friends/ids <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids>`_ 
-to collect follower and friend IDs for a given User ID.
-
-This data is later used to generate Graph edges by :mod:twitter_scraper.graph.edges.
-
-By collecting followers and friends data, this module creates a graph node similar to the following:
-
-.. code-block:: json
-
-    {
-        "<user-id>": {
-            "friends_count": 8,
-            "followers_count": 6,
-            "friends": [
-                848904702,
-                219350809,
-                536230802,
-                3028905893,
-                214826344,
-                2801523007,
-                1008662348,
-                614676639
-            ],
-            "followers": [
-                91446501,
-                214826344,
-                269747126,
-                219350809,
-                536230802,
-                848904702
-            ]
-        }
-    }
-
-"""
 import os
 import time
 import queue
@@ -56,8 +12,6 @@ logger = utils.get_logger(__file__)
 
 l = threading.Lock()
 q = queue.Queue()
-
-baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_IDS)
 
 
 def __collect_user_ids(conn_name, api, pbar):
@@ -100,13 +54,14 @@ def user_ids(apis):
     # 15 000 users in 28h
     # 35 000 users in 65h
     
-    global q, baseline_user_ids
+    global q
 
     start_time = time.time()
     threads = []
     
     utils.mkdir(settings.USER_IDS_DIR)
     
+    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_IDS)
     for user_id in baseline_user_ids:
         q.put(user_id)
     

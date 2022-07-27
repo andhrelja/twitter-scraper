@@ -1,15 +1,24 @@
+*~vsdx
+*.webp
+
 .vscode/
 nohup*
 temp*
 git-pat.txt
 rm-csv-json.sh
+sample.csv
+
+zip-docs.sh
+docs.zip
 
 data/input/history*
 data/output/scrape/tweets/*
 data/output/scrape/users/ids/*
+data/output/scrape/users/objs/*
 data/output/clean/user/*
 data/output/clean/tweet/*
 logs/
+
 
 
 docs/make.bat

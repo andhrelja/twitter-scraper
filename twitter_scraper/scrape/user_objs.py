@@ -1,50 +1,3 @@
-"""
-scrape.user_objs
-================
-
-**Input**: ``~/data/input/baseline-user-ids.json``
-
-**Output**: ``~/data/output/scrape/users/objs/user-objs.csv``
-
-Uses `users/show <https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-show>`_ 
-to collect User object for a given user ID.
-
-Applies transformations to API response data. Original tweet JSON:
-
-.. literalinclude:: _static/user.json
-    :language: json
-
-is transformed using the following mapping:
-
-.. code-block:: python
-
-    SCRAPE_USER = lambda x: {
-        'user_id':          x.get('id'),
-        'user_id_str':      x.get('id_str'),
-        'name':             x.get('name'),
-        'screen_name':      x.get('screen_name'),
-        'location':         x.get('location'),
-        "profile_location": x.get('profile_location'),
-        'derived':          x.get('derived'),
-        'url':              x.get('url'),
-        'description':      x.get('description'),
-        'protected':        x.get('protected'),
-        'verified':         x.get('verified'),
-        'followers_count':  x.get('followers_count'),
-        'friends_count':    x.get('friends_count'),
-        'listed_count':     x.get('listed_count'),
-        'favourites_count': x.get('favourites_count'),
-        'statuses_count':   x.get('statuses_count'),
-        'created_at':       x.get('created_at'),
-        'profile_banner_url':      x.get('profile_banner_url'),
-        'profile_image_url_https': x.get('profile_image_url_https'),
-        'default_profile':         x.get('default_profile'),
-        'default_profile_image':   x.get('default_profile_image'),
-        'withheld_in_countries':   x.get('withheld_in_countries'),
-        'withheld_scope':          x.get('withheld_scope'),
-    }
-
-"""
 import os
 import time
 import queue
@@ -59,8 +12,6 @@ logger = utils.get_logger(__file__)
 
 l = threading.Lock()
 q = queue.Queue()
-
-baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_OBJS)
 
 SCRAPE_USER = lambda x: {
     'user_id':          x.get('id'),
@@ -108,14 +59,14 @@ def __collect_user_objs(conn_name, api, pbar):
 
 
 def user_objs(apis):
-    global q, baseline_user_ids
+    global q
 
     start_time = time.time()
-    user_id_batches = utils.batches(list(baseline_user_ids), 100)
     threads = []
 
     utils.mkdir(settings.USER_OBJS_DIR)
-
+    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_OBJS)
+    user_id_batches = utils.batches(list(baseline_user_ids), 100)
     for user_ids in user_id_batches:
         q.put(user_ids)
     

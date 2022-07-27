@@ -3,12 +3,11 @@ import datetime as dt
 
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
-# folder_name = '2022-07-12'
+folder_name = '2022-07-21'
 
 DEBUG = False
 
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-
 
 INPUT_DIR = os.path.join(ROOT_DIR, 'data', 'input')
 OUTPUT_DIR = os.path.join(ROOT_DIR, 'data', 'output')
@@ -24,6 +23,9 @@ MISSING_USER_IDS = os.path.join(INPUT_DIR, 'missing-user-ids.json')
 PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
 PROCESSED_USER_OBJS = os.path.join(INPUT_DIR, 'processed-user-objs.json')
 PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
+STOP_WORDS_HRV = os.path.join(INPUT_DIR, 'stop_words_hrv.json')
+STOP_WORDS_ENG = os.path.join(INPUT_DIR, 'stop_words_eng.json')
+
 
 # Scrape
 USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids')

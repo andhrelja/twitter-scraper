@@ -7,58 +7,52 @@ contain the root `toctree` directive. -->
 # Contents
 
 
+* [General](general.md)
+
+
+    * [Legend](general.md#legend)
+
+
+    * [Activity Diagram](general.md#activity-diagram)
+
+
+    * [Workflow Diagram](general.md#workflow-diagram)
+
+
 * [Modules](modules.md)
 
 
     * [Scrapers](modules.md#scrapers)
 
 
-    * [User IDs Scraper](modules.md#user-ids-scraper)
+        * [scrape.user_ids](modules.md#scrape-user-ids)
 
 
-        * [Input](modules.md#input)
+        * [scrape.user_objs](modules.md#scrape-user-objs)
 
 
-        * [Output](modules.md#output)
-
-
-    * [User Scraper](modules.md#user-scraper)
-
-
-        * [Input](modules.md#id3)
-
-
-        * [Output](modules.md#id4)
-
-
-    * [Tweets Scraper](modules.md#tweets-scraper)
-
-
-        * [Input](modules.md#id6)
-
-
-        * [Output](modules.md#id7)
+        * [scrape.tweets](modules.md#scrape-tweets)
 
 
     * [Cleaners](modules.md#cleaners)
 
 
-    * [Tweets Cleaner](modules.md#tweets-cleaner)
+        * [clean.users](modules.md#clean-users)
 
 
-        * [Input](modules.md#id8)
+        * [clean.tweets](modules.md#clean-tweets)
 
 
-        * [Output](modules.md#id9)
+    * [Graph](modules.md#graph)
 
 
-    * [Users Cleaner](modules.md#users-cleaner)
+        * [graph.nodes](modules.md#graph-nodes)
 
 
-        * [Input](modules.md#id10)
+        * [graph.edges](modules.md#graph-edges)
 
 
-        * [Output](modules.md#id11)
+* [Reference](reference.md)
 
 
 * [Usage](usage.md)

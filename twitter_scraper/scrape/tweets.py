@@ -1,54 +1,3 @@
-"""
-scrape.tweets
-=============
-
-**Input**: ``~/data/input/baseline-user-ids.json`` #1 
-
-**Output**: ``~/data/output/scrape/users/ids/<user-id>.json``
-
-
-Uses `user_timeline <https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-user_timeline>`_ to collect tweets for a given user ID.
-
-Applies transformations to API response data. Original tweet JSON:
-
-.. literalinclude:: _static/tweet.json
-    :language: json
-
-is transformed using the following mapping:
-
-.. code-block:: python
-
-    SCRAPE_TWEET = lambda x, api=None: {
-        'id':                   x.get('id'),
-        'user_id':              x.get('user', {}).get('id'),
-        'user_id_str':          x.get('user', {}).get('id_str'),
-        'full_text':            x.get('full_text', x.get('text')),
-        'created_at':           x.get('created_at'),
-        'hashtags':             flatten_dictlist(x.get('entities', {}).get('hashtags', []), 'text'),
-        'user_mentions':        flatten_dictlist(x.get('entities', {}).get('user_mentions', []), 'id'),
-        'retweet_count':        x.get('retweet_count'),
-        'retweeter_ids':        [],# api.get_retweeter_ids(x.get('id')),
-        'retweet_from_user_id':         x.get('retweeted_status', {}).get('user', {}).get('id'),
-        'retweet_from_user_id_str':     str(x.get('retweeted_status', {}).get('user', {}).get('id')),
-        'in_reply_to_status_id':        x.get('in_reply_to_status_id'),
-        'in_reply_to_status_id_str':    x.get('in_reply_to_status_id_str'),
-        'in_reply_to_user_id':          x.get('in_reply_to_user_id'),
-        'in_reply_to_user_id_str':      x.get('in_reply_to_user_id_str'),
-        'in_reply_to_screen_name':      x.get('in_reply_to_screen_name'),
-        'geo':                  x.get('geo'),
-        'coordinates':          x.get('coordinates'),
-        'place':                x.get('place'),
-        'contributors':         x.get('contributors'),
-        'is_quote_status':      x.get('is_quote_status'),
-        'favorite_count':       x.get('favorite_count'),
-        'favorited':            x.get('favorited'),
-        'retweeted':            x.get('retweeted'),
-        'possibly_sensitive':   x.get('possibly_sensitive'),
-        'lang':                 x.get('lang')
-    }
-
-"""
-
 from typing import List
 
 import os
@@ -67,8 +16,6 @@ logger = utils.get_logger(__file__)
 
 l = threading.Lock()
 q = queue.Queue()
-
-baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_TWEETS)
 
 flatten_dictlist = lambda dictlist, colname: [_dict.get(colname) for _dict in dictlist]
 SCRAPE_TWEET = lambda x, api=None: {
@@ -118,15 +65,15 @@ def get_tweet_max_id(user_id: int):
 
 
 def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
-    """Collects tweets for all user IDs read from ``baseline-user-ids.json`` using :module:queue.
-    This function is ran on multiple threads. The number of running threads matches the number of available Twitter API connections in :module:twitter_scraper.settings.
+    """Collects tweets for all user IDs read from ``baseline-user-ids.json`` using :mod:queue.
+    This function is ran on multiple threads. The number of running threads matches the number of available Twitter API connections in :mod:twitter_scraper.settings.
     Retrieves all the user's tweets filtered by ``since_id`` and ``max_id``, applies the ``SCRAPE_TWEET`` transformation and appends the tweets to ``<user_id>.json``.
 
-    :param conn_name: Twitter API connection name (:module:twitter_scraper.settings)
+    :param conn_name: Twitter API connection name (:mod:twitter_scraper.settings)
     :type conn_name: str
     :param api: :py:class:tweepy.API object used to call Twitter API endpoints
     :type api: tweepy.API
-    :param pbar: :module:tqdm progress bar instance - total number of available user IDs, gets updated after a user's tweets are scraped
+    :param pbar: :mod:tqdm progress bar instance - total number of available user IDs, gets updated after a user's tweets are scraped
     :type pbar: tqdm.tqdm
     """
     # Twitter only allows access to 
@@ -177,19 +124,20 @@ def tweets(apis: List[dict]):
     """
     1. Creates tweet scrape directory
     2. Enqueues user IDs from ``baseline-user-ids.json``
-    3. Starts a :py:func:__collect_user_tweets thread for each connection in :module:twitter_scraper.settings
+    3. Starts a :py:func:__collect_user_tweets thread for each connection in :mod:twitter_scraper.settings
     4. Waits until all threads complete executing
 
     :param apis: list of dictionaries: ``[{connection_name: tweepy.API}]``
     :type apis: List[dict]
     """
-    global q, baseline_user_ids, pbar
+    global q, pbar
     
     start_time = time.time()
     threads = []
 
     utils.mkdir(settings.USER_TWEETS_DIR)
 
+    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_TWEETS)
     for user_id in baseline_user_ids:
         q.put(user_id)
     

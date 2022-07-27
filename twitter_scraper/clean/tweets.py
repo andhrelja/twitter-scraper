@@ -1,51 +1,3 @@
-"""
-clean.tweets
-============
-
-**Input**: ``~/data/output/scrape/tweets/<user-id>.json``
-
-**Output**: ``~/data/output/clean/tweet/YYYY-MM-DD/tweets.csv``
-
-Filter Tweets from 2021-08-01 onwards.
-
-Conforms Tweet data to the following :module:pandas schema:
-
-.. code-block:: python
-
-    TWEET_DTYPE = {
-        'id':               'string',
-        'user_id':          'int64',
-        'user_id_str':      'string',
-        'full_text':        'string',
-        'created_at':       'object',
-        'hashtags':         'object',
-        'user_mentions':    'object',
-        'retweet_from_user_id':     'int64',
-        'retweet_from_user_id_str': 'string',
-        #'in_reply_to_status_id':      pd.Int64Dtype(),
-        # 'in_reply_to_status_id_str':  'string',
-        #'in_reply_to_user_id':        pd.Int64Dtype(),
-        # 'in_reply_to_user_id_str':    'string',
-        # 'in_reply_to_screen_name':    'string',
-        'geo':              'object',
-        'coordinates':      'object',
-        # 'place':          'object',
-        # 'contributors':   'object',
-        # 'is_quote_status': 'bool',
-        'retweet_count':    'int',
-        'favorite_count':   'int',
-        # 'favorited':      'bool',
-        # 'retweeted':      'bool',
-        # 'possibly_sensitive': 'bool',
-        # 'lang': 'string',
-
-        ### Custom columns
-        'week': 'string',
-        'month': 'string',
-        'is_covid': 'bool'
-    }
-
-"""
 # %%
 import os
 import time
@@ -90,7 +42,7 @@ TWEET_DTYPE = {
 	# 'favorited':      'bool',
 	# 'retweeted':      'bool',
 	# 'possibly_sensitive': 'bool',
-	# 'lang': 'string',
+	'lang': 'string',
 
     ### Custom columns
     'week': 'string',

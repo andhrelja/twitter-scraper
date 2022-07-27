@@ -54,6 +54,7 @@ def get_user_followers_edges_df(nodes_df):
     #     edges_df = new_edges_df
     #     edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
     # edges_df = edges_df.reset_index(drop=False)
+    edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
     return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 
 

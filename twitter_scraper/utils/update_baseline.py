@@ -9,6 +9,7 @@ from . import utils
 from . import fileio
 from twitter_scraper import settings
 
+baseline_user_ids = utils.get_baseline_user_ids()
 logger = utils.get_logger(__file__)
 
 l = threading.Lock()
@@ -32,13 +33,14 @@ def update_user_friends_baseline():
     logger.info("`user_friends`")
     start_time = time.time()
 
-    baseline_user_ids = utils.get_baseline_user_ids()
     user_friends_ids = set()
-    for file_name in tqdm(filter(lambda x: x.endswith('.json'), os.listdir(settings.USER_IDS_DIR))):
-        user_id = file_name.replace('.json', '')
+    for user_id in tqdm(baseline_user_ids):
+        file_name = f'{user_id}.json'
         file_path = os.path.join(settings.USER_IDS_DIR, file_name)
+        
         file_content = fileio.read_content(file_path, file_type='json')
-        user_friends_ids = user_friends_ids.union(file_content[user_id]['friends'])
+        if file_content: # TODO: sync input to output data
+            user_friends_ids = user_friends_ids.union(file_content[str(user_id)]['friends'])
     
     user_friends_ids.difference_update(baseline_user_ids)
     logger.info("Appending {} `user_friends` to baseline".format(len(user_friends_ids)))
@@ -50,12 +52,12 @@ def update_user_friends_baseline():
 
 
 def update_user_mentions_baseline():
+    global baseline_user_ids
     logger.info("`user_mentions`")
     start_time = time.time()
 
-    baseline_user_ids = utils.get_baseline_user_ids()
     user_mentions_ids = set()
-    for file_name in tqdm(filter(lambda x: x.endswith('.json'), os.listdir(settings.USER_TWEETS_DIR))):
+    for file_name in tqdm(list(filter(lambda x: x.endswith('.json'), os.listdir(settings.USER_TWEETS_DIR)))):
         file_path = os.path.join(settings.USER_TWEETS_DIR, file_name)
         file_content = fileio.read_content(file_path, file_type='json')
         for tweet_obj in file_content:
@@ -71,12 +73,12 @@ def update_user_mentions_baseline():
 
 
 def update_user_retweets_baseline():
+    global baseline_user_ids
     logger.info("`user_retweets`")
     start_time = time.time()
 
-    baseline_user_ids = utils.get_baseline_user_ids()
     user_retweet_ids = set()
-    for file_name in tqdm(filter(lambda x: x.endswith('.json'), os.listdir(settings.USER_TWEETS_DIR))):
+    for file_name in tqdm(list(filter(lambda x: x.endswith('.json'), os.listdir(settings.USER_TWEETS_DIR)))):
         file_path = os.path.join(settings.USER_TWEETS_DIR, file_name)
         file_content = fileio.read_content(file_path, file_type='json')
         retweet_from_user_ids = list()
@@ -104,4 +106,4 @@ def update_baseline(archive=True, user_friends=True, user_mentions=True, user_re
         update_user_retweets_baseline()
 
 if __name__ == '__main__':
-    update_baseline(archive=True, clean=True, update=True)
+    update_baseline(archive=True, user_friends=True, user_mentions=True, user_retweets=True)

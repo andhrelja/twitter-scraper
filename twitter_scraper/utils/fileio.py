@@ -56,7 +56,8 @@ def _write_json_content(path, content):
         try:
             json.dump(content, jsonfile, ensure_ascii=False, indent=2)
         except json.decoder.JSONDecodeError:
-            logger.error("JSONDecode error on {}.json".format(path))
+            logger.error("JSONDecodeError on '{}'".format(path))
+            raise
         
 
 def _append_csv_content(path, content, fieldnames=None):
@@ -91,8 +92,8 @@ def _read_json_content(path, column=None):
         try:
             content = json.load(jsonfile)
         except json.decoder.JSONDecodeError:
-            logger.error("JSONDecode error on {}.json".format(path))
-            return []
+            logger.error("JSONDecodeError on '{}'".format(path))
+            raise
     if column:
         return [item[column] for item in content]
     else:
