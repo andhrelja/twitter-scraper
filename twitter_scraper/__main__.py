@@ -12,7 +12,7 @@ scrape.user_objs(apis)
 logger.info("------------------ clean.users ------------------")
 clean.users()
 logger.info("----------------- scrape.user_ids ----------------")
-# scrape.user_ids(apis)
+scrape.user_ids(apis)
 logger.info("******************** END USERS ********************")
 
 
@@ -34,14 +34,14 @@ logger.info("******************** END GRAPH ********************")
 
 logger.info("****************** UPDATE BASELINE ******************")
 
-logger.info("--------------- utils.update_baseline ---------------")
-utils.update_baseline(
-    archive=True, 
-    user_friends=True,
-    user_mentions=True,
-    user_retweets=True
-)
+# logger.info("--------------- utils.update_baseline ---------------")
+# utils.update_baseline(
+#     archive=True, 
+#     user_friends=True,
+#     user_mentions=True,
+#     user_retweets=True
+# )
 
-logger.info("**************** END UPDATE BASELINE ****************")
+# logger.info("**************** END UPDATE BASELINE ****************")
 
 logger.info("********************** DONE **********************")

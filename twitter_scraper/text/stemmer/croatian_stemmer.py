@@ -58,7 +58,7 @@ def croatian_stemmer(text):
 			# output[token] = token.lower()
 			continue
 		output[token] = korjenuj(transformiraj(token.lower()))
-	return output
+	return output.values()
 
 if __name__=='__main__':
 	croatian_stemmer('Ujak Ivo je krenuo u selo trčeći u bijelim tenisicama')

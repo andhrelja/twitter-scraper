@@ -3,9 +3,9 @@ import datetime as dt
 
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
-folder_name = '2022-07-21'
+# folder_name = '2022-07-27'
 
-DEBUG = False
+DEBUG = True
 
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 
