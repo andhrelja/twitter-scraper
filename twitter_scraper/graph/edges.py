@@ -78,7 +78,8 @@ def get_user_mentions_edges_df(nodes_df, tweets_df):
 
 
 def get_user_retweets_edges_df(nodes_df, tweets_df):
-    edges_df = tweets_df[['user_id', 'retweet_from_user_id']].rename(columns={'user_id': 'target', 'retweet_from_user_id': 'source'})
+    edge_dtype = dict(id='int64', **EDGE_DTYPE)
+    edges_df = tweets_df[['id', 'user_id', 'retweet_from_user_id']].rename(columns={'id': 'id', 'user_id': 'target', 'retweet_from_user_id': 'source'})
     edges_df = edges_df.dropna()
     edges_df = edges_df.loc[edges_df['source'].isin(nodes_df['user_id'])]
     
@@ -87,7 +88,7 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
     found = total_users - not_found
     
     edges_df['timestamp'] = dt.datetime.now(dt.timezone.utc).timestamp()
-    return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
+    return edges_df[edge_dtype.keys()].astype(edge_dtype), total_users, found
 
 
 # %%

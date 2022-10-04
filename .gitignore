@@ -11,15 +11,21 @@ sample.csv
 zip-docs.sh
 docs.zip
 
+./logs/*.log
 data/input/history*
 data/output/scrape/tweets/*
 data/output/scrape/users/ids/*
 data/output/scrape/users/objs/*
 data/output/clean/user/*
 data/output/clean/tweet/*
-logs/
 
-
+debug/logs/*.log
+debug/input/history*
+debug/output/scrape/tweets/*.json
+debug/output/scrape/users/ids/*.json
+debug/output/scrape/users/objs/*.csv
+debug/output/clean/user/*.csv
+debug/output/clean/tweet/*.csv
 
 docs/make.bat
 docs/Makefile

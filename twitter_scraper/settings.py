@@ -20,11 +20,11 @@ if DEBUG:
 # Input
 BASELINE_USER_IDS = os.path.join(INPUT_DIR, 'baseline-user-ids.json')
 MISSING_USER_IDS = os.path.join(INPUT_DIR, 'missing-user-ids.json')
-PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
+# PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
 PROCESSED_USER_OBJS = os.path.join(INPUT_DIR, 'processed-user-objs.json')
-PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
-STOP_WORDS_HRV = os.path.join(INPUT_DIR, 'stop_words_hrv.json')
-STOP_WORDS_ENG = os.path.join(INPUT_DIR, 'stop_words_eng.json')
+# PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
+STOP_WORDS_HRV = os.path.join(INPUT_DIR, 'stop-words-hrv.json')
+STOP_WORDS_ENG = os.path.join(INPUT_DIR, 'stop-words-eng.json')
 EMOJI_SENTIMENT_DATA = os.path.join(INPUT_DIR, 'Emoji_Sentiment_Data_v1.0.csv')
 
 # Scrape

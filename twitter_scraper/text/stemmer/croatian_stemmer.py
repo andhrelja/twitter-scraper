@@ -19,13 +19,15 @@
 import os
 import re
 
+from twitter_scraper.utils import fileio
 from twitter_scraper import settings
 
 RULES_TXT = os.path.join(settings.ROOT_DIR, 'twitter_scraper/text/stemmer/rules.txt')
 TRANSFORMATIONS_TXT = os.path.join(settings.ROOT_DIR, 'twitter_scraper/text/stemmer/transformations.txt')
 
-stop=set(['biti','jesam','budem','sam','jesi','budeš','si','jesmo','budemo','smo','jeste','budete','ste','jesu','budu','su','bih','bijah','bjeh','bijaše','bi','bje','bješe','bijasmo','bismo','bjesmo','bijaste','biste','bjeste','bijahu','biste','bjeste','bijahu','bi','biše','bjehu','bješe','bio','bili','budimo','budite','bila','bilo','bile','ću','ćeš','će','ćemo','ćete','želim','želiš','želi','želimo','želite','žele','moram','moraš','mora','moramo','morate','moraju','trebam','trebaš','treba','trebamo','trebate','trebaju','mogu','možeš','može','možemo','možete'])
-pravila=[re.compile(r'^('+osnova+')('+nastavak+r')$') for osnova, nastavak in [e.strip().split(' ') for e in open(RULES_TXT, encoding='utf-8')]]
+# stop = set(['biti','jesam','budem','sam','jesi','budeš','si','jesmo','budemo','smo','jeste','budete','ste','jesu','budu','su','bih','bijah','bjeh','bijaše','bi','bje','bješe','bijasmo','bismo','bjesmo','bijaste','biste','bjeste','bijahu','biste','bjeste','bijahu','bi','biše','bjehu','bješe','bio','bili','budimo','budite','bila','bilo','bile','ću','ćeš','će','ćemo','ćete','želim','želiš','želi','želimo','želite','žele','moram','moraš','mora','moramo','morate','moraju','trebam','trebaš','treba','trebamo','trebate','trebaju','mogu','možeš','može','možemo','možete'])
+stop = fileio.read_content(settings.STOP_WORDS_HRV, 'json')
+pravila = [re.compile(r'^('+osnova+')('+nastavak+r')$') for osnova, nastavak in [e.strip().split(' ') for e in open(RULES_TXT, encoding='utf-8')]]
 transformacije=[e.strip().split('\t') for e in open(TRANSFORMATIONS_TXT, encoding='utf-8')]
 
 def istakniSlogotvornoR(niz):
