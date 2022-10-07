@@ -76,9 +76,9 @@ def clean_location(location):
         if name in location.lower():
             return 'Hrvatska'
     
-    for char in location.lower():
-        if char not in accepted_chars + ' ':
-            location_lower = location_lower.replace(char, ' ')
+    # for char in location.lower():
+    #     if char not in accepted_chars + ' ':
+    #         location_lower = location_lower.replace(char, ' ')
     
     if location_lower == '':
         location_lower = 'hrvatska'

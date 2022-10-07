@@ -65,6 +65,7 @@ def update_user_mentions_baseline(tweets_df):
     mentions_df = mentions_df[['user_id', 'user_mentions']].groupby('user_id').sum()
     mentions_df['user_mentions'] = mentions_df['user_mentions'].map(set)
     user_mentions_df = mentions_df.explode(column='user_mentions')
+    
     user_mentions_ids = set(user_mentions_df[~user_mentions_df['user_mentions'].isna()].user_mentions.values)
     user_mentions_ids.difference_update(baseline_user_ids)
     user_mentions_ids.difference_update(processed_user_ids)

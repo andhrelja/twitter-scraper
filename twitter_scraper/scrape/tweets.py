@@ -137,7 +137,7 @@ def tweets(apis: List[dict]):
 
     utils.mkdir(settings.USER_TWEETS_DIR)
 
-    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_TWEETS)
+    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)
     for user_id in baseline_user_ids:
         q.put(user_id)
     
