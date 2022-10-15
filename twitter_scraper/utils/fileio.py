@@ -51,7 +51,7 @@ def _write_csv_content(path, content, fieldnames=None, **kwargs):
 
 def _write_json_content(path, content, **kwargs):
     if 'indent' not in kwargs:
-        kwargs['intent'] = 2
+        kwargs['indent'] = 2
     if not isinstance(content, dict) and not isinstance(content, list):
         content = [content]
     with open(path, 'w', encoding='utf-8') as jsonfile:
