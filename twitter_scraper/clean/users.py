@@ -3,7 +3,6 @@ import re
 import csv
 import os
 import time
-import string
 import pandas as pd
 
 from twitter_scraper import utils
@@ -67,7 +66,7 @@ def clean_location(location):
     
     location_lower = location.lower()
     location_names = ('republic of croatia', 'republika hrvatska', 'hrvatska', 'croatia', 'croacia', 'croatie')
-    accepted_chars = string.ascii_lowercase + 'čšćžđ'
+    # accepted_chars = string.ascii_lowercase + 'čšćžđ'
     
     if re.search(r'\s+', location):
         location_lower = re.sub(r'\s+', ' ', location).strip().lower()
@@ -113,11 +112,17 @@ def transform_users_df(users_df):
 
 # %%
 
-def update_filtered_baseline(users_df):
+def update_filtered_baseline():
+    users_df = pd.read_csv(settings.USERS_CSV)
     archive_baseline_len = len(utils.get_baseline_user_ids())
     baseline_user_ids = list(map(int, users_df.user_id.values))
     utils.archive_baseline(prefix='clean.users')
     fileio.write_content(settings.BASELINE_USER_IDS, baseline_user_ids, 'json', overwrite=True)
+    fileio.write_content(
+        path=os.path.join(settings.LOGS_DIR, '{}.json'.format(settings.folder_name)), 
+        content={'cro_users_len': len(users_df)},
+        file_type='json'
+    )
     logger.info("Filtered baseline from {:,} to {:,} records".format(archive_baseline_len, len(baseline_user_ids)))
     
 
@@ -133,8 +138,6 @@ def users():
 
     users_df.to_csv(settings.USERS_CSV, index=False, quoting=csv.QUOTE_NONNUMERIC)
     logger.info("Wrote clean User model to {}".format(settings.USERS_CSV))
-
-    update_filtered_baseline(users_df)
 
     end_time = time.time()
     logger.info("User model saved: {}".format(settings.USERS_CSV))

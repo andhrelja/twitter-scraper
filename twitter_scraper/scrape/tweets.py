@@ -30,6 +30,7 @@ SCRAPE_TWEET = lambda x, api=None: {
     'retweeter_ids':        [],# api.get_retweeter_ids(x.get('id')),
     'retweet_from_user_id':         x.get('retweeted_status', {}).get('user', {}).get('id'),
     'retweet_from_user_id_str':     str(x.get('retweeted_status', {}).get('user', {}).get('id')),
+    'retweet_from_tweet_id':        x.get('retweeted_status', {}).get('id'),
 	'in_reply_to_status_id':        x.get('in_reply_to_status_id'),
 	'in_reply_to_status_id_str':    x.get('in_reply_to_status_id_str'),
 	'in_reply_to_user_id':          x.get('in_reply_to_user_id'),

@@ -81,10 +81,10 @@ def _append_json_content(path, content):
         content = [content]
     existing_content = _read_json_content(path)
     if isinstance(content, list):
-        content += existing_content
+        existing_content += content
     elif isinstance(content, dict):
-        content.update(existing_content)
-    _write_json_content(path, content)
+        existing_content.update(content)
+    _write_json_content(path, existing_content)
 
 
 def _read_json_content(path, column=None):

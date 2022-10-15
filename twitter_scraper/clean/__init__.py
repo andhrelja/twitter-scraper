@@ -103,3 +103,4 @@ Conforms Tweet data to the following `pandas dtypes <https://pandas.pydata.org/d
 
 from .tweets import tweets
 from .users import users
+from .users import update_filtered_baseline

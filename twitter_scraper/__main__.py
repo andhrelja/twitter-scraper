@@ -11,6 +11,7 @@ logger.info("---------------- scrape.user_objs ---------------")
 scrape.user_objs(apis)
 logger.info("------------------ clean.users ------------------")
 clean.users()
+clean.update_filtered_baseline()
 logger.info("----------------- scrape.user_ids ----------------")
 scrape.user_ids(apis)
 logger.info("******************** END USERS ********************")
@@ -43,5 +44,7 @@ utils.update_baseline(
 )
 
 logger.info("**************** END UPDATE BASELINE ****************")
+
+utils.notify()
 
 logger.info("********************** DONE **********************")

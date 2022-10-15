@@ -91,6 +91,9 @@ def get_twitter_lookup_users(conn_name, api, user_ids, retry_max=3, retry_delay=
     while retry_num < retry_max:
         try:
             batch_users = api.lookup_users(user_id=user_ids)
+
+        except tweepy.errors.NotFound: # 404
+            return []
             
         except tweepy.errors.TwitterServerError: # 503
             retry_num += 1
@@ -114,7 +117,6 @@ def get_twitter_lookup_users(conn_name, api, user_ids, retry_max=3, retry_delay=
             
         else:
             return batch_users
-            
 
 
 def reconnect_api(conn_name):

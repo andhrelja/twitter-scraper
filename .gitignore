@@ -5,11 +5,14 @@
 nohup*
 temp*
 git-pat.txt
-rm-csv-json.sh
-sample.csv
 
+*-credentials.json
+rm-csv-json.sh
 zip-docs.sh
+mk-data-dirs.sh
+cleanup-data-dirs.sh
 docs.zip
+data_old*
 
 ./logs/*.log
 data/input/history*

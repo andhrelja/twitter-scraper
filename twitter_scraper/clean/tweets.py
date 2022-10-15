@@ -12,7 +12,7 @@ from twitter_scraper import settings
 
 logger = utils.get_logger(__file__)
 
-MIN_DATE = dt.datetime(2021, 8, 1, 0, 0, 0, 0, dt.timezone.utc)
+MIN_DATE = dt.datetime(2022, 1, 1, 0, 0, 0, 0, dt.timezone.utc)
 # MAX_DATE = dt.datetime(2022, 1, 31, 0, 0, 0, 0, dt.timezone.utc)
 MAX_DATE = dt.datetime.now(dt.timezone.utc)
 
@@ -27,9 +27,10 @@ TWEET_DTYPE = {
     'user_mentions':    'object',
     'retweet_from_user_id':     pd.Int64Dtype(),
     'retweet_from_user_id_str': 'string',
-	#'in_reply_to_status_id':      pd.Int64Dtype(),
+    'retweet_from_tweet_id':     pd.Int64Dtype(),
+	'in_reply_to_status_id':      pd.Int64Dtype(),
 	# 'in_reply_to_status_id_str':  'string',
-	#'in_reply_to_user_id':        pd.Int64Dtype(),
+	'in_reply_to_user_id':        pd.Int64Dtype(),
 	# 'in_reply_to_user_id_str':    'string',
 	# 'in_reply_to_screen_name':    'string',
 	'geo':              'object',
