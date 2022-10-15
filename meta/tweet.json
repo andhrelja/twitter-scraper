@@ -1,0 +1,81 @@
+{
+  "created_at": "Thu Apr 06 15:28:43 +0000 2017",
+  "id": 850007368138018817,
+  "id_str": "850007368138018817",
+  "text": "RT @TwitterDev: 1/ Today we’re sharing our vision for the future of the Twitter API platform!nhttps://t.co/XweGngmxlP",
+  "truncated": false,
+  "entities": {
+    "hashtags": [
+      {
+        "text": "toninopiculaljudina"
+      },
+      {
+        "text": "drugihashtag"
+      }
+    ],
+    "user_mentions": [
+      {
+        "id": 2244994945
+      },
+      {
+        "id": 837333540
+      }
+    ],
+    "urls": [
+      {
+        "extended_url": "https://www.sphinx-doc.org/en/master/usage/restructuredtext/roles.html#role-download"
+      }
+    ]
+  },
+  "source": "<a href=\"http://twitter.com\" rel=\"nofollow\">Twitter Web Client</a>",
+  "in_reply_to_status_id": null,
+  "in_reply_to_status_id_str": null,
+  "in_reply_to_user_id": null,
+  "in_reply_to_user_id_str": null,
+  "in_reply_to_screen_name": null,
+  "geo": null,
+  "coordinates": null,
+  "place": null,
+  "contributors": null,
+  "retweeted_status": {
+    "id": 850006245121695744,
+    "entities": {
+      "hashtags": [
+        {
+          "text": "toninopiculaljudina"
+        },
+        {
+          "text": "drugihashtag"
+        }
+      ],
+      "user_mentions": []
+    },
+    "source": "<a href=\"http://twitter.com\" rel=\"nofollow\">Twitter Web Client</a>",
+    "in_reply_to_status_id": null,
+    "in_reply_to_status_id_str": null,
+    "in_reply_to_user_id": null,
+    "in_reply_to_user_id_str": null,
+    "in_reply_to_screen_name": null,
+    "user": {
+      "id": 2244994945
+    },
+    "geo": null,
+    "coordinates": null,
+    "place": null,
+    "contributors": null,
+    "is_quote_status": false,
+    "retweet_count": 284,
+    "favorite_count": 399,
+    "favorited": false,
+    "retweeted": false,
+    "possibly_sensitive": false,
+    "lang": "en"
+  },
+  "is_quote_status": false,
+  "retweet_count": 284,
+  "favorite_count": 0,
+  "favorited": false,
+  "retweeted": false,
+  "possibly_sensitive": false,
+  "lang": "en"
+}

@@ -1,8 +1,49 @@
-scrape_tweets/collected_data
-scrape_tweets/preproc_2021
-scrape_tweets/all_new.csv
-scrape_tweets/new_update.csv
-scrape_users/data/folowing_users_graph.gml
+*~vsdx
+*.webp
+
+.vscode/
+nohup*
+temp*
+git-pat.txt
+
+*-credentials.json
+rm-csv-json.sh
+zip-docs.sh
+mk-data-dirs.sh
+cleanup-data-dirs.sh
+docs.zip
+data_old*
+
+./logs/*.log
+data/input/history*
+data/output/scrape/tweets/*
+data/output/scrape/users/ids/*
+data/output/scrape/users/objs/*
+data/output/clean/user/*
+data/output/clean/tweet/*
+
+debug/logs/*.log
+debug/input/history*
+debug/output/scrape/tweets/*.json
+debug/output/scrape/users/ids/*.json
+debug/output/scrape/users/objs/*.csv
+debug/output/clean/user/*.csv
+debug/output/clean/tweet/*.csv
+
+docs/make.bat
+docs/Makefile
+docs/source*
+
+docs/build/doctrees
+docs/build/html/*
+!docs/build/html/index.html
+!docs/build/html/modules.html
+!docs/build/html/usage.html
+
+notebooks/*.csv
+notebooks/*.json
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -13,7 +54,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+# build/
 develop-eggs/
 dist/
 downloads/

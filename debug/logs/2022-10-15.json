@@ -1,0 +1,16 @@
+{
+  "nodes_len": 4,
+  "found_retweets": 1,
+  "len_retweets_source": 1,
+  "len_retweets": 1,
+  "found_mentions": 2,
+  "len_mentions_source": 2,
+  "len_mentions": 2,
+  "found_followers": 4,
+  "len_followers_source": 4,
+  "len_followers": 4,
+  "cro_users_len": 998,
+  "debug": true,
+  "initial_baseline_len": 47,
+  "final_baseline_len": 6071
+}

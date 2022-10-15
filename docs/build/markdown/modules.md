@@ -1,36 +1,16 @@
-# Twitter Scraper
-
-## General
+# General
 
 Twitter Scraper is a Python package built using [tweepy](https://www.tweepy.org/), [pandas](https://pandas.pydata.org/) and [networkx](https://networkx.org/).
 
 It accumulates Tweets data using static User objects based in Croatia. User objects can periodically be updated using `twitter_scraper.utils.update_baseline`.
 
-### Goals
-
-Twitter Scraper is designed to accomplish the following goals:
-
-* create a user ID `baseline` to fetch user tweets
-    * because Twitter API doesn't provide an out-of-the-box solution for fetching user IDs, the `twitter_scraper.utils.update_baseline` module updates `baseline` user IDs by collecting existing user's friend IDs, mentioned and retweeted users available via tweets who are not already a part of `baseline`
-* filter `baseline` to only keep Croatian users
-    * to collect Croatian users only, `twitter_scraper.clean.users` filters Croatian locations, ensuring only Croatian users are a part of the resulting graph
-* ensure new tweets are periodically added
-    * to collect new tweets, `twitter_scraper.scrape.tweets` uses the `since_id` and `max_id` endpoint parameters that work similar to date parameters on API endpoints
-* ensure new friends are periodically updated
-    * to update existing user friends, the `twitter_scraper.scrape.user_ids` module runs on every Twitter Scraper execution and captures all new users' friends connections created in between the workflow executions
-* generate graph data for:
-    * user friends
-    * user mentions (in tweets)
-    * retweets
-
-### Content
+# Content
 
 1. General
-   1. Goals
-   2. Content
-   3. Legend
-   4. Activity Diagram
-   5. Workflow Diagram
+   1. Content
+   2. Legend
+   3. Activity Diagram
+   4. Workflow Diagram
 
 2. Modules
    1. Scrapers
@@ -46,17 +26,17 @@ Twitter Scraper is designed to accomplish the following goals:
       * graph.nodes
       * graph.edges
 
-### Legend
+## Legend
 
 ![image](/assets/legend.png)
 
 
-### Activity Diagram
+## Activity Diagram
 
 ![image](/assets/activity.png)
 
 
-### Workflow Diagram
+## Workflow Diagram
 
 ![image](/assets/workflow.png)
 
@@ -65,9 +45,9 @@ The workflow runs module-specific jobs sequentially using [threading](https://do
 where each connection from `twitter_scraper.settings` runs on a separate thread.
 
   
-## Modules
+# Modules
 
-### Scrapers
+## Scrapers
 
 The `twitter_scraper.scrape` module transforms the unstructured data, but it doesn’t transform the file’s content.
 Scraped data is considered as *golden copy* of the source data. New Tweets data is accumulated using static User (IDs) objects based in Croatia.
@@ -114,7 +94,7 @@ This module comprises 3 sub-modules (utilizing 4 Twitter API endpoints):
   			* `~/data/input/processed-user-ids.json`
   			* `~/data/output/scrape/users/objs/user-objs.csv`
 
-#### scrape.user_ids
+### scrape.user_ids
 
 
 **Endpoints**:
@@ -163,7 +143,7 @@ By collecting followers and friends data, this module retrieves source data to f
 
 This data is later used to generate Graph edges by `twitter_scraper.graph.edges`.
 
-#### scrape.user_objs
+### scrape.user_objs
 
 **Endpoints**: 
 	
@@ -275,7 +255,7 @@ SCRAPE_USER = lambda x: {
 }
 ```
 
-#### scrape.tweets
+### scrape.tweets
 
 **Endpoints**: 
 
@@ -492,7 +472,7 @@ flatten_dictlist = lambda dictlist, colname: [_dict.get(colname) for _dict in di
 ]
 ```
 
-### Cleaners
+## Cleaners
 
 Cleaners are fueled by [pandas](https://pandas.pydata.org/) focused on working with `csv` formats. They will
 Cleaners transform `twitter_scraper.scrape` outputs by creating artificial content and deleting irrelevant content. They do not interract with data/input/ files.
@@ -518,7 +498,7 @@ The `twitter_scraper.clean` module consists from two sub-modules:
    * **outputs**:
        * `~/data/output/clean/user/YYY-MM-DD/users.csv`
 
-#### clean.users
+### clean.users
 
 **Inputs**: 
 
@@ -571,7 +551,7 @@ USER_DTYPE = {
 }
 ```
 
-#### clean.tweets
+### clean.tweets
 
 **Inputs**: 
 
@@ -606,7 +586,7 @@ TWEET_DTYPE = {
 }
 ```
 
-### Graph
+## Graph
 
 Graphs are also fueled by [pandas](https://pandas.pydata.org/), focused on working with csv formats.
 Graphs transform `twitter_scraper.clean` outputs by aggregating Tweets (*edges-mentions, edges-retweets*).
@@ -633,7 +613,7 @@ The `twitter_scraper.graph` module consists from two sub-modules:
       	* `~/data/output/graph/YYY-MM-DD/edges-mentions.csv`
       	* `~/data/output/graph/YYY-MM-DD/edges-retweets.csv`
 
-#### graph.nodes
+### graph.nodes
 
 **Inputs**: 
 
@@ -671,7 +651,7 @@ NODE_DTYPE = {
 }
 ```
 
-#### graph.edges
+### graph.edges
 
 **Inputs**: 
 
