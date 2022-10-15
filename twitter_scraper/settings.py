@@ -6,13 +6,13 @@ now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
 # folder_name = '2022-07-27'
 
-DEBUG = True if os.getenv('DEBUG', 'true') == 'true' else False
+DEBUG = True if os.getenv('DEBUG', 'TRUE') == 'TRUE' else False
 
 # ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 ROOT_DIR = os.getenv('TWITTER_SCRAPER_DIR', '/home/milky/infocov/twitter_scraper')
 
-INPUT_DIR = os.path.join(ROOT_DIR, 'data_old', 'input')
-OUTPUT_DIR = os.path.join(ROOT_DIR, 'data_old', 'output')
+INPUT_DIR = os.path.join(ROOT_DIR, 'data', 'input')
+OUTPUT_DIR = os.path.join(ROOT_DIR, 'data', 'output')
 LOGS_DIR = os.path.join(ROOT_DIR, 'logs')
 if DEBUG:
     INPUT_DIR = os.path.join(ROOT_DIR, 'debug', 'input')
