@@ -114,7 +114,7 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
         l.acquire()
         fileio.write_content(
             os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 
-            all_user_tweets, 'json'
+            all_user_tweets, 'json', indent=None
         )
         # fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
         l.release()
