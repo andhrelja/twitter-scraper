@@ -22,7 +22,7 @@ if DEBUG:
 # Input
 BASELINE_USER_IDS = os.path.join(INPUT_DIR, 'baseline-user-ids.json')
 MISSING_USER_IDS = os.path.join(INPUT_DIR, 'missing-user-ids.json')
-# PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
+PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
 PROCESSED_USER_OBJS = os.path.join(INPUT_DIR, 'processed-user-objs.json')
 # PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
 STOP_WORDS_HRV = os.path.join(INPUT_DIR, 'stop-words-hrv.json')

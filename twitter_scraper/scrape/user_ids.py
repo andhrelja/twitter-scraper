@@ -61,7 +61,7 @@ def user_ids(apis):
     
     utils.mkdir(settings.USER_IDS_DIR)
     
-    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)
+    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_IDS)
     for user_id in baseline_user_ids:
         q.put(user_id)
     
