@@ -2,6 +2,12 @@ name: Run Twitter Scraper
 
 on:
   workflow_dispatch:
+    inputs:
+      module_name:
+        type: string
+        required: true
+        description: "Name of the Python module to run"
+        default: twitter_scraper
 
 env:
   DEBUG: false
@@ -12,6 +18,7 @@ jobs:
   run-twitter-scraper:
     name: run-twitter-scraper
     runs-on: self-hosted
+    timeout-minutes: 14400
     steps:
       - uses: actions/checkout@v3
       
@@ -23,4 +30,4 @@ jobs:
       
       # Runs a set of commands using the runners shell
       - name: Run Twitter Scraper
-        run: python -m twitter_scraper
+        run: python -m ${{ inputs.module_name }}
