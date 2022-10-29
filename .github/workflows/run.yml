@@ -31,7 +31,7 @@ jobs:
       - run: |
           git checkout master
           git pull origin master
-          pip install .
+          pip install --upgrade .
       
       # Runs a set of commands using the runners shell
       - name: Run Twitter Scraper
