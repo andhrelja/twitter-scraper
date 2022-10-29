@@ -1,5 +1,7 @@
+import stanza
 import classla
 
-classla.download('sl')
-classla.download('hr')
-classla.download('sr')
+stanza.download('en', logging_level='ERROR')
+classla.download('sl', logging_level='ERROR')
+classla.download('hr', logging_level='ERROR')
+classla.download('sr', logging_level='ERROR')
