@@ -60,3 +60,7 @@ def nodes():
     end_time = time.time()
     logger.info("END - Done creating Graph data")
     logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+
+
+if __name__ == '__main__':
+    nodes()

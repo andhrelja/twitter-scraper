@@ -2,6 +2,7 @@
 import os
 import time
 import csv
+import langid
 import pandas as pd
 import datetime as dt
 from tqdm import tqdm
@@ -18,7 +19,7 @@ MAX_DATE = dt.datetime.now(dt.timezone.utc)
 
 
 TWEET_DTYPE = {
-    'id':               'string',
+    'id':               'int64',
     'user_id':          'int64',
     'user_id_str':      'string',
     'full_text':        'string',
@@ -46,6 +47,7 @@ TWEET_DTYPE = {
 	'lang': 'string',
 
     ### Custom columns
+    'langid': 'string',
     'week': 'string',
     'month': 'string',
     'is_covid': 'bool'
@@ -54,12 +56,22 @@ TWEET_DTYPE = {
 
 # %%
 def get_tweets_df(user_df):
+    def detect_language(text):
+        if text is None or text == '':
+            return 'zxx'
+        try:
+            lang, _ = langid.classify(text)
+        except Exception:
+            lang = 'zxx'
+        return lang
+
     def transform(tweets_df):
         tweets_df['week']  = tweets_df['created_at'].dt.strftime('%Y-%W')
         tweets_df['month'] = tweets_df['created_at'].dt.strftime('%Y-%m')
         
         tweets_df['hashtags']   = tweets_df['hashtags'].transform(lambda x: [item.lower() for item in x])
         tweets_df['full_text']  = tweets_df['full_text'].fillna('')
+        tweets_df['langid']     = tweets_df.apply(lambda x: detect_language(x['full_text']) if x['lang'] == 'und' else x['lang'], axis=1)
         tweets_df['full_text_nospace'] = tweets_df['full_text'].str.replace(' ', '')
         
         tweets_df['is_covid_1'] = tweets_df['full_text'].transform(lambda x: any(tag in x.lower()

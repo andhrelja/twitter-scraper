@@ -1,5 +1,5 @@
 # %%
-import langdetect
+import langid
 import gensim
 # import emoji
 import re
@@ -37,11 +37,44 @@ TRANSFORM = lambda x: {
 
 # %%
 def detect_language(text):
+    if text is None or text == '':
+        return 'zxx'
     try:
-        lang = langdetect.detect(text)
+        lang, _ = langid.classify(text)
     except Exception:
         lang = 'zxx'
     return lang
+
+def clean_twitter_text(text):
+    text = re.sub(URL_REGEX, '', text)
+    text = re.sub(MENTIONS_REGEX, '', text)
+    text = text.replace('RT', '').strip()
+    if text.startswith(':'): text = text[1:]
+    return text.strip()
+
+def get_stemmed_text(text, lang=None):
+    if lang is None:
+        lang = detect_language(text)
+    
+    if lang == 'en':
+        stop_words = fileio.read_content(settings.STOP_WORDS_ENG, 'json')
+    elif lang in ('hr', 'bs', 'sr', 'sl'):
+        stop_words = fileio.read_content(settings.STOP_WORDS_HRV, 'json')
+    else:
+        stop_words = []
+    
+    if text == '':
+        return ''
+
+    text = gensim.utils.simple_preprocess(text)
+    text = [word.lower() for word in text if word.lower() not in stop_words]
+    
+    if lang in ('hr', 'bs', 'sr', 'sl'):
+        text = [croatian_stemmer.croatian_stemmer(word) for word in text]
+    else:
+        text = [lemmatizer.lemmatize(word) for word in text]
+    return text
+
 
 def get_stemmed_tweets_df(tweets_df):
     tweets_df['full_text_processed']  = tweets_df['full_text'].fillna('None').replace('', 'None')
