@@ -1,6 +1,8 @@
 # %%
 import langid
 import gensim
+import stanza
+import classla
 # import emoji
 import re
 import os
@@ -10,21 +12,28 @@ import pandas as pd
 import pyLDAvis
 import pyLDAvis.gensim_models as gensimvis
 
-from nltk.stem import WordNetLemmatizer
-
 from twitter_scraper import settings
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
 from twitter_scraper.clean.tweets import TWEET_DTYPE
-from twitter_scraper.text.stemmer import croatian_stemmer
 
 
 logger = utils.get_logger(__file__)
 
 stop_words_eng = fileio.read_content(settings.STOP_WORDS_ENG, 'json')
 stop_words_hrv = fileio.read_content(settings.STOP_WORDS_HRV, 'json')
+# Because of the way our dataset is limited, we are assuming
+# we can allow to concatenate english and croatian stop words
+stop_words = stop_words_eng + stop_words_hrv 
 
-lemmatizer = WordNetLemmatizer()
+nlps = {
+    'en': stanza.Pipeline('en', use_gpu=False, logging_level='ERROR'),
+    'hr': classla.Pipeline('hr', use_gpu=False, logging_level='ERROR'),
+    'sr': classla.Pipeline('sr', use_gpu=False, logging_level='ERROR'),
+    'sl': classla.Pipeline('sl', use_gpu=False, logging_level='ERROR')
+}
+nlps['bs'] = nlps['hr']
+
 tweets_df = pd.read_csv(settings.TWEETS_CSV, dtype=TWEET_DTYPE)
 emoji_sentiment_df = pd.read_csv(settings.EMOJI_SENTIMENT_DATA)
 
@@ -50,51 +59,61 @@ def clean_twitter_text(text):
     text = re.sub(MENTIONS_REGEX, '', text)
     text = text.replace('RT', '').strip()
     if text.startswith(':'): text = text[1:]
-    return text.strip()
+    return text
 
 def get_stemmed_text(text, lang=None):
+    # text = re.sub(URL_REGEX, '', text)
+    if text == '':
+        return []
+    
     if lang is None:
         lang = detect_language(text)
     
-    if lang == 'en':
-        stop_words = fileio.read_content(settings.STOP_WORDS_ENG, 'json')
-    elif lang in ('hr', 'bs', 'sr', 'sl'):
-        stop_words = fileio.read_content(settings.STOP_WORDS_HRV, 'json')
-    else:
-        stop_words = []
-    
-    if text == '':
-        return ''
-
     text = gensim.utils.simple_preprocess(text)
     text = [word.lower() for word in text if word.lower() not in stop_words]
     
+    if not text:
+        return text
+    
     if lang in ('hr', 'bs', 'sr', 'sl'):
-        text = [croatian_stemmer.croatian_stemmer(word) for word in text]
+        nlp = nlps[lang]
     else:
-        text = [lemmatizer.lemmatize(word) for word in text]
+        nlp = nlps['en']
+        
+    doc = nlp(" ".join(text))
+    text = [word.lemma for sentence in doc.sentences for word in sentence.words]
     return text
 
-
 def get_stemmed_tweets_df(tweets_df):
-    tweets_df['full_text_processed']  = tweets_df['full_text'].fillna('None').replace('', 'None')
-    tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(lambda x: 'None' if x == '' else x)
+    def get_lemmatized_text(row):
+        if row.lang in ('hr', 'bs', 'sr', 'sl'):
+            nlp = nlps[row.lang]
+        else:
+            nlp = nlps['en']
+            
+        if not row.full_text_processed: 
+            return []
+        
+        doc = nlp(" ".join(row.full_text_processed))
+        return [word.lemma for sentence in doc.sentences for word in sentence.words]
+    
+    tweets_df['full_text_processed']  = tweets_df['full_text'].fillna('')
     tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(lambda x: re.sub(URL_REGEX, '', x))
     # tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(lambda x: re.sub(SYMBOLS_REGEX, '', x))
     tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
     tweets_df['full_text_processed']  = tweets_df['full_text_processed'].str.replace('RT', '')
     tweets_df['full_text_processed']  = tweets_df['full_text_processed'].str.strip()
     
-    logger.info("Running langdetect.detect_language")
+    logger.info("Running langid.classify")
     # tweets_df['language']   = tweets_df['full_text_processed'].transform(lambda x: x.lang if x.lang == 'en' else detect_language(x))
-    tweets_df['language']   = tweets_df['full_text_processed'].transform(detect_language)
+    tweets_df['langid']               = tweets_df['full_text_processed'].transform(detect_language)
 
     logger.info("Running gensim.utils.simple_preprocess")
     tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(gensim.utils.simple_preprocess)
 
     logger.info("Removing stop words")
-    tweets_df['full_text_processed']  = tweets_df.apply(lambda x: [word for word in x.full_text_processed if (x.language != 'hr' and word not in stop_words_eng) or (x.language == 'hr' and word not in stop_words_hrv)], axis=1)
-    tweets_df['stemmed']    = tweets_df.apply(lambda x: croatian_stemmer.croatian_stemmer(x.full_text_processed) if x.language == 'hr' else [lemmatizer.lemmatize(word) for word in x.full_text_processed], axis=1)
+    tweets_df['full_text_processed']  = tweets_df.apply(lambda x: [word for word in x.full_text_processed if word not in stop_words], axis=1)
+    tweets_df['stemmed'] = tweets_df.apply(get_lemmatized_text, axis=1)
     return tweets_df
 
 
@@ -129,8 +148,12 @@ def get_corpus_tweets_df(tweets_df):
 # %%
 def tweets():
     global tweets_df
+    
+    utils.mkdir(os.path.dirname(settings.TWEETS_TEXT_CSV))
+    
+    logger.info("Starting text transformations")
     tweets_df = get_stemmed_tweets_df(tweets_df)
-    tweets_df.to_csv('tweets-text.csv')
+    tweets_df.to_csv(settings.TWEETS_TEXT_CSV, index=False)
     
 # %%
 if __name__ == '__main__':

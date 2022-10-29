@@ -119,8 +119,8 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
     edges_df = edges_df.merge(tweets_df[['id', 'created_at']].rename(columns={
         'created_at': 'og_created_at'
     }), left_on='og_tweet_id', right_on='id', how='left').drop('id', axis=1)
-    edges_df['_full_text'] = edges_df['og_tweet_id'].transform(get_og_full_text)
-    edges_df['full_text'] = edges_df['_full_text'] or edges_df['full_text']
+    # edges_df['_full_text'] = edges_df['og_tweet_id'].transform(get_og_full_text)
+    # edges_df['full_text'] = edges_df['_full_text'] or edges_df['full_text']
     edges_df['rt_created_at'] = pd.to_datetime(edges_df['rt_created_at'])
     edges_df['og_created_at'] = pd.to_datetime(edges_df['og_created_at'])
     edges_df['rt_time_elapsed_sec'] = (edges_df['rt_created_at'] - edges_df['og_created_at']).map(lambda x: x.total_seconds())

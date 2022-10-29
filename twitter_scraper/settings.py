@@ -38,6 +38,9 @@ USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'tweets')
 USERS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'user', folder_name, 'users.csv')
 TWEETS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'tweet', folder_name, 'tweets.csv')
 
+# Text
+TWEETS_TEXT_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'tweets.csv')
+
 # Graph
 NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
 EDGES_MENTIONS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-mentions.csv')
