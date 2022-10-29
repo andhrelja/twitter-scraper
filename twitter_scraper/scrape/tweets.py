@@ -72,18 +72,24 @@ def get_retweeted_tweet_ids():
     :return: Missing retweeted tweet IDs batched in sets of 100 IDs
     :rtype: List[int]
     """
+    logger.info("Collecting missing retweeted tweet IDs")
     all_tweet_ids = set()
     retweeted_tweet_ids = set()
     baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)
-    for user_id in filter(lambda x: "{}.json".format(x) in os.listdir(settings.USER_TWEETS_DIR), baseline_user_ids):
+    
+    p_bar = tqdm(total=len(baseline_user_ids) * 2)
+    for user_id in baseline_user_ids:
         user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
         for tweet in user_tweets:
             all_tweet_ids.add(tweet['id'])
+        p_bar.update(1)
     
-    for user_id in filter(lambda x: "{}.json".format(x) in os.listdir(settings.USER_TWEETS_DIR), baseline_user_ids):
+    for user_id in baseline_user_ids:
         user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
         for tweet in user_tweets:
             retweeted_tweet_ids.add(tweet['retweet_from_tweet_id'])
+        p_bar.update(1)
+    p_bar.close()
     missing_retweeted_tweet_ids = retweeted_tweet_ids.difference(all_tweet_ids)
     return utils.batches(missing_retweeted_tweet_ids, 100)
 
@@ -229,7 +235,7 @@ def tweets(apis: List[dict]):
     for missing_retweet_ids in retweeted_tweet_ids:
         q.put(missing_retweet_ids)
     
-    pbar = tqdm(total=len(baseline_user_ids))
+    pbar = tqdm(total=len(retweeted_tweet_ids))
     for conn_name, api in apis.items():
         thread = threading.Thread(
             target=__collect_retweeted_tweets, 
