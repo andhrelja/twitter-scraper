@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: '3.8.10'
       
-      - run: pip install ${{ env.TWITTER_SCRAPER_DIR }}
+      - run: pip install .
       
       # Runs a set of commands using the runners shell
       - name: Run Twitter Scraper
