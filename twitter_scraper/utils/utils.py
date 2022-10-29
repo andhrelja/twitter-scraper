@@ -23,8 +23,9 @@ def get_logger(logger_name, **kwargs):
     return logging.getLogger(logger_name)
 
 
-def batches(lst, n=100):
+def batches(obj, n=100):
     batches = []
+    lst = list(obj)
     for i in range(0, len(lst), n):
         batches.append(lst[i:i+n])
     return batches

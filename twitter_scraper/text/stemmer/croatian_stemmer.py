@@ -49,19 +49,18 @@ def korjenuj(pojavnica):
 	for pravilo in pravila:
 		dioba=pravilo.match(pojavnica)
 		if dioba is not None:
-			if imaSamoglasnik(dioba.group(1)) and len(dioba.group(1))>1:
-				return dioba.group(1)
+			if imaSamoglasnik(dioba.group()) and len(dioba.group())>1:
+				return dioba.group()
 	return pojavnica
 
-def croatian_stemmer(text):
+def croatian_stemmer(word):
 	output = {}
-	for token in text:
-		if token.lower() in stop:
-			# output[token] = token.lower()
-			continue
-		output[token] = korjenuj(transformiraj(token.lower()))
-	return output.values()
+	if not isinstance(word, str):
+		raise TypeError('Expected `string`, got `{}`'.format(type(word)))
+	if re.search(r"\s", word):
+		raise ValueError('Expected a word without spaces, got `{}`'.format(word))
+	return korjenuj(transformiraj(word.lower()))
 
 if __name__=='__main__':
-	croatian_stemmer('Ujak Ivo je krenuo u selo trčeći u bijelim tenisicama')
+	print(croatian_stemmer('Ujak Ivo je krenuo u selo trčeći u bijelim tenisicama'))
 

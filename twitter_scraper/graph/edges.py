@@ -2,7 +2,7 @@
 import os
 import time
 import pandas as pd
-import datetime as dt
+# import datetime as dt
 from tqdm import tqdm
 
 from twitter_scraper import utils
@@ -81,20 +81,49 @@ def get_user_mentions_edges_df(nodes_df, tweets_df):
 
 
 def get_user_retweets_edges_df(nodes_df, tweets_df):
+    apis = utils.api.get_api_connections()
+    def get_og_full_text(tweet_id, conn_name='Carlos'):
+        og_full_text_idx = tweets_df[['id', 'full_text']].set_index('id').to_dict()['full_text']
+        api = apis[conn_name]
+        if tweet_id in og_full_text_idx:
+            return og_full_text_idx[tweet_id]
+        tweet, _ = utils.api.get_twitter_endpoint(conn_name, api, 'get_status', user_id=None, id=tweet_id)
+        if tweet:
+            return tweet.text
+        return None
+        
     # Has a custom edge_dtype
-    edge_dtype = dict(id='int64', **EDGE_DTYPE)
+    edge_dtype = dict(**EDGE_DTYPE,
+        rt_tweet_id='int64',
+        full_text='string',
+        og_tweet_id='int64',
+        rt_time_elapsed_sec='float64'
+    )
+    
     edges_df = tweets_df[[
+        'id',
         'retweet_from_tweet_id', 
         'user_id', 
-        'retweet_from_user_id'
+        'retweet_from_user_id',
+        'created_at',
+        'full_text'
     ]].rename(columns={
-        'retweet_from_tweet_id': 'id', 
+        'id': 'rt_tweet_id',
+        'retweet_from_tweet_id': 'og_tweet_id', 
         'user_id': 'target', 
-        'retweet_from_user_id': 'source'
+        'retweet_from_user_id': 'source',
+        'created_at': 'rt_created_at'
     })
     edges_df = edges_df.dropna()
     edges_df = edges_df.loc[edges_df['source'].isin(nodes_df['user_id'])]
-    
+    edges_df = edges_df.merge(tweets_df[['id', 'created_at']].rename(columns={
+        'created_at': 'og_created_at'
+    }), left_on='og_tweet_id', right_on='id', how='left').drop('id', axis=1)
+    edges_df['_full_text'] = edges_df['og_tweet_id'].transform(get_og_full_text)
+    edges_df['full_text'] = edges_df['_full_text'] or edges_df['full_text']
+    edges_df['rt_created_at'] = pd.to_datetime(edges_df['rt_created_at'])
+    edges_df['og_created_at'] = pd.to_datetime(edges_df['og_created_at'])
+    edges_df['rt_time_elapsed_sec'] = (edges_df['rt_created_at'] - edges_df['og_created_at']).map(lambda x: x.total_seconds())
     total_users = len(nodes_df.user_id.unique())
     not_found = total_users - len(edges_df.source.unique())
     found = total_users - not_found
@@ -203,8 +232,8 @@ def user_retweets_edges():
 
     logger.info("START - Creating User Retweets Edges, this may take a while")
 
-    tweets_df = pd.read_csv(settings.TWEETS_CSV)
-    tweets_df = tweets_df.astype(TWEET_DTYPE)
+    tweets_df = pd.read_csv(settings.TWEETS_CSV, dtype=TWEET_DTYPE)
+    # tweets_df = tweets_df.astype(TWEET_DTYPE)
 
     edges_df, nodes_len, found_retweets = get_user_retweets_edges_df(nodes_df, tweets_df)
     if edges_df.empty:
@@ -252,4 +281,4 @@ def edges(user_followers=True, user_mentions=True, user_retweets=True):
 
 # %%
 if __name__ == '__main__':
-    edges(user_followers=True, user_mentions=True, user_retweets=True)
+    edges(user_followers=False, user_mentions=False, user_retweets=True)

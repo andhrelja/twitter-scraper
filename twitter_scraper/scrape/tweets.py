@@ -65,6 +65,29 @@ def get_tweet_max_id(user_id: int):
     return None
 
 
+def get_retweeted_tweet_ids():
+    """Reads the user's scraped tweet JSON and returns missing retweeted tweet IDs. 
+    Missing retweeted tweet IDs are used to collect tweet text to ensure full text is available for text processing.
+
+    :return: Missing retweeted tweet IDs batched in sets of 100 IDs
+    :rtype: List[int]
+    """
+    all_tweet_ids = set()
+    retweeted_tweet_ids = set()
+    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)
+    for user_id in filter(lambda x: "{}.json".format(x) in os.listdir(settings.USER_TWEETS_DIR), baseline_user_ids):
+        user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
+        for tweet in user_tweets:
+            all_tweet_ids.add(tweet['id'])
+    
+    for user_id in filter(lambda x: "{}.json".format(x) in os.listdir(settings.USER_TWEETS_DIR), baseline_user_ids):
+        user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
+        for tweet in user_tweets:
+            retweeted_tweet_ids.add(tweet['retweet_from_tweet_id'])
+    missing_retweeted_tweet_ids = retweeted_tweet_ids.difference(all_tweet_ids)
+    return utils.batches(missing_retweeted_tweet_ids, 100)
+
+
 def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
     """Collects tweets for all user IDs read from ``baseline-user-ids.json`` using :mod:queue.
     This function is ran on multiple threads. The number of running threads matches the number of available Twitter API connections in :mod:twitter_scraper.settings.
@@ -121,6 +144,51 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
         pbar.update(1)
 
 
+def __collect_retweeted_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
+    """Collects tweets for all missing retweeted IDs read from ``<user-id>.json`` using :mod:queue.
+    This function is ran on multiple threads. The number of running threads matches the number of available Twitter API connections in :mod:twitter_scraper.settings.
+    Retrieves all the missing tweets that were not collected using :fun:__collect_users_tweets.
+
+    :param conn_name: Twitter API connection name (:mod:twitter_scraper.settings)
+    :type conn_name: str
+    :param api: :py:class:tweepy.API object used to call Twitter API endpoints
+    :type api: tweepy.API
+    :param pbar: :mod:tqdm progress bar instance - total number of available user IDs, gets updated after a user's tweets are scraped
+    :type pbar: tqdm.tqdm
+    """
+    global q, l
+    
+    while not q.empty():
+        tweet_ids = q.get()
+        user_tweets = {}
+        new_tweets, _ = utils.get_twitter_endpoint(
+            conn_name, api, 
+            'lookup_statuses', 
+            user_id=None, 
+            retry_max=5, 
+            retry_delay=3, 
+            id=tweet_ids
+        )
+        new_tweets = [SCRAPE_TWEET(item._json, api) for item in new_tweets]
+
+        for tweet in new_tweets:
+            user_id = tweet['user_id']
+            if user_id in user_tweets:
+                user_tweets[user_id].append(tweet)
+            else:
+                user_tweets[user_id] = [tweet]
+        
+        for user_id, _tweets in user_tweets.items():
+            l.acquire()
+            fileio.write_content(
+                os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 
+                _tweets, 'json', indent=None
+            )
+            # fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
+            l.release()
+        pbar.update(1)
+
+
 def tweets(apis: List[dict]):
     """
     1. Creates tweet scrape directory
@@ -148,6 +216,23 @@ def tweets(apis: List[dict]):
     for conn_name, api in apis.items():
         thread = threading.Thread(
             target=__collect_users_tweets, 
+            args=(conn_name, api, pbar)
+        )
+        thread.start()
+        threads.append(thread)
+    
+    for thread in threads:
+        thread.join()
+    pbar.close()
+    
+    retweeted_tweet_ids = get_retweeted_tweet_ids()
+    for missing_retweet_ids in retweeted_tweet_ids:
+        q.put(missing_retweet_ids)
+    
+    pbar = tqdm(total=len(baseline_user_ids))
+    for conn_name, api in apis.items():
+        thread = threading.Thread(
+            target=__collect_retweeted_tweets, 
             args=(conn_name, api, pbar)
         )
         thread.start()
