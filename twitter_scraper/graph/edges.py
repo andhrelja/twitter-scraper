@@ -271,14 +271,18 @@ def user_retweets_edges():
     logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
 
 
-def edges(user_followers=True, user_mentions=True, user_retweets=True):
-    if user_followers:
-        user_followers_edges()
+def edges(user_mentions=True, user_retweets=True, user_followers=True):
     if user_mentions:
         user_mentions_edges()
     if user_retweets:
         user_retweets_edges()
+    if user_followers:
+        user_followers_edges()
 
 # %%
 if __name__ == '__main__':
-    edges(user_followers=False, user_mentions=False, user_retweets=True)
+    edges(
+        user_mentions=False, 
+        user_retweets=True, 
+        user_followers=False
+    )
