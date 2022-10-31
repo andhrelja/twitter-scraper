@@ -158,6 +158,5 @@ def tweets(tweets_csv=settings.TWEETS_CSV, text_col_name='full_text', slice=None
 # %%
 if __name__ == '__main__':
     tweets(
-        tweets_csv=settings.TWEETS_CSV,
-        slice=10000
+        tweets_csv=settings.TWEETS_CSV
     )
