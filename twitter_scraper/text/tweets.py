@@ -97,7 +97,8 @@ def get_stemmed_tweets_df(tweets_df, text_col_name):
         doc = nlp(" ".join(row[_text_col_name]))
         return [word.lemma for sentence in doc.sentences for word in sentence.words]
     
-    tweets_df[_text_col_name]  = tweets_df[text_col_name].fillna('')
+    # NOTE: Remove clean_twitter_text transformation
+    tweets_df[_text_col_name]  = tweets_df[text_col_name].fillna('').transform(clean_twitter_text)
     tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(URL_REGEX, '', x))
     # tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(SYMBOLS_REGEX, '', x))
     tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
@@ -108,7 +109,7 @@ def get_stemmed_tweets_df(tweets_df, text_col_name):
     tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(gensim.utils.simple_preprocess)
 
     logger.info("Removing stop words")
-    tweets_df[_text_col_name]  = tweets_df.apply(lambda x: [word for word in x.full_text_processed if word not in stop_words], axis=1)
+    tweets_df[_text_col_name]  = tweets_df.apply(lambda x: [word for word in x[_text_col_name] if word not in stop_words], axis=1)
     logger.info("Running (classla.Pipeline, stanza.Pipeline)")
     tweets_df['stemmed'] = tweets_df.apply(get_lemmatized_text, axis=1)
     return tweets_df
@@ -143,11 +144,13 @@ def get_corpus_tweets_df(tweets_df):
 
     
 # %%
-def tweets(tweets_csv=settings.TWEETS_CSV, text_col_name='full_text'):    
+def tweets(tweets_csv=settings.TWEETS_CSV, text_col_name='full_text', slice=None):    
     utils.mkdir(os.path.dirname(settings.TWEETS_TEXT_CSV))
     
     logger.info("Reading tweets CSV")
     tweets_df = pd.read_csv(tweets_csv, dtype=TWEET_DTYPE)
+    if slice:
+        tweets_df = tweets_df.sample(slice)
     logger.info("Starting text transformations")
     tweets_df = get_stemmed_tweets_df(tweets_df, text_col_name)
     tweets_df.to_csv(settings.TWEETS_TEXT_CSV, index=False)
@@ -155,5 +158,6 @@ def tweets(tweets_csv=settings.TWEETS_CSV, text_col_name='full_text'):
 # %%
 if __name__ == '__main__':
     tweets(
-        tweets_csv=settings.TWEETS_CSV
+        tweets_csv=settings.TWEETS_CSV,
+        slice=10000
     )
