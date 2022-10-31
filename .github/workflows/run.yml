@@ -28,7 +28,13 @@ jobs:
         with:
           python-version: '3.8.10'
       
-      - run: pip install ${{ env.TWITTER_SCRAPER_DIR }}
+      - run: |
+          git checkout master
+          git pull origin master
+          pip install langid
+          pip install stanza
+          pip install classla
+          pip install --upgrade .
       
       # Runs a set of commands using the runners shell
       - name: Run Twitter Scraper
