@@ -34,7 +34,6 @@ nlps = {
 }
 nlps['bs'] = nlps['hr']
 
-tweets_df = pd.read_csv(settings.TWEETS_CSV, dtype=TWEET_DTYPE)
 emoji_sentiment_df = pd.read_csv(settings.EMOJI_SENTIMENT_DATA)
 
 URL_REGEX = r'https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
@@ -84,35 +83,33 @@ def get_stemmed_text(text, lang=None):
     text = [word.lemma for sentence in doc.sentences for word in sentence.words]
     return text
 
-def get_stemmed_tweets_df(tweets_df):
+def get_stemmed_tweets_df(tweets_df, text_col_name):
+    _text_col_name = "{}_transform".format(text_col_name)
     def get_lemmatized_text(row):
-        if row.lang in ('hr', 'bs', 'sr', 'sl'):
-            nlp = nlps[row.lang]
+        if row['langid'] in ('hr', 'bs', 'sr', 'sl'):
+            nlp = nlps[row['langid']]
         else:
             nlp = nlps['en']
             
-        if not row.full_text_processed: 
+        if not row[_text_col_name]: 
             return []
         
-        doc = nlp(" ".join(row.full_text_processed))
+        doc = nlp(" ".join(row[_text_col_name]))
         return [word.lemma for sentence in doc.sentences for word in sentence.words]
     
-    tweets_df['full_text_processed']  = tweets_df['full_text'].fillna('')
-    tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(lambda x: re.sub(URL_REGEX, '', x))
-    # tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(lambda x: re.sub(SYMBOLS_REGEX, '', x))
-    tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
-    tweets_df['full_text_processed']  = tweets_df['full_text_processed'].str.replace('RT', '')
-    tweets_df['full_text_processed']  = tweets_df['full_text_processed'].str.strip()
+    tweets_df[_text_col_name]  = tweets_df[text_col_name].fillna('')
+    tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(URL_REGEX, '', x))
+    # tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(SYMBOLS_REGEX, '', x))
+    tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
+    tweets_df[_text_col_name]  = tweets_df[_text_col_name].str.replace('RT', '')
+    tweets_df[_text_col_name]  = tweets_df[_text_col_name].str.strip()
     
-    logger.info("Running langid.classify")
-    # tweets_df['language']   = tweets_df['full_text_processed'].transform(lambda x: x.lang if x.lang == 'en' else detect_language(x))
-    tweets_df['langid']               = tweets_df['full_text_processed'].transform(detect_language)
-
     logger.info("Running gensim.utils.simple_preprocess")
-    tweets_df['full_text_processed']  = tweets_df['full_text_processed'].transform(gensim.utils.simple_preprocess)
+    tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(gensim.utils.simple_preprocess)
 
     logger.info("Removing stop words")
-    tweets_df['full_text_processed']  = tweets_df.apply(lambda x: [word for word in x.full_text_processed if word not in stop_words], axis=1)
+    tweets_df[_text_col_name]  = tweets_df.apply(lambda x: [word for word in x.full_text_processed if word not in stop_words], axis=1)
+    logger.info("Running (classla.Pipeline, stanza.Pipeline)")
     tweets_df['stemmed'] = tweets_df.apply(get_lemmatized_text, axis=1)
     return tweets_df
 
@@ -146,15 +143,17 @@ def get_corpus_tweets_df(tweets_df):
 
     
 # %%
-def tweets():
-    global tweets_df
-    
+def tweets(tweets_csv=settings.TWEETS_CSV, text_col_name='full_text'):    
     utils.mkdir(os.path.dirname(settings.TWEETS_TEXT_CSV))
     
+    logger.info("Reading tweets CSV")
+    tweets_df = pd.read_csv(tweets_csv, dtype=TWEET_DTYPE)
     logger.info("Starting text transformations")
-    tweets_df = get_stemmed_tweets_df(tweets_df)
+    tweets_df = get_stemmed_tweets_df(tweets_df, text_col_name)
     tweets_df.to_csv(settings.TWEETS_TEXT_CSV, index=False)
     
 # %%
 if __name__ == '__main__':
-    tweets()
+    tweets(
+        tweets_csv=settings.TWEETS_CSV
+    )

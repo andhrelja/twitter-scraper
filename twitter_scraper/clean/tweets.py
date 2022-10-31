@@ -71,7 +71,7 @@ def get_tweets_df(user_df):
         
         tweets_df['hashtags']   = tweets_df['hashtags'].transform(lambda x: [item.lower() for item in x])
         tweets_df['full_text']  = tweets_df['full_text'].fillna('')
-        tweets_df['langid']     = tweets_df.apply(lambda x: detect_language(x['full_text']) if x['lang'] == 'und' else x['lang'], axis=1)
+        tweets_df['langid']     = tweets_df.apply(lambda x: detect_language(x['full_text']) if x['lang'] in ('und', 'zxx') else x['lang'], axis=1)
         tweets_df['full_text_nospace'] = tweets_df['full_text'].str.replace(' ', '')
         
         tweets_df['is_covid_1'] = tweets_df['full_text'].transform(lambda x: any(tag in x.lower()
