@@ -7,6 +7,7 @@ folder_name = now.strftime('%Y-%m-%d')
 folder_name = '2022-10-16'
 
 DEBUG = True if os.getenv('DEBUG', 'false') == 'TRUE' else False
+CLASSLA_USE_GPU = True
 
 # ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 ROOT_DIR = os.getenv('TWITTER_SCRAPER_DIR', '/home/milky/infocov/twitter_scraper')
@@ -39,7 +40,7 @@ USERS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'user', folder_name, 'users.csv')
 TWEETS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'tweet', folder_name, 'tweets.csv')
 
 # Text
-TWEETS_TEXT_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'tweets.csv')
+TWEETS_TEXT_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'edges-retweets.csv')
 
 # Graph
 NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
