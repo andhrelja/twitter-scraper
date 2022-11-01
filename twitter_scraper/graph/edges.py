@@ -82,10 +82,10 @@ def get_user_mentions_edges_df(nodes_df, tweets_df):
 
 def get_user_retweets_edges_df(nodes_df, tweets_df):
     def get_og_full_text(row):
-        user_tweets = utils.fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, "{}.json".format(row.user_id)))
+        user_tweets = utils.fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, "{}.json".format(row.source)), 'json')
         tweet = list(filter(lambda x: x['id'] == row.og_tweet_id, user_tweets))
         if tweet:
-            return tweet[0]
+            return tweet[0]['full_text']
         return None
         
     # Has a custom edge_dtype
@@ -94,6 +94,7 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
         full_text='string',
         og_tweet_id='int64',
         rt_time_elapsed_sec='float64',
+        rt_created_at='object',
         langid='string'
     )
     
@@ -121,7 +122,7 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
         'langid'    : 'og_langid'
     }), left_on='og_tweet_id', right_on='id', how='left').drop('id', axis=1)
     # 14529/49181 og_full_text available
-    edges_df['og_full_text'] = edges_df.apply(lambda x: get_og_full_text(x) if x['og_full_text'].isna() else x['og_full_text'], axis=1)
+    # edges_df['og_full_text'] = edges_df.apply(lambda x: get_og_full_text(x) if x['og_full_text'] is pd.NA else x['og_full_text'], axis=1)
     edges_df['full_text'] = edges_df['og_full_text'].fillna(edges_df['full_text'])
     edges_df['langid'] = edges_df['og_langid'].fillna(edges_df['langid'])
     edges_df['rt_created_at'] = pd.to_datetime(edges_df['rt_created_at'])

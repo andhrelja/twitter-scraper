@@ -40,7 +40,7 @@ USERS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'user', folder_name, 'users.csv')
 TWEETS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'tweet', folder_name, 'tweets.csv')
 
 # Text
-TWEETS_TEXT_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'edges-retweets.csv')
+TWEETS_TEXT_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'tweets.csv')
 
 # Graph
 NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
