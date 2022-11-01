@@ -1,9 +1,8 @@
 # %%
-import langid
 import gensim
 import stanza
 import classla
-# import emoji
+import csv
 import re
 import os
 import pickle
@@ -27,32 +26,19 @@ stop_words_hrv = fileio.read_content(settings.STOP_WORDS_HRV, 'json')
 stop_words = stop_words_eng + stop_words_hrv 
 
 nlps = {
-    'en': stanza.Pipeline('en', use_gpu=False, logging_level='ERROR'),
-    'hr': classla.Pipeline('hr', use_gpu=False, logging_level='ERROR'),
-    'sr': classla.Pipeline('sr', use_gpu=False, logging_level='ERROR'),
-    'sl': classla.Pipeline('sl', use_gpu=False, logging_level='ERROR')
+    'en': stanza.Pipeline('en', use_gpu=settings.CLASSLA_USE_GPU, logging_level='ERROR'),
+    'hr': classla.Pipeline('hr', use_gpu=settings.CLASSLA_USE_GPU, logging_level='ERROR'),
+    'sr': classla.Pipeline('sr', use_gpu=settings.CLASSLA_USE_GPU, logging_level='ERROR'),
+    'sl': classla.Pipeline('sl', use_gpu=settings.CLASSLA_USE_GPU, logging_level='ERROR')
 }
 nlps['bs'] = nlps['hr']
 
 emoji_sentiment_df = pd.read_csv(settings.EMOJI_SENTIMENT_DATA)
 
 URL_REGEX = r'https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
-# SYMBOLS_REGEX = r'[,\.:;!?]'
 MENTIONS_REGEX = r'@[A-Za-z0-9-_]+'
-TRANSFORM = lambda x: {
-
-}
 
 # %%
-def detect_language(text):
-    if text is None or text == '':
-        return 'zxx'
-    try:
-        lang, _ = langid.classify(text)
-    except Exception:
-        lang = 'zxx'
-    return lang
-
 def clean_twitter_text(text):
     text = re.sub(URL_REGEX, '', text)
     text = re.sub(MENTIONS_REGEX, '', text)
@@ -65,8 +51,8 @@ def get_stemmed_text(text, lang=None):
     if text == '':
         return []
     
-    if lang is None:
-        lang = detect_language(text)
+    # if lang is None:
+    #     lang = detect_language(text)
     
     text = gensim.utils.simple_preprocess(text)
     text = [word.lower() for word in text if word.lower() not in stop_words]
@@ -100,7 +86,6 @@ def get_stemmed_tweets_df(tweets_df, text_col_name):
     # NOTE: Remove clean_twitter_text transformation
     tweets_df[_text_col_name]  = tweets_df[text_col_name].fillna('').transform(clean_twitter_text)
     tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(URL_REGEX, '', x))
-    # tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(SYMBOLS_REGEX, '', x))
     tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
     tweets_df[_text_col_name]  = tweets_df[_text_col_name].str.replace('RT', '')
     tweets_df[_text_col_name]  = tweets_df[_text_col_name].str.strip()
@@ -151,12 +136,15 @@ def tweets(tweets_csv=settings.TWEETS_CSV, text_col_name='full_text', slice=None
     tweets_df = pd.read_csv(tweets_csv, dtype=TWEET_DTYPE)
     if slice:
         tweets_df = tweets_df.sample(slice)
-    logger.info("Starting text transformations")
+    logger.info("START - Text transformations")
     tweets_df = get_stemmed_tweets_df(tweets_df, text_col_name)
-    tweets_df.to_csv(settings.TWEETS_TEXT_CSV, index=False)
-    
+    logger.info("END - Text transformations")
+    tweets_df.to_csv(settings.TWEETS_CSV.replace('tweets.csv', 'tweets-text.csv'), encoding='utf-8', index=False, quoting=csv.QUOTE_ALL)
+
 # %%
 if __name__ == '__main__':
     tweets(
-        tweets_csv=settings.TWEETS_CSV
+        tweets_csv=settings.TWEETS_CSV,
+        text_col_name='full_text', 
+        slice=None
     )

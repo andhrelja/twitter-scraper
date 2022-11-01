@@ -7,6 +7,7 @@ folder_name = now.strftime('%Y-%m-%d')
 folder_name = '2022-10-16'
 
 DEBUG = True if os.getenv('DEBUG', 'false') == 'TRUE' else False
+CLASSLA_USE_GPU = True
 
 # ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 ROOT_DIR = os.getenv('TWITTER_SCRAPER_DIR', '/home/milky/infocov/twitter_scraper')

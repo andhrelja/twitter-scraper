@@ -14,6 +14,7 @@ logger = utils.get_logger(__file__)
 NODE_DTYPE = {
     'user_id':          'int64',
     'user_id_str':      'string',
+    'screen_name':      'string',
     'followers_count':  'int',
     'friends_count':    'int',
     'listed_count':     'int',

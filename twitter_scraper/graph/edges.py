@@ -81,15 +81,11 @@ def get_user_mentions_edges_df(nodes_df, tweets_df):
 
 
 def get_user_retweets_edges_df(nodes_df, tweets_df):
-    apis = utils.api.get_api_connections()
-    def get_og_full_text(tweet_id, conn_name='Carlos'):
-        og_full_text_idx = tweets_df[['id', 'full_text']].set_index('id').to_dict()['full_text']
-        api = apis[conn_name]
-        if tweet_id in og_full_text_idx:
-            return og_full_text_idx[tweet_id]
-        tweet, _ = utils.api.get_twitter_endpoint(conn_name, api, 'get_status', user_id=None, id=tweet_id)
+    def get_og_full_text(row):
+        user_tweets = utils.fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, "{}.json".format(row.source)), 'json')
+        tweet = list(filter(lambda x: x['id'] == row.og_tweet_id, user_tweets))
         if tweet:
-            return tweet.text
+            return tweet[0]['full_text']
         return None
         
     # Has a custom edge_dtype
@@ -97,7 +93,9 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
         rt_tweet_id='int64',
         full_text='string',
         og_tweet_id='int64',
-        rt_time_elapsed_sec='float64'
+        rt_time_elapsed_sec='float64',
+        rt_created_at='object',
+        langid='string'
     )
     
     edges_df = tweets_df[[
@@ -106,7 +104,8 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
         'user_id', 
         'retweet_from_user_id',
         'created_at',
-        'full_text'
+        'full_text',
+        'langid'
     ]].rename(columns={
         'id': 'rt_tweet_id',
         'retweet_from_tweet_id': 'og_tweet_id', 
@@ -116,11 +115,16 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
     })
     edges_df = edges_df.dropna()
     edges_df = edges_df.loc[edges_df['source'].isin(nodes_df['user_id'])]
-    edges_df = edges_df.merge(tweets_df[['id', 'created_at']].rename(columns={
-        'created_at': 'og_created_at'
+    edges_df = edges_df.loc[edges_df['source'] != edges_df['target']]
+    edges_df = edges_df.merge(tweets_df[['id', 'created_at', 'full_text', 'langid']].rename(columns={
+        'created_at': 'og_created_at',
+        'full_text' : 'og_full_text',
+        'langid'    : 'og_langid'
     }), left_on='og_tweet_id', right_on='id', how='left').drop('id', axis=1)
-    # edges_df['_full_text'] = edges_df['og_tweet_id'].transform(get_og_full_text)
-    # edges_df['full_text'] = edges_df['_full_text'] or edges_df['full_text']
+    # 14529/49181 og_full_text available
+    # edges_df['og_full_text'] = edges_df.apply(lambda x: get_og_full_text(x) if x['og_full_text'] is pd.NA else x['og_full_text'], axis=1)
+    edges_df['full_text'] = edges_df['og_full_text'].fillna(edges_df['full_text'])
+    edges_df['langid'] = edges_df['og_langid'].fillna(edges_df['langid'])
     edges_df['rt_created_at'] = pd.to_datetime(edges_df['rt_created_at'])
     edges_df['og_created_at'] = pd.to_datetime(edges_df['og_created_at'])
     edges_df['rt_time_elapsed_sec'] = (edges_df['rt_created_at'] - edges_df['og_created_at']).map(lambda x: x.total_seconds())
