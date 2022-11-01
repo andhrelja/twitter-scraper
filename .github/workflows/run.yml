@@ -12,6 +12,7 @@ on:
 env:
   DEBUG: false
   DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+  CUDA_VISIBLE_DEVICES: 2
   TWITTER_SCRAPER_DIR: '/home/milky/infocov/twitter_scraper'
 
 jobs:
