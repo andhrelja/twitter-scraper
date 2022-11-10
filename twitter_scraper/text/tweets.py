@@ -1,4 +1,6 @@
 # %%
+# %env CUDA_VISIBLE_DEVICES=2
+# %env MODIN_ENGINE=dask
 import gensim
 import stanza
 import classla
@@ -6,7 +8,8 @@ import csv
 import re
 import os
 import pickle
-import pandas as pd
+import modin.pandas as pd
+from collections import defaultdict
 
 import pyLDAvis
 import pyLDAvis.gensim_models as gensimvis
@@ -15,6 +18,9 @@ from twitter_scraper import settings
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
 from twitter_scraper.clean.tweets import TWEET_DTYPE
+from twitter_scraper.text import logging_level
+from twitter_scraper.text import stanza_supported_languages
+from twitter_scraper.text import classla_supported_languages
 
 
 logger = utils.get_logger(__file__)
@@ -25,20 +31,50 @@ stop_words_hrv = fileio.read_content(settings.STOP_WORDS_HRV, 'json')
 # we can allow to concatenate english and croatian stop words
 stop_words = stop_words_eng + stop_words_hrv 
 
-nlps = {
-    'en': stanza.Pipeline('en', use_gpu=settings.CLASSLA_USE_GPU, logging_level='ERROR'),
-    'hr': classla.Pipeline('hr', use_gpu=settings.CLASSLA_USE_GPU, logging_level='ERROR'),
-    'sr': classla.Pipeline('sr', use_gpu=settings.CLASSLA_USE_GPU, logging_level='ERROR'),
-    'sl': classla.Pipeline('sl', use_gpu=settings.CLASSLA_USE_GPU, logging_level='ERROR')
-}
-nlps['bs'] = nlps['hr']
+def default_nlp():
+    return stanza.Pipeline(
+        lang='en', 
+        use_gpu=settings.CLASSLA_USE_GPU, 
+        logging_level=logging_level,
+        processors='tokenize,pos,lemma'
+    )
 
+nlps = defaultdict(default_nlp)
 emoji_sentiment_df = pd.read_csv(settings.EMOJI_SENTIMENT_DATA)
 
 URL_REGEX = r'https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
 MENTIONS_REGEX = r'@[A-Za-z0-9-_]+'
 
 # %%
+def setup_global_nlps():
+    global nlps
+    
+    for stanza_lang in stanza_supported_languages:
+        try:
+            nlps[stanza_lang] = stanza.Pipeline(
+                lang=stanza_lang, 
+                use_gpu=settings.CLASSLA_USE_GPU, 
+                logging_level=logging_level,
+                processors='tokenize,pos,lemma'
+            )
+        except (stanza.pipeline.core.UnsupportedProcessorError, KeyError):
+            nlps[stanza_lang] = stanza.Pipeline(
+                lang=stanza_lang, 
+                use_gpu=settings.CLASSLA_USE_GPU, 
+                logging_level=logging_level
+            )
+    
+    for classla_lang in classla_supported_languages:
+        nlps[classla_lang] = classla.Pipeline(
+            lang=classla_lang, 
+            use_gpu=settings.CLASSLA_USE_GPU, 
+            logging_level=logging_level,
+            processors='tokenize,pos,lemma'
+        )
+    
+    nlps['bs'] = nlps['hr']
+
+
 def clean_twitter_text(text):
     text = re.sub(URL_REGEX, '', text)
     text = re.sub(MENTIONS_REGEX, '', text)
@@ -130,6 +166,7 @@ def get_corpus_tweets_df(tweets_df):
     
 # %%
 def tweets(tweets_csv=settings.TWEETS_CSV, text_col_name='full_text', slice=None):    
+    setup_global_nlps()
     utils.mkdir(os.path.dirname(settings.TWEETS_TEXT_CSV))
     
     logger.info("Reading tweets CSV")
@@ -146,5 +183,5 @@ if __name__ == '__main__':
     tweets(
         tweets_csv=settings.TWEETS_CSV,
         text_col_name='full_text', 
-        slice=None
+        slice=10000
     )

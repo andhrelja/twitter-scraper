@@ -6,6 +6,7 @@ nohup*
 temp*
 git-pat.txt
 debug/*
+build/*
 
 *-credentials.json
 rm-csv-json.sh

@@ -4,7 +4,7 @@ import datetime as dt
 
 now = dt.datetime.now()
 folder_name = now.strftime('%Y-%m-%d')
-folder_name = '2022-10-16'
+folder_name = '2022-11-01'
 
 DEBUG = True if os.getenv('DEBUG', 'false') == 'TRUE' else False
 CLASSLA_USE_GPU = True

@@ -2,6 +2,7 @@ from . import utils
 from . import scrape
 from . import clean
 from . import graph
+from . import text
 
 logger = utils.get_logger(__file__)
 apis = utils.get_api_connections()
