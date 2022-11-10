@@ -1,0 +1,36 @@
+name: Changelog
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [closed]
+
+jobs:
+  changelog:
+    name: changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+          fetch-depth: 0
+      
+      - name: Commit Lint
+        uses: wagoid/commitlint-github-action@v5
+        with:
+          configFile: .github/commitlint.config.js
+
+      - name: Conventional Changelog Action
+        id: conventional_changelog_action
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          tag-prefix: 'v'
+          version-file: version.json
+          
+      - name: Create Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.conventional_changelog_action.outputs.tag }}
+          release_name: ${{ steps.conventional_changelog_action.outputs.tag }}
+          body: ${{ steps.conventional_changelog_action.outputs.clean_changelog }}

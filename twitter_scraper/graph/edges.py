@@ -1,7 +1,7 @@
 # %%
 import os
 import time
-import pandas as pd
+import modin.pandas as pd
 # import datetime as dt
 from tqdm import tqdm
 
@@ -55,7 +55,7 @@ def get_user_followers_edges_df(nodes_df):
     #     edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
     # edges_df = edges_df.reset_index(drop=False)
     # edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
-    return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
+    return edges_df[list(EDGE_DTYPE.keys())].astype(EDGE_DTYPE), total_users, found
 
 
 def get_user_mentions_edges_df(nodes_df, tweets_df):
@@ -133,7 +133,7 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
     found = total_users - not_found
     
     # edges_df['timestamp'] = dt.datetime.now(dt.timezone.utc).timestamp()
-    return edges_df[edge_dtype.keys()].astype(edge_dtype), total_users, found
+    return edges_df[list(edge_dtype.keys())].astype(edge_dtype), total_users, found
 
 
 # %%
@@ -287,6 +287,8 @@ def edges(user_mentions=True, user_retweets=True, user_followers=True):
 if __name__ == '__main__':
     edges(
         user_mentions=False, 
-        user_retweets=True, 
-        user_followers=False
+        user_retweets=False, 
+        user_followers=True
     )
+
+# %%
