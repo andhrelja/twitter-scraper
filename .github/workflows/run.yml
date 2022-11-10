@@ -13,6 +13,9 @@ env:
   DEBUG: false
   DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
   CUDA_VISIBLE_DEVICES: 2
+  CLASSLA_RESOURCES_DIR: '/srv/milky/classla_resources'
+  STANZA_RESOURCES_DIR: '/srv/milky/stanza_resources'
+  NUMEXPR_MAX_THREADS: 9
   TWITTER_SCRAPER_DIR: '/home/milky/infocov/twitter_scraper'
 
 jobs:

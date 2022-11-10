@@ -1,13 +1,17 @@
 import os
 import discord
+import logging
 
 from twitter_scraper import settings
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
 
+discord.utils.setup_logging(level=logging.ERROR)
+
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_ID = 1029494278751273011
 LOG_OUTPUT_PATH = os.path.join(settings.LOGS_DIR, '{}.json'.format(settings.folder_name))
+
 message = """twitter-scraper outputs:
 
 - Debug = `{debug}`
