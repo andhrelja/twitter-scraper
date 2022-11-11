@@ -16,11 +16,6 @@ jobs:
           ref: develop
           fetch-depth: 0
       
-      - name: Commit Lint
-        uses: wagoid/commitlint-github-action@v5
-        with:
-          configFile: .github/commitlint.config.js
-
       - name: Conventional Changelog Action
         id: conventional_changelog_action
         uses: TriPSs/conventional-changelog-action@v3
