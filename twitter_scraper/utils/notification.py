@@ -1,12 +1,9 @@
 import os
 import discord
-import logging
 
 from twitter_scraper import settings
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
-
-discord.utils.setup_logging(level=logging.ERROR)
 
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_ID = 1029494278751273011
@@ -61,10 +58,12 @@ async def on_ready():
  
 
 def notify():
-    update_log_outputs()
-    client.run(DISCORD_TOKEN)
+    if not settings.DEBUG:
+        update_log_outputs()
+        client.run(DISCORD_TOKEN)
      
 
 if __name__ == '__main__':
-    update_log_outputs()
-    client.run(DISCORD_TOKEN)
+    if not settings.DEBUG:
+        update_log_outputs()
+        client.run(DISCORD_TOKEN)

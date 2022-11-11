@@ -13,8 +13,6 @@ scrape.user_objs(apis)
 logger.info("------------------ clean.users ------------------")
 clean.users()
 clean.update_filtered_baseline()
-logger.info("----------------- scrape.user_ids ----------------")
-scrape.user_ids(apis)
 logger.info("******************** END USERS ********************")
 
 
@@ -30,19 +28,24 @@ logger.info("********************** GRAPH **********************")
 logger.info("------------------ graph.nodes ------------------")
 graph.nodes()
 logger.info("------------------ graph.edges ------------------")
-graph.edges(user_followers=True, user_mentions=True, user_retweets=True)
+graph.edges(user_followers=False, user_mentions=True, user_retweets=True)
 logger.info("******************** END GRAPH ********************")
 
 
 logger.info("****************** UPDATE BASELINE ******************")
 
+logger.info("----------------- scrape.user_ids ----------------")
+scrape.user_ids(apis)
+logger.info("------------------ graph.edges ------------------")
+graph.edges(user_followers=True, user_mentions=False, user_retweets=False)
+
 logger.info("--------------- utils.update_baseline ---------------")
-utils.update_baseline(
-    archive=True, 
-    user_friends=True,
-    user_mentions=True,
-    user_retweets=True
-)
+# utils.update_baseline(
+#     archive=True, 
+#     user_friends=True,
+#     user_mentions=True,
+#     user_retweets=True
+# )
 
 logger.info("**************** END UPDATE BASELINE ****************")
 

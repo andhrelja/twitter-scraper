@@ -1,8 +1,8 @@
 # %%
 import os
-import time
-import modin.pandas as pd
-# import datetime as dt
+# import modin.pandas as pd
+import pandas as pd
+import datetime as dt
 from tqdm import tqdm
 
 from twitter_scraper import utils
@@ -24,9 +24,10 @@ def get_user_followers_edges_df(nodes_df):
     not_found = []
     users_friends = {}
 
-    for user_id_str in tqdm(nodes_df.user_id_str.unique()):
-        user_path = os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id_str))
+    for user_id in tqdm(nodes_df.user_id.unique(), desc='graph.user_follower_edges', position=-1):
+        user_path = settings.SCRAPE_USER_IDS_FN.format(user_id=user_id)
         if os.path.exists(user_path):
+            user_id_str = str(user_id)
             user_ids_content = fileio.read_content(user_path, 'json')
             users_friends[user_id_str] = user_ids_content[user_id_str]['friends']
         else:
@@ -49,13 +50,13 @@ def get_user_followers_edges_df(nodes_df):
     # if os.path.isfile(settings.EDGES_FOLLOWERS_CSV):
     #     existing_edges_df = pd.read_csv(settings.EDGES_FOLLOWERS_CSV, index_col=['source', 'target'])
     #     edges_df = existing_edges_df.join(new_edges_df, how='right')
-    #     edges_df['timestamp'] = edges_df['timestamp'].fillna(int(dt.datetime.now(dt.timezone.utc).timestamp()))
+    #     edges_df['timestamp'] = edges_df['timestamp'].fillna(int(dt.datetime.now(settings.TZ_INFO).timestamp()))
     # else:
     #     edges_df = new_edges_df
-    #     edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
+    #     edges_df['timestamp'] = int(dt.datetime.now(settings.TZ_INFO).timestamp())
     # edges_df = edges_df.reset_index(drop=False)
-    # edges_df['timestamp'] = int(dt.datetime.now(dt.timezone.utc).timestamp())
-    return edges_df[list(EDGE_DTYPE.keys())].astype(EDGE_DTYPE), total_users, found
+    # edges_df['timestamp'] = int(dt.datetime.now(settings.TZ_INFO).timestamp())
+    return edges_df.astype(EDGE_DTYPE), total_users, found
 
 
 def get_user_mentions_edges_df(nodes_df, tweets_df):
@@ -76,76 +77,58 @@ def get_user_mentions_edges_df(nodes_df, tweets_df):
     
     # Create self loops for users who don't have a `user mention`
     edges_df.loc[edges_df['target'].isna(), 'target'] = edges_df['source']
-    # edges_df['timestamp'] = dt.datetime.now(dt.timezone.utc).timestamp()
+    # edges_df['timestamp'] = dt.datetime.now(settings.TZ_INFO).timestamp()
     return edges_df[EDGE_DTYPE.keys()].astype(EDGE_DTYPE), total_users, found
 
 
 def get_user_retweets_edges_df(nodes_df, tweets_df):
-    def get_og_full_text(row):
-        user_tweets = utils.fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, "{}.json".format(row.source)), 'json')
-        tweet = list(filter(lambda x: x['id'] == row.og_tweet_id, user_tweets))
-        if tweet:
-            return tweet[0]['full_text']
-        return None
-        
     # Has a custom edge_dtype
     edge_dtype = dict(**EDGE_DTYPE,
         rt_tweet_id='int64',
-        full_text='string',
         og_tweet_id='int64',
-        rt_time_elapsed_sec='float64',
         rt_created_at='object',
+        og_created_at='object',
+        rt_timedelta_sec='int64',
         langid='string'
     )
     
     edges_df = tweets_df[[
         'id',
-        'retweet_from_tweet_id', 
         'user_id', 
-        'retweet_from_user_id',
         'created_at',
-        'full_text',
+        # 'full_text',
+        'retweet_from_tweet_id', 
+        'retweet_from_user_id',
+        'retweet_created_at',
+        'retweet_timedelta_sec',
         'langid'
     ]].rename(columns={
-        'id': 'rt_tweet_id',
-        'retweet_from_tweet_id': 'og_tweet_id', 
-        'user_id': 'target', 
-        'retweet_from_user_id': 'source',
-        'created_at': 'rt_created_at'
+        'retweet_from_user_id':     'source',
+        'user_id':                  'target', 
+        'id':                       'rt_tweet_id',
+        'retweet_from_tweet_id':    'og_tweet_id', 
+        'created_at':               'rt_created_at',
+        'retweet_created_at':       'og_created_at',
+        'retweet_timedelta_sec':    'rt_timedelta_sec'
     })
     edges_df = edges_df.dropna()
     edges_df = edges_df.loc[edges_df['source'].isin(nodes_df['user_id'])]
     edges_df = edges_df.loc[edges_df['source'] != edges_df['target']]
-    edges_df = edges_df.merge(tweets_df[['id', 'created_at', 'full_text', 'langid']].rename(columns={
-        'created_at': 'og_created_at',
-        'full_text' : 'og_full_text',
-        'langid'    : 'og_langid'
-    }), left_on='og_tweet_id', right_on='id', how='left').drop('id', axis=1)
     # 14529/49181 og_full_text available
-    # edges_df['og_full_text'] = edges_df.apply(lambda x: get_og_full_text(x) if x['og_full_text'] is pd.NA else x['og_full_text'], axis=1)
-    edges_df['full_text'] = edges_df['og_full_text'].fillna(edges_df['full_text'])
-    edges_df['langid'] = edges_df['og_langid'].fillna(edges_df['langid'])
-    edges_df['rt_created_at'] = pd.to_datetime(edges_df['rt_created_at'])
-    edges_df['og_created_at'] = pd.to_datetime(edges_df['og_created_at'])
-    edges_df['rt_time_elapsed_sec'] = (edges_df['rt_created_at'] - edges_df['og_created_at']).map(lambda x: x.total_seconds())
     total_users = len(nodes_df.user_id.unique())
     not_found = total_users - len(edges_df.source.unique())
     found = total_users - not_found
     
-    # edges_df['timestamp'] = dt.datetime.now(dt.timezone.utc).timestamp()
-    return edges_df[list(edge_dtype.keys())].astype(edge_dtype), total_users, found
-
+    # edges_df['timestamp'] = dt.datetime.now(settings.TZ_INFO).timestamp()
+    return edges_df.astype(edge_dtype), total_users, found
 
 # %%
-def user_followers_edges():
-    start_time = time.time()
-    
-    utils.mkdir(os.path.dirname(settings.TWEETS_CSV))
-    NODES_DF = pd.read_csv(settings.NODES_CSV, dtype=NODE_DTYPE)
+def user_followers_edges(nodes_df):
+    start_time = dt.datetime.now(settings.TZ_INFO)
 
     logger.info("START - Creating User Followers Edges, this may take a while")
     
-    edges_df, nodes_len, found_followers = get_user_followers_edges_df(NODES_DF)
+    edges_df, nodes_len, found_followers = get_user_followers_edges_df(nodes_df)
     if edges_df.empty:
         message = "No Edges were found, inspect baseline-user-ids.json:\n"
         len_followers_source = 0
@@ -176,22 +159,15 @@ def user_followers_edges():
         file_type='json'
     )
 
-    end_time = time.time()
+    end_time = dt.datetime.now(settings.TZ_INFO)
     logger.info("END - Done creating User Followers Edges")
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
-def user_mentions_edges():
-    start_time = time.time()
-    
-    utils.mkdir(os.path.dirname(settings.TWEETS_CSV))
-    nodes_df = pd.read_csv(settings.NODES_CSV, dtype=NODE_DTYPE)
+def user_mentions_edges(nodes_df, tweets_df):
+    start_time = dt.datetime.now(settings.TZ_INFO)
 
     logger.info("START - Creating User Mentions Edges, this may take a while")
-
-    tweets_df = pd.read_csv(settings.TWEETS_CSV)
-    tweets_df = tweets_df.astype(TWEET_DTYPE)
-
     edges_df, nodes_len, found_mentions = get_user_mentions_edges_df(nodes_df, tweets_df)
     if edges_df.empty:
         message = "No Edges were found, inspect baseline-user-ids.json:\n"
@@ -223,22 +199,15 @@ def user_mentions_edges():
         file_type='json'
     )
     
-    end_time = time.time()
+    end_time = dt.datetime.now(settings.TZ_INFO)
     logger.info("END - Done creating User Mentions Edges")
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
-def user_retweets_edges():
-    start_time = time.time()
-    
-    utils.mkdir(os.path.dirname(settings.TWEETS_CSV))
-    nodes_df = pd.read_csv(settings.NODES_CSV, dtype=NODE_DTYPE)
+def user_retweets_edges(nodes_df, tweets_df):
+    start_time = dt.datetime.now(settings.TZ_INFO)
 
     logger.info("START - Creating User Retweets Edges, this may take a while")
-
-    tweets_df = pd.read_csv(settings.TWEETS_CSV, dtype=TWEET_DTYPE)
-    # tweets_df = tweets_df.astype(TWEET_DTYPE)
-
     edges_df, nodes_len, found_retweets = get_user_retweets_edges_df(nodes_df, tweets_df)
     if edges_df.empty:
         message = "No Edges were found, inspect baseline-user-ids.json:\n"
@@ -270,18 +239,21 @@ def user_retweets_edges():
         file_type='json'
     )
     
-    end_time = time.time()
+    end_time = dt.datetime.now(settings.TZ_INFO)
     logger.info("END - Done creating User Retweets Edges")
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
 def edges(user_mentions=True, user_retweets=True, user_followers=True):
+    nodes_df = pd.read_csv(settings.NODES_CSV, dtype=NODE_DTYPE)
+    tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, dtype=TWEET_DTYPE)
+    
     if user_mentions:
-        user_mentions_edges()
+        user_mentions_edges(nodes_df, tweets_df)
     if user_retweets:
-        user_retweets_edges()
+        user_retweets_edges(nodes_df, tweets_df)
     if user_followers:
-        user_followers_edges()
+        user_followers_edges(nodes_df)
 
 # %%
 if __name__ == '__main__':

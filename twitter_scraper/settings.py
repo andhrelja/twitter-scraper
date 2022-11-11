@@ -2,51 +2,72 @@ import os
 import json
 import datetime as dt
 
-now = dt.datetime.now()
+TZ_INFO = dt.timezone.utc
+
+now = dt.datetime.now(TZ_INFO)
 folder_name = now.strftime('%Y-%m-%d')
 folder_name = '2022-11-01'
 
-DEBUG = True if os.getenv('DEBUG', 'false') == 'TRUE' else False
-CLASSLA_USE_GPU = True
+DEBUG = os.getenv('DEBUG', 'true') == 'true'
+USE_GPU = os.getenv('USE_GPU', 'true') == 'true'
 
-# ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-ROOT_DIR = os.getenv('TWITTER_SCRAPER_DIR', '/home/milky/infocov/twitter_scraper')
-
-INPUT_DIR = os.path.join(ROOT_DIR, 'data', 'input')
-OUTPUT_DIR = os.path.join(ROOT_DIR, 'data', 'output')
-LOGS_DIR = os.path.join(ROOT_DIR, 'logs')
 if DEBUG:
-    INPUT_DIR = os.path.join(ROOT_DIR, 'debug', 'input')
-    OUTPUT_DIR = os.path.join(ROOT_DIR, 'debug', 'output')
-    LOGS_DIR = os.path.join(ROOT_DIR, 'debug', 'logs')
+    ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+else:
+    ROOT_DIR = os.getenv('TWITTER_SCRAPER_DATA_DIR', '/srv/milky/twitter_scraper')
+
+INPUT_DIR     = os.path.join(ROOT_DIR, 'data', 'input')
+OUTPUT_DIR    = os.path.join(ROOT_DIR, 'data', 'output')
+PROCESSED_DIR = os.path.join(ROOT_DIR, 'data', 'processed')
+LOGS_DIR      = os.path.join(ROOT_DIR, 'logs')
 
 # Input
-BASELINE_USER_IDS = os.path.join(INPUT_DIR, 'baseline-user-ids.json')
-MISSING_USER_IDS = os.path.join(INPUT_DIR, 'missing-user-ids.json')
-PROCESSED_USER_IDS = os.path.join(INPUT_DIR, 'processed-user-ids.json')
+## Locations
+LOCATIONS_HR  = os.path.join(INPUT_DIR, 'locations', 'hr.json')
+## Stop words
+STOP_WORDS_HR = os.path.join(INPUT_DIR, 'stop_words', 'hr.json')
+STOP_WORDS_EN = os.path.join(INPUT_DIR, 'stop_words', 'en.json')
+
+## Users
+BASELINE_USER_IDS   = os.path.join(INPUT_DIR, 'baseline-user-ids.json')
+MISSING_USER_IDS    = os.path.join(INPUT_DIR, 'missing-user-ids.json')
+PROCESSED_USER_IDS  = os.path.join(INPUT_DIR, 'processed-user-ids.json')
 PROCESSED_USER_OBJS = os.path.join(INPUT_DIR, 'processed-user-objs.json')
-# PROCESSED_USER_TWEETS = os.path.join(INPUT_DIR, 'processed-user-tweets.json')
-STOP_WORDS_HRV = os.path.join(INPUT_DIR, 'stop-words-hrv.json')
-STOP_WORDS_ENG = os.path.join(INPUT_DIR, 'stop-words-eng.json')
+MAX_TWEET_IDS       = os.path.join(INPUT_DIR, 'max-tweet-ids.json')
+
+## Static
+LOCATIONS_HRV       = os.path.join(INPUT_DIR, 'locations', 'hr.json')
+STOP_WORDS_HRV      = os.path.join(INPUT_DIR, 'stop_words', 'hr.json')
+STOP_WORDS_ENG      = os.path.join(INPUT_DIR, 'stop_words', 'en.json')
 EMOJI_SENTIMENT_DATA = os.path.join(INPUT_DIR, 'Emoji_Sentiment_Data_v1.0.csv')
 
-# Scrape
-USER_IDS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids', folder_name)
-USER_OBJS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs')
-USER_TWEETS_DIR = os.path.join(OUTPUT_DIR, 'scrape', 'tweets')
+# Output
+## Scrape
+SCRAPE_USER_OBJS_FN     = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs', 'users.json')
+SCRAPE_USER_IDS_FN      = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids', folder_name, '{user_id}.json')
+SCRAPE_TWEETS_FN        = os.path.join(OUTPUT_DIR, 'scrape', 'tweets', '{user_id}.json')
 
-# Clean
-USERS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'user', folder_name, 'users.csv')
-TWEETS_CSV = os.path.join(OUTPUT_DIR, 'clean', 'tweet', folder_name, 'tweets.csv')
+## Clean
+CLEAN_USERS_CSV     = os.path.join(OUTPUT_DIR, 'clean', 'users', folder_name, 'users.csv')
+CLEAN_TWEETS_CSV    = os.path.join(OUTPUT_DIR, 'clean', 'tweets', folder_name, 'tweets.csv')
 
-# Text
-TWEETS_TEXT_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'tweets.csv')
-
-# Graph
-NODES_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
-EDGES_MENTIONS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-mentions.csv')
-EDGES_RETWEETS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-retweets.csv')
+## Graph 
+NODES_CSV           = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
+EDGES_MENTIONS_CSV  = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-mentions.csv')
+EDGES_RETWEETS_CSV  = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-retweets.csv')
 EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-followers.csv')
+
+## Text
+TEXT_TWEETS_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'tweets.csv')
+ 
+# Processed 
+## Scrape
+PROCESSED_SCRAPE_USERS_DIR  = os.path.join(PROCESSED_DIR, 'scrape', 'users', folder_name)
+PROCESSED_SCRAPE_TWEETS_DIR = os.path.join(PROCESSED_DIR, 'scrape', 'tweets', folder_name)
+
+## Clean
+PROCESSED_CLEAN_USERS_DIR  = os.path.join(PROCESSED_DIR, 'clean', 'users', folder_name)
+PROCESSED_CLEAN_TWEETS_DIR = os.path.join(PROCESSED_DIR, 'clean', 'tweets', folder_name)
 
 
 KEYWORDS = {
@@ -81,3 +102,6 @@ KEYWORDS = {
 
 with open(os.path.join(ROOT_DIR, 'twitter-credentials.json'), 'r', encoding='utf-8') as f:
     connections = json.load(f)
+
+# with open(os.path.join(INPUT_DIR, 'latest-load.json'), 'r', encoding='utf-8') as f:
+#     latest_load_json = json.load(f)
