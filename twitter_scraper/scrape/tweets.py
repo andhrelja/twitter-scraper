@@ -88,12 +88,10 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
             file_type='json', 
             indent=None
         )
+        if max_tweet_ids:
+            fileio.write_content(settings.MAX_TWEET_IDS, max_tweet_ids, 'json')
         l.release()
         pbar.update(1)
-    if max_tweet_ids:
-        l.acquire()
-        fileio.write_content(settings.MAX_TWEET_IDS, max_tweet_ids, 'json', overwrite=True)
-        l.release()
 
 
 def tweets(apis: List[dict]):
