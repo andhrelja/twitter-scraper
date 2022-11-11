@@ -1,15 +1,15 @@
 import os
-import time
 import shutil
 import queue
 import threading
 import pandas as pd
+import datetime as dt
 from tqdm import tqdm
 
 from twitter_scraper import settings
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
-# from twitter_scraper.clean.tweets import TWEET_DTYPE
+from twitter_scraper.clean.tweets import TWEET_DTYPE
 
 logger = utils.get_logger(__file__)
 
@@ -32,15 +32,13 @@ def archive_baseline(prefix=None):
 
 def update_user_friends_baseline():
     logger.info("`user_friends`")
-    start_time = time.time()
+    start_time = dt.datetime.now(settings.TZ_INFO)
     baseline_user_ids = utils.get_baseline_user_ids()
     processed_user_ids = fileio.read_content(settings.PROCESSED_USER_OBJS, 'json')
 
     user_friends_ids = set()
     for user_id in tqdm(baseline_user_ids):
-        file_name = f'{user_id}.json'
-        file_path = os.path.join(settings.USER_IDS_DIR, file_name)
-        
+        file_path = settings.SCRAPE_USER_IDS_FN.format(user_id=user_id)
         file_content = fileio.read_content(file_path, file_type='json')
         if file_content: # TODO: sync input to output data
             user_friends_ids = user_friends_ids.union(file_content[str(user_id)]['friends'])
@@ -51,13 +49,13 @@ def update_user_friends_baseline():
     fileio.write_content(settings.BASELINE_USER_IDS, list(user_friends_ids), file_type='json')
     logger.info("Updated baseline from {:,} to {:,} records".format(len(baseline_user_ids), len(user_friends_ids) + len(baseline_user_ids)))
 
-    end_time = time.time()
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    end_time = dt.datetime.now(settings.TZ_INFO)
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
 def update_user_mentions_baseline(tweets_df):
     logger.info("`user_mentions`")
-    start_time = time.time()
+    start_time = dt.datetime.now(settings.TZ_INFO)
     baseline_user_ids = utils.get_baseline_user_ids()
     processed_user_ids = fileio.read_content(settings.PROCESSED_USER_OBJS, 'json')
 
@@ -74,13 +72,13 @@ def update_user_mentions_baseline(tweets_df):
     fileio.write_content(settings.BASELINE_USER_IDS, list(map(int, user_mentions_ids)), file_type='json')
     logger.info("Updated baseline from {:,} to {:,} records".format(len(baseline_user_ids), len(user_mentions_ids) + len(baseline_user_ids)))
     
-    end_time = time.time()
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    end_time = dt.datetime.now(settings.TZ_INFO)
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
 def update_user_retweets_baseline(tweets_df):
     logger.info("`user_retweets`")
-    start_time = time.time()
+    start_time = dt.datetime.now(settings.TZ_INFO)
     baseline_user_ids = utils.get_baseline_user_ids()
     processed_user_ids = fileio.read_content(settings.PROCESSED_USER_OBJS, 'json')
 
@@ -93,13 +91,14 @@ def update_user_retweets_baseline(tweets_df):
     fileio.write_content(settings.BASELINE_USER_IDS, list(map(int, user_retweet_ids)), file_type='json')
     logger.info("Updated baseline from {:,} to {:,} records".format(len(baseline_user_ids), len(user_retweet_ids) + len(baseline_user_ids)))
     
-    end_time = time.time()
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    end_time = dt.datetime.now(settings.TZ_INFO)
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
 def update_baseline(archive=True, user_friends=True, user_mentions=True, user_retweets=True):
-    tweets_df = pd.read_csv(settings.TWEETS_CSV)#, dtype=TWEET_DTYPE)
+    tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, dtype=TWEET_DTYPE)
     tweets_df['user_mentions'] = tweets_df['user_mentions'].map(eval)
+    
     if archive:
         archive_baseline(prefix='utils.update_baseline')
     if user_friends:
@@ -110,4 +109,9 @@ def update_baseline(archive=True, user_friends=True, user_mentions=True, user_re
         update_user_retweets_baseline(tweets_df)
 
 if __name__ == '__main__':
-    update_baseline(archive=True, user_friends=False, user_mentions=True, user_retweets=True)
+    update_baseline(
+        archive=True, 
+        user_friends=False,
+        user_mentions=True, 
+        user_retweets=True
+    )

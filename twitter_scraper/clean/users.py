@@ -2,18 +2,16 @@
 import re
 import csv
 import os
-import time
 import pandas as pd
+import datetime as dt
 
 from twitter_scraper import utils
 from twitter_scraper import settings
 from twitter_scraper.utils import fileio
 
 logger = utils.get_logger(__file__)
-
-USER_OBJS_CSV = os.path.join(settings.USER_OBJS_DIR, 'user-objs.csv')
-LOCATIONS_JSON = os.path.join(settings.INPUT_DIR, 'locations.json')
-
+locations = fileio.read_content(settings.LOCATIONS_HR, 'json')
+    
 USER_DTYPE = {
     'user_id':          'int64',
     'user_id_str':      'string',
@@ -31,7 +29,7 @@ USER_DTYPE = {
     'listed_count':     'int',
     'favourites_count': 'int',
     'statuses_count':   'int',
-    'created_at':       'str',
+    'created_at':       'object',
     # 'profile_banner_url':      'string',
     # 'profile_image_url_https': 'string',
     # 'default_profile':         'object',
@@ -46,9 +44,22 @@ USER_DTYPE = {
 
 
 # %%
-def is_croatian(location):
-    locations = pd.read_json(LOCATIONS_JSON)[0]
+def update_filtered_baseline():
+    users_df = pd.read_csv(settings.CLEAN_USERS_CSV)
+    archive_baseline_len = len(utils.get_baseline_user_ids())
+    baseline_user_ids = list(map(int, users_df.user_id.values))
     
+    utils.archive_baseline(prefix='clean.users')
+    fileio.write_content(settings.BASELINE_USER_IDS, baseline_user_ids, 'json', overwrite=True)
+    fileio.write_content(
+        path=os.path.join(settings.LOGS_DIR, '{}.json'.format(settings.folder_name)), 
+        content={'cro_users_len': len(users_df)},
+        file_type='json'
+    )
+    logger.info("Filtered baseline from {:,} to {:,} records".format(archive_baseline_len, len(baseline_user_ids)))
+
+
+def is_croatian(location):
     if location == '':
         return False
     
@@ -82,9 +93,8 @@ def clean_location(location):
     if location_lower == '':
         location_lower = 'hrvatska'
     return location_lower.title()
-
-def transform_users_df(users_df):
-    users_df['created_at'] = pd.to_datetime(users_df['created_at'], format='%a %b %d %H:%M:%S %z %Y')
+# %%
+def transform(users_df):
     users_df['location'] = users_df['location'].fillna('').transform(lambda x: re.sub(r'\s+', ' ', x).strip())
     users_df['is_croatian'] = users_df['location'].transform(is_croatian)
     users_df['clean_location'] = users_df.loc[users_df['is_croatian'] == True, 'location'].transform(clean_location)
@@ -108,41 +118,40 @@ def transform_users_df(users_df):
             # & (users_df['followers_count'] < 5000)
         )
     users_df = users_df[filters].sort_values(by='followers_count')
-    return users_df[USER_DTYPE.keys()].astype(USER_DTYPE)
-
-# %%
-
-def update_filtered_baseline():
-    users_df = pd.read_csv(settings.USERS_CSV)
-    archive_baseline_len = len(utils.get_baseline_user_ids())
-    baseline_user_ids = list(map(int, users_df.user_id.values))
-    utils.archive_baseline(prefix='clean.users')
-    fileio.write_content(settings.BASELINE_USER_IDS, baseline_user_ids, 'json', overwrite=True)
-    fileio.write_content(
-        path=os.path.join(settings.LOGS_DIR, '{}.json'.format(settings.folder_name)), 
-        content={'cro_users_len': len(users_df)},
-        file_type='json'
-    )
-    logger.info("Filtered baseline from {:,} to {:,} records".format(archive_baseline_len, len(baseline_user_ids)))
-    
+    return users_df.astype(USER_DTYPE)
 
 # %%
 def users():
-    start_time = time.time()
+    start_time = dt.datetime.now(settings.TZ_INFO)
     
-    utils.mkdir(os.path.dirname(settings.USERS_CSV))
+    utils.mkdir(os.path.dirname(settings.CLEAN_USERS_CSV))
+    utils.mkdir(settings.PROCESSED_SCRAPE_USERS_DIR)
 
     logger.info("START - Cleaning Users ...")
-    users_df = pd.read_csv(USER_OBJS_CSV, dtype=USER_DTYPE)
-    users_df = transform_users_df(users_df)
+    users_data = fileio.read_content(settings.SCRAPE_USER_OBJS_FN, 'json')
+    if not users_data:
+        logger.warning("STOP - Empty scrape.user_objs at {}".format(settings.SCRAPE_USER_OBJS_FN))
+        return
+    
+    users_df = pd.DataFrame(users_data)
+    users_df = transform(users_df)
 
-    users_df.to_csv(settings.USERS_CSV, index=False, quoting=csv.QUOTE_NONNUMERIC)
-    logger.info("Wrote clean User model to {}".format(settings.USERS_CSV))
+    users_df.to_csv(
+        settings.CLEAN_USERS_CSV,
+        index=False, 
+        encoding='utf-8',
+        quoting=csv.QUOTE_NONNUMERIC
+    )
+    logger.info("Wrote clean User model to {}".format(settings.CLEAN_USERS_CSV))
 
-    end_time = time.time()
-    logger.info("User model saved: {}".format(settings.USERS_CSV))
+    os.rename(
+        src=settings.SCRAPE_USER_OBJS_FN, 
+        dst=os.path.join(settings.PROCESSED_SCRAPE_USERS_DIR, 'users.json')
+    )
+    end_time = dt.datetime.now(settings.TZ_INFO)
+    logger.info("User model saved: {}".format(settings.CLEAN_USERS_CSV))
     logger.info("END - Done cleaning Users")
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 # %%
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 import os
-import time
 import queue
 import threading
+import datetime as dt
 from tqdm import tqdm
 
 from twitter_scraper import utils
@@ -40,10 +40,13 @@ def __collect_user_ids(conn_name, api, pbar):
         }
         
         l.acquire()
-        fileio.write_content(os.path.join(settings.USER_IDS_DIR, '{}.json'.format(user_id_str)), output_dict, 'json', overwrite=True)
-        # fileio.write_content(settings.PROCESSED_USER_IDS, user_id, 'json')
+        fileio.write_content(settings.SCRAPE_USER_IDS_FN.format(user_id=user_id), output_dict, 'json', overwrite=True)
+        fileio.write_content(settings.PROCESSED_USER_IDS, user_id, 'json')
         l.release()
         pbar.update(1)
+    if os.path.exists(settings.PROCESSED_USER_IDS):
+        os.remove(settings.PROCESSED_USER_IDS)
+        logger.info("Deleted {}".format(settings.PROCESSED_USER_IDS))
 
 
 def user_ids(apis):
@@ -56,10 +59,10 @@ def user_ids(apis):
     
     global q
 
-    start_time = time.time()
+    start_time = dt.datetime.now(settings.TZ_INFO)
     threads = []
     
-    utils.mkdir(settings.USER_IDS_DIR)
+    utils.mkdir(os.path.dirname(settings.SCRAPE_USER_IDS_FN))
     
     baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_IDS)
     for user_id in baseline_user_ids:
@@ -67,7 +70,7 @@ def user_ids(apis):
     
     logger.info("Scraping User IDs")
 
-    pbar = tqdm(total=len(baseline_user_ids))
+    pbar = tqdm(total=len(baseline_user_ids), desc='scrape.user_ids', position=-1)
     for conn_name, api in apis.items():
         thread = threading.Thread(
             target=__collect_user_ids, 
@@ -80,8 +83,8 @@ def user_ids(apis):
         thread.join()
     pbar.close()
 
-    end_time = time.time()
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    end_time = dt.datetime.now(settings.TZ_INFO)
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
 if __name__ == '__main__':

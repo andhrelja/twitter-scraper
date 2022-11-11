@@ -1,12 +1,11 @@
 from typing import List
 
 import os
-import time
 import queue
 import threading
+import tweepy
 import datetime as dt
 from tqdm import tqdm
-import tweepy
 
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
@@ -17,40 +16,10 @@ logger = utils.get_logger(__file__)
 l = threading.Lock()
 q = queue.Queue()
 
-flatten_dictlist = lambda dictlist, colname: [_dict.get(colname) for _dict in dictlist]
-SCRAPE_TWEET = lambda x, api=None: {
-    'id':                   x.get('id'),
-    'user_id':              x.get('user', {}).get('id'),
-    'user_id_str':          x.get('user', {}).get('id_str'),
-    'full_text':            x.get('full_text', x.get('text')),
-    'created_at':           x.get('created_at'),
-    'hashtags':             flatten_dictlist(x.get('entities', {}).get('hashtags', []), 'text'),
-    'user_mentions':        flatten_dictlist(x.get('entities', {}).get('user_mentions', []), 'id'),
-    'retweet_count':        x.get('retweet_count'),
-    'retweeter_ids':        [],# api.get_retweeter_ids(x.get('id')),
-    'retweet_from_user_id':         x.get('retweeted_status', {}).get('user', {}).get('id'),
-    'retweet_from_user_id_str':     str(x.get('retweeted_status', {}).get('user', {}).get('id')),
-    'retweet_from_tweet_id':        x.get('retweeted_status', {}).get('id'),
-	'in_reply_to_status_id':        x.get('in_reply_to_status_id'),
-	'in_reply_to_status_id_str':    x.get('in_reply_to_status_id_str'),
-	'in_reply_to_user_id':          x.get('in_reply_to_user_id'),
-	'in_reply_to_user_id_str':      x.get('in_reply_to_user_id_str'),
-	'in_reply_to_screen_name':      x.get('in_reply_to_screen_name'),
-	'geo':                  x.get('geo'),
-	'coordinates':          x.get('coordinates'),
-	'place':                x.get('place'),
-	'contributors':         x.get('contributors'),
-	'is_quote_status':      x.get('is_quote_status'),
-	'favorite_count':       x.get('favorite_count'),
-	'favorited':            x.get('favorited'),
-	'retweeted':            x.get('retweeted'),
-	'possibly_sensitive':   x.get('possibly_sensitive'),
-	'lang':                 x.get('lang')
-}
-
+MIN_DATE = dt.datetime.fromisoformat("2020-01-01T00:00:00+00:00")
 
 def get_tweet_max_id(user_id: int):
-    """Reads the user's scraped tweet JSON and returns the latest tweet ID. 
+    """Reads static ``input/max-tweet-ids`` JSON and returns the latest tweet ID. 
     Latest tweet ID value is used as ``since_id`` for incremental loads.
 
     :param user_id: User ID
@@ -58,41 +27,10 @@ def get_tweet_max_id(user_id: int):
     :return: Latest tweet ID if exists, else None
     :rtype: Union[int, NoneType]
     """
-    user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
-    if user_tweets:
-        latest_tweet = max(user_tweets, key=lambda x: x['id'])
-        return latest_tweet['id']
+    max_tweet_ids = fileio.read_content(os.path.join(settings.MAX_TWEET_IDS), 'json')
+    if max_tweet_ids:
+        return max_tweet_ids.get(user_id)
     return None
-
-
-def get_retweeted_tweet_ids():
-    """Reads the user's scraped tweet JSON and returns missing retweeted tweet IDs. 
-    Missing retweeted tweet IDs are used to collect tweet text to ensure full text is available for text processing.
-
-    :return: Missing retweeted tweet IDs batched in sets of 100 IDs
-    :rtype: List[int]
-    """
-    logger.info("Collecting missing retweeted tweet IDs")
-    all_tweet_ids = set()
-    retweeted_tweet_ids = set()
-    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)
-    
-    p_bar = tqdm(total=len(baseline_user_ids) * 2)
-    for user_id in baseline_user_ids:
-        user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
-        for tweet in user_tweets:
-            all_tweet_ids.add(tweet['id'])
-        p_bar.update(1)
-    
-    for user_id in baseline_user_ids:
-        user_tweets = fileio.read_content(os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 'json')
-        for tweet in user_tweets:
-            retweeted_tweet_ids.add(tweet['retweet_from_tweet_id'])
-        p_bar.update(1)
-    p_bar.close()
-    missing_retweeted_tweet_ids = retweeted_tweet_ids.difference(all_tweet_ids)
-    return utils.batches(missing_retweeted_tweet_ids, 100)
-
 
 def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
     """Collects tweets for all user IDs read from ``baseline-user-ids.json`` using :mod:queue.
@@ -110,6 +48,7 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
     # a users most recent 3240 tweets with this method
     global q, l
     
+    max_tweet_ids = {}
     while not q.empty():
         user_id = q.get()
 
@@ -131,68 +70,28 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
             if len(new_tweets) == 0:
                 break
             else:
-                new_tweets = [SCRAPE_TWEET(item._json, api) for item in new_tweets]
-                all_user_tweets.extend(new_tweets)
                 oldest_tweet = new_tweets[-1]
-                max_id = oldest_tweet['id']-1
-
-                created_at = dt.datetime.strptime(oldest_tweet['created_at'], '%a %b %d %H:%M:%S %z %Y')
-                if created_at <= dt.datetime(2020, 1, 1, 0, 0, 0, 0, tzinfo=dt.timezone.utc):
+                max_id = oldest_tweet.id - 1
+                
+                tweets = [item._json for item in new_tweets]
+                all_user_tweets.extend(tweets)
+                
+                if oldest_tweet.created_at < MIN_DATE:
                     break
+        
+        max_tweet_ids[user_id] = max_id
         
         l.acquire()
         fileio.write_content(
-            os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 
-            all_user_tweets, 'json', indent=None
+            path=os.path.join(settings.SCRAPE_TWEETS_FN.format(user_id=user_id)), 
+            content=all_user_tweets,
+            file_type='json', 
+            indent=None
         )
-        # fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
         l.release()
         pbar.update(1)
-
-
-def __collect_retweeted_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
-    """Collects tweets for all missing retweeted IDs read from ``<user-id>.json`` using :mod:queue.
-    This function is ran on multiple threads. The number of running threads matches the number of available Twitter API connections in :mod:twitter_scraper.settings.
-    Retrieves all the missing tweets that were not collected using :fun:__collect_users_tweets.
-
-    :param conn_name: Twitter API connection name (:mod:twitter_scraper.settings)
-    :type conn_name: str
-    :param api: :py:class:tweepy.API object used to call Twitter API endpoints
-    :type api: tweepy.API
-    :param pbar: :mod:tqdm progress bar instance - total number of available user IDs, gets updated after a user's tweets are scraped
-    :type pbar: tqdm.tqdm
-    """
-    global q, l
-    
-    while not q.empty():
-        tweet_ids = q.get()
-        user_tweets = {}
-        new_tweets, _ = utils.get_twitter_endpoint(
-            conn_name, api, 
-            'lookup_statuses', 
-            user_id=None, 
-            retry_max=5, 
-            retry_delay=3, 
-            id=tweet_ids
-        )
-        new_tweets = [SCRAPE_TWEET(item._json, api) for item in new_tweets]
-
-        for tweet in new_tweets:
-            user_id = tweet['user_id']
-            if user_id in user_tweets:
-                user_tweets[user_id].append(tweet)
-            else:
-                user_tweets[user_id] = [tweet]
-        
-        for user_id, _tweets in user_tweets.items():
-            l.acquire()
-            fileio.write_content(
-                os.path.join(settings.USER_TWEETS_DIR, '{}.json'.format(user_id)), 
-                _tweets, 'json', indent=None
-            )
-            # fileio.write_content(settings.PROCESSED_USER_TWEETS, user_id, 'json')
-            l.release()
-        pbar.update(1)
+    if max_tweet_ids:
+        fileio.write_content(settings.MAX_TWEET_IDS, max_tweet_ids, 'json', overwrite=True)
 
 
 def tweets(apis: List[dict]):
@@ -207,10 +106,9 @@ def tweets(apis: List[dict]):
     """
     global q, pbar
     
-    start_time = time.time()
+    start_time = dt.datetime.now(settings.TZ_INFO)
+    utils.mkdir(settings.PROCESSED_SCRAPE_TWEETS_DIR)
     threads = []
-
-    utils.mkdir(settings.USER_TWEETS_DIR)
 
     baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)
     for user_id in baseline_user_ids:
@@ -218,7 +116,7 @@ def tweets(apis: List[dict]):
     
     logger.info("Scraping Tweets")
 
-    pbar = tqdm(total=len(baseline_user_ids))
+    pbar = tqdm(total=len(baseline_user_ids), desc='scrape.tweets', position=-1)
     for conn_name, api in apis.items():
         thread = threading.Thread(
             target=__collect_users_tweets, 
@@ -231,25 +129,8 @@ def tweets(apis: List[dict]):
         thread.join()
     pbar.close()
     
-    retweeted_tweet_ids = get_retweeted_tweet_ids()
-    for missing_retweet_ids in retweeted_tweet_ids:
-        q.put(missing_retweet_ids)
-    
-    pbar = tqdm(total=len(retweeted_tweet_ids))
-    for conn_name, api in apis.items():
-        thread = threading.Thread(
-            target=__collect_retweeted_tweets, 
-            args=(conn_name, api, pbar)
-        )
-        thread.start()
-        threads.append(thread)
-    
-    for thread in threads:
-        thread.join()
-    pbar.close()
-
-    end_time = time.time()
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    end_time = dt.datetime.now(settings.TZ_INFO)
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
 if __name__ == '__main__':
