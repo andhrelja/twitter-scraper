@@ -40,12 +40,12 @@ logger.info("------------------ graph.edges ------------------")
 graph.edges(user_followers=True, user_mentions=False, user_retweets=False)
 
 logger.info("--------------- utils.update_baseline ---------------")
-# utils.update_baseline(
-#     archive=True, 
-#     user_friends=True,
-#     user_mentions=True,
-#     user_retweets=True
-# )
+utils.update_baseline(
+    archive=True, 
+    user_friends=True,
+    user_mentions=True,
+    user_retweets=True
+)
 
 logger.info("**************** END UPDATE BASELINE ****************")
 
