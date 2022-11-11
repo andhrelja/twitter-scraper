@@ -45,6 +45,9 @@ USER_DTYPE = {
 
 # %%
 def update_filtered_baseline():
+    if not os.path.exists(settings.CLEAN_USERS_CSV):
+        logger.warning("STOP - Baseline was not updated, missing scraped users")
+        return
     users_df = pd.read_csv(settings.CLEAN_USERS_CSV)
     archive_baseline_len = len(utils.get_baseline_user_ids())
     baseline_user_ids = list(map(int, users_df.user_id.values))
