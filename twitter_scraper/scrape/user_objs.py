@@ -1,7 +1,7 @@
 import os
-import time
 import queue
 import threading
+import datetime as dt
 from tqdm import tqdm
 
 from twitter_scraper import utils
@@ -49,9 +49,9 @@ def __collect_user_objs(conn_name, api, pbar):
         
         l.acquire()
         fileio.write_content(
-            os.path.join(settings.USER_OBJS_DIR, 'user-objs.csv'), 
-            user_objs, 'csv', 
-            fieldnames=SCRAPE_USER({}).keys()
+            path=settings.SCRAPE_USER_OBJS_FN, 
+            content=user_objs, 
+            file_type='json'
         )
         fileio.write_content(settings.PROCESSED_USER_OBJS, user_ids, 'json')
         l.release()
@@ -61,10 +61,9 @@ def __collect_user_objs(conn_name, api, pbar):
 def user_objs(apis):
     global q
 
-    start_time = time.time()
-    threads = []
-
-    utils.mkdir(settings.USER_OBJS_DIR)
+    start_time = dt.datetime.now(settings.TZ_INFO)
+    utils.mkdir(os.path.dirname(settings.SCRAPE_USER_OBJS_FN))
+    
     baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_OBJS)
     user_id_batches = utils.batches(list(baseline_user_ids), 100)
     for user_ids in user_id_batches:
@@ -72,7 +71,8 @@ def user_objs(apis):
     
     logger.info("Scraping User objects")
 
-    pbar = tqdm(total=len(user_id_batches))
+    threads = []
+    pbar = tqdm(total=len(user_id_batches), desc='scrape.user_objs', position=-1)
     for conn_name, api in apis.items():
         thread = threading.Thread(
             target=__collect_user_objs, 
@@ -85,8 +85,8 @@ def user_objs(apis):
         thread.join()
     pbar.close()
     
-    end_time = time.time()
-    logger.info("Time elapsed: {} min".format(round((end_time - start_time)/60, 2)))
+    end_time = dt.datetime.now(settings.TZ_INFO)
+    logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
 if __name__ == '__main__':
