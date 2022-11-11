@@ -63,7 +63,6 @@ tornado==6.2
 tqdm==4.62.3
 traitlets==5.5.0
 tweepy==4.12.1
--e git+https://github.com/milanXpetrovic/twitter_scraper.git@08873e9b6cf837d8e2ee172aa8031af1e8452f50#egg=twitter_scraper
 typing_extensions==4.4.0
 urllib3==1.26.12
 wcwidth==0.2.5
