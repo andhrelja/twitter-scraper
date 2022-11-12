@@ -65,14 +65,13 @@ def user_objs(apis):
     utils.mkdir(os.path.dirname(settings.SCRAPE_USER_OBJS_FN))
     
     baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_OBJS)
-    user_id_batches = utils.batches(list(baseline_user_ids), 100)
-    for user_ids in user_id_batches:
+    for user_ids in utils.batches(baseline_user_ids, 100):
         q.put(user_ids)
     
     logger.info("Scraping User objects")
 
     threads = []
-    pbar = tqdm(total=len(user_id_batches), desc='scrape.user_objs', position=-1)
+    pbar = tqdm(total=q.qize, desc='scrape.user_objs', position=-1)
     for conn_name, api in apis.items():
         thread = threading.Thread(
             target=__collect_user_objs, 

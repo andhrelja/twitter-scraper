@@ -4,6 +4,9 @@ from . import clean
 from . import graph
 from . import text
 
+from . import DISCORD_CLIENT
+from .settings import DISCORD_TOKEN
+
 logger = utils.get_logger(__file__)
 apis = utils.get_api_connections()
 
@@ -32,12 +35,18 @@ graph.edges(user_followers=False, user_mentions=True, user_retweets=True)
 logger.info("******************** END GRAPH ********************")
 
 
+logger.info("********************** TEXT **********************")
+logger.info("------------------ text.tweets ------------------")
+text.tweets()
+logger.info("******************** END TEXT ********************")
+
+
 logger.info("****************** UPDATE BASELINE ******************")
 
-logger.info("----------------- scrape.user_ids ----------------")
-scrape.user_ids(apis)
-logger.info("------------------ graph.edges ------------------")
-graph.edges(user_followers=True, user_mentions=False, user_retweets=False)
+# logger.info("----------------- scrape.user_ids ----------------")
+# scrape.user_ids(apis)
+# logger.info("------------------ graph.edges ------------------")
+# graph.edges(user_followers=True, user_mentions=False, user_retweets=False)
 
 logger.info("--------------- utils.update_baseline ---------------")
 utils.update_baseline(
@@ -49,6 +58,7 @@ utils.update_baseline(
 
 logger.info("**************** END UPDATE BASELINE ****************")
 
+DISCORD_CLIENT.run(DISCORD_TOKEN)
 utils.notify()
 
 logger.info("********************** DONE **********************")

@@ -57,6 +57,7 @@ TWEET_DTYPE = {
     'created_at':       'object',
     'hashtags':         'object',
     'user_mentions':    'object',
+    'is_retweet':       'boolean',
     'retweet_from_user_id':         pd.Int64Dtype(),
     # 'retweet_from_user_id_str':   'string',
     'retweet_from_tweet_id':        pd.Int64Dtype(),
@@ -109,6 +110,7 @@ def transform(tweets_df):
     
     tweets_df['week']       = tweets_df['created_at'].dt.strftime('%Y-%W')
     tweets_df['month']      = tweets_df['created_at'].dt.strftime('%Y-%m')
+    tweets_df['is_retweet'] = tweets_df['retweet_from_user_id'].isna()
     tweets_df['full_text']  = tweets_df['full_text'].fillna('')
     tweets_df['langid']     = tweets_df.apply(lambda x: detect_language(x['full_text']) if x['lang'] in ('und', 'zxx', 'pt') else x['lang'], axis=1)
     return tweets_df.astype(TWEET_DTYPE)
