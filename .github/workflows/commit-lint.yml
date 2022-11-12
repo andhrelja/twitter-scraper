@@ -3,7 +3,7 @@ name: Commit Lint
 on:
   pull_request:
     branches: [develop]
-    types: [opened, edited]
+    types: [opened, synchronized, edited]
 
 jobs:
   commit-lint:
