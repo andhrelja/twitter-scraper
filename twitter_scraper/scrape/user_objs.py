@@ -71,7 +71,7 @@ def user_objs(apis):
     logger.info("Scraping User objects")
 
     threads = []
-    pbar = tqdm(total=q.qize, desc='scrape.user_objs', position=-1)
+    pbar = tqdm(total=q.qsize(), desc='scrape.user_objs', position=-1)
     for conn_name, api in apis.items():
         thread = threading.Thread(
             target=__collect_user_objs, 

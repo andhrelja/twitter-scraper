@@ -66,7 +66,7 @@ def user_ids(apis):
     
     processed_user_ids= fileio.read_content(settings.PROCESSED_USER_IDS, 'json')
     baseline_user_ids = fileio.read_content(settings.NODES_CSV, 'csv', column='user_id')
-    for user_id in baseline_user_ids:
+    for user_id in set(baseline_user_ids).difference(processed_user_ids):
         q.put(user_id)
     
     logger.info("Scraping User IDs")
