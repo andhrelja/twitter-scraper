@@ -4,7 +4,7 @@
 import gensim
 import stanza
 import classla
-import demoji
+# import demoji
 import csv
 import re
 import os
