@@ -1,11 +1,12 @@
 import os
 import discord
 
-from twitter_scraper import settings
-from twitter_scraper import utils
 from twitter_scraper.utils import fileio
+from twitter_scraper import DISCORD_CLIENT
+from twitter_scraper import utils
+from twitter_scraper import settings
 
-DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+
 CHANNEL_ID = 1029494278751273011
 LOG_OUTPUT_PATH = os.path.join(settings.LOGS_DIR, '{}.json'.format(settings.folder_name))
 
@@ -29,9 +30,6 @@ message = """twitter-scraper outputs:
     - found `{len_retweets}` edges
 """
 
-intents = discord.Intents.default()
-intents.message_content = True
-client = discord.Client(intents=intents)
 
 def update_log_outputs():
     log_outputs = fileio.read_content(LOG_OUTPUT_PATH, file_type='json')
@@ -46,24 +44,22 @@ def update_log_outputs():
     })
     fileio.write_content(LOG_OUTPUT_PATH, log_outputs, 'json')
 
-@client.event
+@DISCORD_CLIENT.event
 async def on_ready():
     log_outputs = fileio.read_content(LOG_OUTPUT_PATH, file_type='json')
-    await client.get_channel(CHANNEL_ID).send(
+    await DISCORD_CLIENT.get_channel(CHANNEL_ID).send(
         content=message.format(**log_outputs), 
         file=discord.File(os.path.join(settings.LOGS_DIR, '{}.log'.format(settings.folder_name)))
     )
-    await client.close()
+    await DISCORD_CLIENT.close()
     exit()
  
 
 def notify():
-    if not settings.DEBUG:
-        update_log_outputs()
-        client.run(DISCORD_TOKEN)
+    update_log_outputs()
+    DISCORD_CLIENT.run(settings.DISCORD_TOKEN)
      
 
 if __name__ == '__main__':
-    if not settings.DEBUG:
-        update_log_outputs()
-        client.run(DISCORD_TOKEN)
+    update_log_outputs()
+    DISCORD_CLIENT.run(settings.DISCORD_TOKEN)

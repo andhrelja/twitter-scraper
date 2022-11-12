@@ -6,16 +6,18 @@ INPUT_DIR=${DATA_DIR}/input
 INPUT_HISTORY_DIR=${INPUT_DIR}/history
 INPUT_LOCATIONS_DIR=${INPUT_DIR}/locations
 INPUT_STOP_WORDS_DIR=${INPUT_DIR}/stop_words
+INPUT_LOOKUPS_DIR=${INPUT_DIR}/lookups
 
 OUTPUT_DIR=${DATA_DIR}/output
 PROCESSED_DIR=${DATA_DIR}/processed
 
 ROOT_INPUT_BASELINE=${INPUT_DIR}/baseline-user-ids.json
-ROOT_INPUT_PROCESSED_USER_IDS=${INPUT_DIR}/processed-user-ids.json
-ROOT_INPUT_MISSING_USER_IDS=${INPUT_DIR}/missing-user-ids.json
-ROOT_INPUT_PROCESSED_USER_OBJS=${INPUT_DIR}/processed-user-objs.json
-ROOT_INPUT_MAX_TWEET_IDS=${INPUT_DIR}/max-tweet-ids.json
+# ROOT_INPUT_PROCESSED_USER_IDS=${INPUT_DIR}/processed-user-ids.json
+# ROOT_INPUT_MISSING_USER_IDS=${INPUT_DIR}/missing-user-ids.json
+# ROOT_INPUT_PROCESSED_USER_OBJS=${INPUT_DIR}/processed-user-objs.json
+# ROOT_INPUT_MAX_TWEET_IDS=${INPUT_DIR}/max-tweet-ids.json
 
+ROOT_INPUT_SENTIMENT=${INPUT_LOOKUPS_DIR}/sentiment-lookup.csv
 ROOT_INPUT_LOCATIONS_HR=${INPUT_DIR}/locations/hr.json
 ROOT_INPUT_STOP_WORDS_HR=${INPUT_STOP_WORDS_DIR}/hr.json
 ROOT_INPUT_STOP_WORDS_EN=${INPUT_STOP_WORDS_DIR}/en.json
@@ -67,6 +69,8 @@ echo "Created $INPUT_HISTORY_DIR"
 echo "Created $INPUT_LOCATIONS_DIR"
 [ ! -d $INPUT_STOP_WORDS_DIR ]  && mkdir $INPUT_STOP_WORDS_DIR
 echo "Created $INPUT_STOP_WORDS_DIR"
+[ ! -d $INPUT_LOOKUPS_DIR ]     && mkdir $INPUT_LOOKUPS_DIR
+echo "Created $INPUT_LOOKUPS_DIR"
 
 # Output
 [ ! -d $OUTPUT_DIR ]            && mkdir $OUTPUT_DIR
@@ -118,6 +122,7 @@ DEBUG_INPUT_BASELINE=${DEBUG_DATA_DIR}/input/baseline-user-ids.json
 # DEBUG_INPUT_PROCESSED_USER_OBJS=${DEBUG_DATA_DIR}/input/processed-user-objs.json
 # DEBUG_INPUT_MAX_TWEET_IDS=${DEBUG_DATA_DIR}/input/max-tweet-ids.json
 
+DEBUG_INPUT_SENTIMENT=${DEBUG_DATA_DIR}/input/lookups/sentiment-lookup.csv
 DEBUG_INPUT_LOCATIONS_HR=${DEBUG_DATA_DIR}/input/locations/hr.json
 DEBUG_INPUT_STOP_WORDS_HR=${DEBUG_DATA_DIR}/input/stop_words/hr.json
 DEBUG_INPUT_STOP_WORDS_EN=${DEBUG_DATA_DIR}/input/stop_words/en.json
@@ -133,6 +138,8 @@ echo "Copied $ROOT_INPUT_BASELINE"
 # cp $DEBUG_INPUT_MAX_TWEET_IDS           $ROOT_INPUT_MAX_TWEET_IDS
 # echo "Copied $ROOT_INPUT_MAX_TWEET_IDS"
 
+cp $DEBUG_INPUT_SENTIMENT               $ROOT_INPUT_SENTIMENT
+echo "Copied $DEBUG_INPUT_SENTIMENT"
 cp $DEBUG_INPUT_LOCATIONS_HR            $ROOT_INPUT_LOCATIONS_HR
 echo "Copied $ROOT_INPUT_LOCATIONS_HR"
 cp $DEBUG_INPUT_STOP_WORDS_HR           $ROOT_INPUT_STOP_WORDS_HR

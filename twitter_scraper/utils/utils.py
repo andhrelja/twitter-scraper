@@ -24,11 +24,9 @@ def get_logger(logger_name, **kwargs):
 
 
 def batches(obj, n=100):
-    batches = []
     lst = list(obj)
     for i in range(0, len(lst), n):
-        batches.append(lst[i:i+n])
-    return batches
+        yield lst[i:i+n]
 
 
 def get_baseline_user_ids(processed_filepath=None):

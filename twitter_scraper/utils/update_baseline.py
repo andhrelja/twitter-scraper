@@ -9,7 +9,6 @@ from tqdm import tqdm
 from twitter_scraper import settings
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
-from twitter_scraper.clean.tweets import TWEET_DTYPE
 
 logger = utils.get_logger(__file__)
 
@@ -96,7 +95,7 @@ def update_user_retweets_baseline(tweets_df):
 
 
 def update_baseline(archive=True, user_friends=True, user_mentions=True, user_retweets=True):
-    tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, dtype=TWEET_DTYPE)
+    tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, low_memory=False)
     tweets_df['user_mentions'] = tweets_df['user_mentions'].map(eval)
     
     if archive:
