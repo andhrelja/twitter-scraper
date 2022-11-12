@@ -64,7 +64,8 @@ def user_ids(apis):
     
     utils.mkdir(os.path.dirname(settings.SCRAPE_USER_IDS_FN))
     
-    baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=settings.PROCESSED_USER_IDS)
+    processed_user_ids= fileio.read_content(settings.PROCESSED_USER_IDS, 'json')
+    baseline_user_ids = fileio.read_content(settings.NODES_CSV, 'csv', column='user_id')
     for user_id in baseline_user_ids:
         q.put(user_id)
     

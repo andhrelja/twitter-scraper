@@ -3,13 +3,13 @@ import json
 import datetime as dt
 
 TZ_INFO = dt.timezone.utc
-
 now = dt.datetime.now(TZ_INFO)
 folder_name = now.strftime('%Y-%m-%d')
 folder_name = '2022-11-01'
 
 DEBUG = os.getenv('DEBUG', 'true') == 'true'
-USE_GPU = os.getenv('USE_GPU', 'true') == 'true'
+TEXT_USE_GPU = os.getenv('USE_GPU', 'true') == 'true'
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
 if DEBUG:
     ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -22,6 +22,8 @@ PROCESSED_DIR = os.path.join(ROOT_DIR, 'data', 'processed')
 LOGS_DIR      = os.path.join(ROOT_DIR, 'logs')
 
 # Input
+## Lookups
+LOOKUPS_DIR   = os.path.join(INPUT_DIR, 'lookups')
 ## Locations
 LOCATIONS_HR  = os.path.join(INPUT_DIR, 'locations', 'hr.json')
 ## Stop words
@@ -39,7 +41,8 @@ MAX_TWEET_IDS       = os.path.join(INPUT_DIR, 'max-tweet-ids.json')
 LOCATIONS_HRV       = os.path.join(INPUT_DIR, 'locations', 'hr.json')
 STOP_WORDS_HRV      = os.path.join(INPUT_DIR, 'stop_words', 'hr.json')
 STOP_WORDS_ENG      = os.path.join(INPUT_DIR, 'stop_words', 'en.json')
-EMOJI_SENTIMENT_DATA = os.path.join(INPUT_DIR, 'Emoji_Sentiment_Data_v1.0.csv')
+SENTIMENT_LOOKUP    = os.path.join(LOOKUPS_DIR, 'sentiment-lookup.csv')
+LEMMA_LOOKUP        = os.path.join(LOOKUPS_DIR, 'lemma-lookup.csv')
 
 # Output
 ## Scrape

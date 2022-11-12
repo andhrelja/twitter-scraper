@@ -47,7 +47,7 @@ setup(
    package_dir={'twitter_scraper':'twitter_scraper'},
    install_requires=[
       'pandas==1.5.1',
-      'tweepy==4.12.1'
+      'tweepy==4.12.1',
       'stanza==1.4.2',
       'classla==1.2.0',
       'langid==1.1.6',

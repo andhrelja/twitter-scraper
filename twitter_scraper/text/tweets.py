@@ -4,11 +4,13 @@
 import gensim
 import stanza
 import classla
+import demoji
 import csv
 import re
 import os
 import pickle
-import modin.pandas as pd
+# import modin.pandas as pd
+import pandas as pd
 from collections import defaultdict
 
 import pyLDAvis
@@ -18,10 +20,14 @@ from twitter_scraper import settings
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
 from twitter_scraper.clean.tweets import TWEET_DTYPE
-from twitter_scraper.text import logging_level
-from twitter_scraper.text import stanza_supported_languages
-from twitter_scraper.text import classla_supported_languages
 
+
+available_stanza_languages = stanza.resources.common.list_available_languages()
+classla_supported_languages = ['hr', 'sl', 'sr', 'bg', 'mk']
+stanza_supported_languages = set(available_stanza_languages).difference(classla_supported_languages)
+
+USE_STANZA_LANGUAGES = ['en',]
+USE_CLASSLA_LANGUAGES = ['hr', 'sl', 'sr', 'bs']
 
 logger = utils.get_logger(__file__)
 
@@ -34,106 +40,93 @@ stop_words = stop_words_eng + stop_words_hrv
 def default_nlp():
     return stanza.Pipeline(
         lang='en', 
-        use_gpu=settings.CLASSLA_USE_GPU, 
-        logging_level=logging_level,
+        use_gpu=settings.TEXT_USE_GPU, 
+        logging_level='ERROR',
         processors='tokenize,pos,lemma'
     )
 
 nlps = defaultdict(default_nlp)
-emoji_sentiment_df = pd.read_csv(settings.EMOJI_SENTIMENT_DATA)
+sentiment_lookup_df = pd.read_csv(settings.SENTIMENT_LOOKUP)
 
 URL_REGEX = r'https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
 MENTIONS_REGEX = r'@[A-Za-z0-9-_]+'
+
 
 # %%
 def setup_global_nlps():
     global nlps
     
-    for stanza_lang in stanza_supported_languages:
-        try:
-            nlps[stanza_lang] = stanza.Pipeline(
-                lang=stanza_lang, 
-                use_gpu=settings.CLASSLA_USE_GPU, 
-                logging_level=logging_level,
-                processors='tokenize,pos,lemma'
-            )
-        except (stanza.pipeline.core.UnsupportedProcessorError, KeyError):
-            nlps[stanza_lang] = stanza.Pipeline(
-                lang=stanza_lang, 
-                use_gpu=settings.CLASSLA_USE_GPU, 
-                logging_level=logging_level
-            )
+    for stanza_lang in filter(lambda x: x in USE_STANZA_LANGUAGES, stanza_supported_languages):
+        nlps[stanza_lang] = stanza.Pipeline(
+            lang=stanza_lang, 
+            use_gpu=settings.TEXT_USE_GPU, 
+            logging_level='ERROR',
+            processors='tokenize,pos,lemma'
+        )
     
-    for classla_lang in classla_supported_languages:
+    for classla_lang in filter(lambda x: x in USE_CLASSLA_LANGUAGES, classla_supported_languages):
         nlps[classla_lang] = classla.Pipeline(
             lang=classla_lang, 
-            use_gpu=settings.CLASSLA_USE_GPU, 
-            logging_level=logging_level,
+            use_gpu=settings.TEXT_USE_GPU, 
+            logging_level='ERROR',
             processors='tokenize,pos,lemma'
         )
     
     nlps['bs'] = nlps['hr']
 
 
-def clean_twitter_text(text):
-    text = re.sub(URL_REGEX, '', text)
-    text = re.sub(MENTIONS_REGEX, '', text)
-    text = text.replace('RT', '').strip()
-    if text.startswith(':'): text = text[1:]
-    return text
-
-def get_stemmed_text(text, lang=None):
-    # text = re.sub(URL_REGEX, '', text)
-    if text == '':
-        return []
-    
-    # if lang is None:
-    #     lang = detect_language(text)
-    
-    text = gensim.utils.simple_preprocess(text)
-    text = [word.lower() for word in text if word.lower() not in stop_words]
-    
-    if not text:
-        return text
-    
-    if lang in ('hr', 'bs', 'sr', 'sl'):
-        nlp = nlps[lang]
-    else:
-        nlp = nlps['en']
+def get_text_dt(tweets_df, start_date=None, end_date=None):
+    # start_date = '2022-11-09T00:00:00+00:00'
+    # end_date = '2022-11-10T00:00:00+00:00'
+    if start_date and end_date:
+        import datetime as dt
+        start_date = dt.datetime.fromisoformat(start_date)
+        end_date = dt.datetime.fromisoformat(end_date)
+        tweets_df = tweets_df[
+            (tweets_df['created_at'] > start_date) 
+            & (tweets_df['created_at'] < end_date)
+        ]
         
-    doc = nlp(" ".join(text))
-    text = [word.lemma for sentence in doc.sentences for word in sentence.words]
-    return text
-
-def get_stemmed_tweets_df(tweets_df, text_col_name):
-    _text_col_name = "{}_transform".format(text_col_name)
-    def get_lemmatized_text(row):
-        if row['langid'] in ('hr', 'bs', 'sr', 'sl'):
+    def apply_nlp(row, text_col_name='word_grams', keep_upos=('NOUN', 'PROPN', 'ADJ')):
+        if len(row[text_col_name]) > 0:
             nlp = nlps[row['langid']]
+            doc = nlp(" ".join(row[text_col_name]))
+            return [word.lemma
+                    for sentence in doc.sentences
+                    for word in sentence.words
+                    if word.upos in keep_upos]
         else:
-            nlp = nlps['en']
-            
-        if not row[_text_col_name]: 
             return []
-        
-        doc = nlp(" ".join(row[_text_col_name]))
-        return [word.lemma for sentence in doc.sentences for word in sentence.words]
-    
-    # NOTE: Remove clean_twitter_text transformation
-    tweets_df[_text_col_name]  = tweets_df[text_col_name].fillna('').transform(clean_twitter_text)
-    tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(URL_REGEX, '', x))
-    tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
-    tweets_df[_text_col_name]  = tweets_df[_text_col_name].str.replace('RT', '')
-    tweets_df[_text_col_name]  = tweets_df[_text_col_name].str.strip()
-    
-    logger.info("Running gensim.utils.simple_preprocess")
-    tweets_df[_text_col_name]  = tweets_df[_text_col_name].transform(gensim.utils.simple_preprocess)
 
-    logger.info("Removing stop words")
-    tweets_df[_text_col_name]  = tweets_df.apply(lambda x: [word for word in x[_text_col_name] if word not in stop_words], axis=1)
-    logger.info("Running (classla.Pipeline, stanza.Pipeline)")
-    tweets_df['stemmed'] = tweets_df.apply(get_lemmatized_text, axis=1)
-    return tweets_df
+    
+    text_df = tweets_df[tweets_df['langid'].isin(USE_STANZA_LANGUAGES + USE_CLASSLA_LANGUAGES)].copy()
+    text_df['text'] = text_df['full_text'].transform(lambda x: re.sub(URL_REGEX, '', x))
+    text_df['text'] = text_df['text'].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
+    # text_df['emoji'] = text_df['text'].transform(demoji.findall_list, desc=False)
+    
+    logger.info("Running gensim.utils.simple_preprocess ...")
+    text_df['text'] = text_df['text'].transform(gensim.utils.simple_preprocess)
+    
+    logger.info("Running stop_words filtering ...")
+    text_df['text'] = text_df['text'].transform(
+        lambda text: [word for word in text if word not in stop_words]
+    )
+
+    texts = [list(filter(None, x)) for x in text_df['text']]
+    texts = list(filter(lambda x: x != [], texts))
+    
+    logger.info("Running gensim bigrams ...")
+    bigrams = gensim.models.Phrases(sentences=texts, min_count=50, threshold=50)
+    bigram_model = gensim.models.phrases.Phraser(bigrams)
+
+    logger.info("Running gensim trigrams ...")
+    trigrams = gensim.models.Phrases(sentences=bigram_model[texts], min_count=20, threshold=100)
+    # bitri_grams = trigrams[bigram_model[texts]]
+    
+    logger.info("Running lemmatization  ...")
+    text_df['word_grams'] = text_df['text'].transform(lambda x: trigrams[bigram_model[x]] if len(x) > 0 else [])
+    text_df['lemmatized'] = text_df.apply(apply_nlp, axis=1)
+    return text_df
 
 
 def get_corpus_tweets_df(tweets_df):
@@ -165,23 +158,28 @@ def get_corpus_tweets_df(tweets_df):
 
     
 # %%
-def tweets(tweets_csv=settings.TWEETS_CSV, text_col_name='full_text', slice=None):    
+def tweets():  
+    logger.info("Setting up NLPs (stanza, classla) ...")  
     setup_global_nlps()
-    utils.mkdir(os.path.dirname(settings.TWEETS_TEXT_CSV))
+    utils.mkdir(os.path.dirname(settings.TEXT_TWEETS_CSV))
     
     logger.info("Reading tweets CSV")
-    tweets_df = pd.read_csv(tweets_csv, dtype=TWEET_DTYPE)
-    if slice:
-        tweets_df = tweets_df.sample(slice)
+    tweets_df = pd.read_csv(
+        settings.CLEAN_TWEETS_CSV, 
+        dtype=TWEET_DTYPE, 
+        parse_dates=['created_at', 'retweet_created_at']
+    )
+
     logger.info("START - Text transformations")
-    tweets_df = get_stemmed_tweets_df(tweets_df, text_col_name)
+    text_df = get_text_dt(tweets_df)
     logger.info("END - Text transformations")
-    tweets_df.to_csv(settings.TWEETS_CSV.replace('tweets.csv', 'tweets-text.csv'), encoding='utf-8', index=False, quoting=csv.QUOTE_ALL)
+    text_df.to_csv(
+        settings.TEXT_TWEETS_CSV, 
+        encoding='utf-8', 
+        index=False, 
+        quoting=csv.QUOTE_ALL
+    )
 
 # %%
 if __name__ == '__main__':
-    tweets(
-        tweets_csv=settings.TWEETS_CSV,
-        text_col_name='full_text', 
-        slice=10000
-    )
+    tweets()
