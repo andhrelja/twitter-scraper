@@ -41,7 +41,7 @@ def default_nlp():
     return stanza.Pipeline(
         lang='en', 
         use_gpu=settings.TEXT_USE_GPU, 
-        logging_level='ERROR',
+        logging_level='DEBUG',
         processors='tokenize,pos,lemma'
     )
 
@@ -60,7 +60,7 @@ def setup_global_nlps():
         nlps[stanza_lang] = stanza.Pipeline(
             lang=stanza_lang, 
             use_gpu=settings.TEXT_USE_GPU, 
-            logging_level='ERROR',
+            logging_level='DEBUG',
             processors='tokenize,pos,lemma'
         )
     
@@ -68,7 +68,7 @@ def setup_global_nlps():
         nlps[classla_lang] = classla.Pipeline(
             lang=classla_lang, 
             use_gpu=settings.TEXT_USE_GPU, 
-            logging_level='ERROR',
+            logging_level='DEBUG',
             processors='tokenize,pos,lemma'
         )
     
@@ -87,7 +87,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
             & (tweets_df['created_at'] < end_date)
         ]
         
-    def apply_nlp(row, text_col_name='word_grams', keep_upos=('NOUN', 'PROPN', 'ADJ')):
+    def apply_nlp(row, text_col_name='text', keep_upos=('NOUN', 'PROPN', 'ADJ')):
         if len(row[text_col_name]) > 0:
             nlp = nlps[row['langid']]
             doc = nlp(" ".join(row[text_col_name]))
@@ -124,9 +124,14 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
     # bitri_grams = trigrams[bigram_model[texts]]
     
     logger.info("Running lemmatization  ...")
-    text_df['word_grams'] = text_df['text'].transform(lambda x: trigrams[bigram_model[x]] if len(x) > 0 else [])
     text_df['lemmatized'] = text_df.apply(apply_nlp, axis=1)
+    logger.info("Applying Phrases model ...")
+    text_df['word_grams'] = text_df['lemmatized'].transform(lambda x: trigrams[bigram_model[x]] if len(x) > 0 else [])
     return text_df
+
+def _get_adhoc_tweets_df(tweets_df):
+    
+    return tweets_df
 
 
 def get_corpus_tweets_df(tweets_df):
@@ -158,10 +163,14 @@ def get_corpus_tweets_df(tweets_df):
 
     
 # %%
-def tweets():  
+def tweets(adhoc=True):
+    TEXT_TWEETS_CSV = settings.TEXT_TWEETS_CSV
+    if adhoc:
+        TEXT_TWEETS_CSV = settings.TEXT_TWEETS_CSV.replace(settings.folder_name, 'adhoc')
+    
     logger.info("Setting up NLPs (stanza, classla) ...")  
     setup_global_nlps()
-    utils.mkdir(os.path.dirname(settings.TEXT_TWEETS_CSV))
+    utils.mkdir(os.path.dirname(TEXT_TWEETS_CSV))
     
     logger.info("Reading tweets CSV")
     tweets_df = pd.read_csv(
@@ -171,10 +180,12 @@ def tweets():
     )
 
     logger.info("START - Text transformations")
+    if adhoc:
+        tweets_df = _get_adhoc_tweets_df(tweets_df)
     text_df = get_text_dt(tweets_df)
     logger.info("END - Text transformations")
     text_df.to_csv(
-        settings.TEXT_TWEETS_CSV, 
+        TEXT_TWEETS_CSV.replace('tweets.csv', 'tweets-lemmatized-wordgrams.csv'), 
         encoding='utf-8', 
         index=False, 
         quoting=csv.QUOTE_ALL
