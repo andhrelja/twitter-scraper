@@ -2,12 +2,12 @@ name: Commit Lint
 
 on:
   pull_request:
-    branches: [develop, master]
+    branches: [develop]
     types: [opened, edited]
 
 jobs:
-  commitlint:
-    name: commitlint
+  commit-lint:
+    name: commit-lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
