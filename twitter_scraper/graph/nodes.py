@@ -33,13 +33,13 @@ NODE_DTYPE = {
 }
 
 # %%
-def get_nodes_df(tweets_df, user_df):
-    nodes_df = tweets_df.groupby('user_id').agg(total_tweets=('user_id', 'size')).join(user_df.set_index('user_id'), how='inner')
+def get_nodes_df(tweets_df, users_df):
+    nodes_df = tweets_df.groupby('user_id').agg(total_tweets=('user_id', 'size')).join(users_df.set_index('user_id'), how='inner')
     # nodes_df['covid_tweets']    = tweets_df[tweets_df['is_covid'] == True].groupby('user_id').size()
     # nodes_df['is_covid']        = nodes_df['covid_tweets'].transform(lambda x: x > 0)
     # nodes_df['covid_tweets']    = nodes_df['covid_tweets'].fillna(0).astype(int)
     # nodes_df['covid_pct']       = nodes_df['covid_tweets'] / nodes_df['total_tweets']
-    nodes_df = nodes_df.join(user_df[['user_id', 'followers_count', 'friends_count']].set_index('user_id').rename(columns={
+    nodes_df = nodes_df.join(users_df[['user_id', 'followers_count', 'friends_count']].set_index('user_id').rename(columns={
         'followers_count': 'out_d',
         'friends_count': 'in_d'
     }))
@@ -53,11 +53,12 @@ def nodes():
     utils.mkdir(os.path.dirname(settings.NODES_CSV))
     
     logger.info("START - Creating Graph data")
-    user_df = utils.pd_read_multiple(settings.CLEAN_USERS_CSV, pd.read_csv, dtype=USER_DTYPE)
+    users_df = utils.pd_read_multiple(settings.CLEAN_USERS_CSV, pd.read_csv, dtype=USER_DTYPE)
+    users_df = pd.concat(users_df)
     tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, dtype=TWEET_DTYPE)
 
     logger.info("Creating Nodes df, this may take a while")
-    nodes_df = get_nodes_df(tweets_df, user_df)
+    nodes_df = get_nodes_df(tweets_df, users_df)
     nodes_df.to_csv(settings.NODES_CSV, index=False, quoting=csv.QUOTE_NONNUMERIC)
     logger.info("Wrote Nodes df")
     logger.info("Graph nodes saved: {}".format(settings.NODES_CSV))
