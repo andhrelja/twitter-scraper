@@ -48,7 +48,28 @@ def update_filtered_baseline():
     if not os.path.exists(settings.CLEAN_USERS_CSV):
         logger.warning("STOP - Baseline was not updated, missing scraped users")
         return
+    
     users_df = pd.read_csv(settings.CLEAN_USERS_CSV)
+    if settings.DEBUG:
+        filters = ((users_df['protected'] == False)
+            & (users_df['is_croatian'] == True)
+            # & (users_df['statuses_count'] > 10)
+            # & (users_df['friends_count'] > 10)
+            # & (users_df['friends_count'] < 5000)
+            # & (users_df['followers_count'] > 10)
+            & (users_df['followers_count'] < 5000)
+        )
+    else:
+        filters = ((users_df['protected'] == False)
+            & (users_df['is_croatian'] == True)
+            & (users_df['statuses_count'] > 10)
+            & (users_df['friends_count'] > 10)
+            & (users_df['friends_count'] < 5000)
+            & (users_df['followers_count'] > 10)
+            # & (users_df['followers_count'] < 5000)
+        )
+    users_df = users_df[filters].sort_values(by='followers_count')
+
     archive_baseline_len = len(utils.get_baseline_user_ids())
     baseline_user_ids = list(map(int, users_df.user_id.values))
     
@@ -93,34 +114,16 @@ def clean_location(location):
     #     if char not in accepted_chars + ' ':
     #         location_lower = location_lower.replace(char, ' ')
     
-    if location_lower == '':
+    if location_lower in ('', '🇭🇷'):
         location_lower = 'hrvatska'
+    if location_lower == 'zg':
+        location_lower = 'zagreb'
     return location_lower.title()
 # %%
 def transform(users_df):
     users_df['location'] = users_df['location'].fillna('').transform(lambda x: re.sub(r'\s+', ' ', x).strip())
     users_df['is_croatian'] = users_df['location'].transform(is_croatian)
     users_df['clean_location'] = users_df.loc[users_df['is_croatian'] == True, 'location'].transform(clean_location)
-
-    if settings.DEBUG:
-        filters = ((users_df['protected'] == False)
-            & (users_df['is_croatian'] == True)
-            # & (users_df['statuses_count'] > 10)
-            # & (users_df['friends_count'] > 10)
-            # & (users_df['friends_count'] < 5000)
-            # & (users_df['followers_count'] > 10)
-            & (users_df['followers_count'] < 5000)
-        )
-    else:
-        filters = ((users_df['protected'] == False)
-            & (users_df['is_croatian'] == True)
-            & (users_df['statuses_count'] > 10)
-            & (users_df['friends_count'] > 10)
-            & (users_df['friends_count'] < 5000)
-            & (users_df['followers_count'] > 10)
-            # & (users_df['followers_count'] < 5000)
-        )
-    users_df = users_df[filters].sort_values(by='followers_count')
     return users_df.astype(USER_DTYPE)
 
 # %%
@@ -128,7 +131,6 @@ def users():
     start_time = dt.datetime.now(settings.TZ_INFO)
     
     utils.mkdir(os.path.dirname(settings.CLEAN_USERS_CSV))
-    utils.mkdir(settings.PROCESSED_SCRAPE_USERS_DIR)
 
     logger.info("START - Cleaning Users ...")
     users_data = fileio.read_content(settings.SCRAPE_USER_OBJS_FN, 'json')
@@ -147,10 +149,6 @@ def users():
     )
     logger.info("Wrote clean User model to {}".format(settings.CLEAN_USERS_CSV))
 
-    os.rename(
-        src=settings.SCRAPE_USER_OBJS_FN, 
-        dst=os.path.join(settings.PROCESSED_SCRAPE_USERS_DIR, 'users.json')
-    )
     end_time = dt.datetime.now(settings.TZ_INFO)
     logger.info("User model saved: {}".format(settings.CLEAN_USERS_CSV))
     logger.info("END - Done cleaning Users")
