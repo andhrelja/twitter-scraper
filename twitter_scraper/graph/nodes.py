@@ -53,7 +53,7 @@ def nodes():
     utils.mkdir(os.path.dirname(settings.NODES_CSV))
     
     logger.info("START - Creating Graph data")
-    user_df = pd.read_csv(settings.CLEAN_USERS_CSV, dtype=USER_DTYPE)
+    user_df = utils.pd_read_multiple(settings.CLEAN_USERS_CSV, pd.read_csv, dtype=USER_DTYPE)
     tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, dtype=TWEET_DTYPE)
 
     logger.info("Creating Nodes df, this may take a while")
