@@ -18,7 +18,6 @@ else:
 
 INPUT_DIR     = os.path.join(ROOT_DIR, 'data', 'input')
 OUTPUT_DIR    = os.path.join(ROOT_DIR, 'data', 'output')
-PROCESSED_DIR = os.path.join(ROOT_DIR, 'data', 'processed')
 LOGS_DIR      = os.path.join(ROOT_DIR, 'logs')
 
 # Input
@@ -46,13 +45,15 @@ LEMMA_LOOKUP        = os.path.join(LOOKUPS_DIR, 'lemma-lookup.csv')
 
 # Output
 ## Scrape
-SCRAPE_USER_OBJS_FN     = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs', 'users.json')
+SCRAPE_USER_OBJS_FN     = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs', folder_name, 'users.json')
 SCRAPE_USER_IDS_FN      = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids', folder_name, '{user_id}.json')
-SCRAPE_TWEETS_FN        = os.path.join(OUTPUT_DIR, 'scrape', 'tweets', '{user_id}.json')
+SCRAPE_TWEETS_FN        = os.path.join(OUTPUT_DIR, 'scrape', 'tweets', folder_name, '{user_id}.json')
 
 ## Clean
-CLEAN_USERS_CSV     = os.path.join(OUTPUT_DIR, 'clean', 'users', folder_name, 'users.csv')
-CLEAN_TWEETS_CSV    = os.path.join(OUTPUT_DIR, 'clean', 'tweets', folder_name, 'tweets.csv')
+CLEAN_USERS_DIR     = os.path.join(OUTPUT_DIR, 'clean', 'users', folder_name)
+CLEAN_TWEETS_DIR    = os.path.join(OUTPUT_DIR, 'clean', 'tweets', folder_name)
+CLEAN_USERS_CSV     = os.path.join(CLEAN_USERS_DIR, 'users.csv')
+CLEAN_TWEETS_CSV    = os.path.join(CLEAN_TWEETS_DIR, 'tweets.csv')
 
 ## Graph 
 NODES_CSV           = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
@@ -62,16 +63,6 @@ EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-foll
 
 ## Text
 TEXT_TWEETS_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'tweets.csv')
- 
-# Processed 
-## Scrape
-PROCESSED_SCRAPE_USERS_DIR  = os.path.join(PROCESSED_DIR, 'scrape', 'users', folder_name)
-PROCESSED_SCRAPE_TWEETS_DIR = os.path.join(PROCESSED_DIR, 'scrape', 'tweets', folder_name)
-
-## Clean
-PROCESSED_CLEAN_USERS_DIR  = os.path.join(PROCESSED_DIR, 'clean', 'users', folder_name)
-PROCESSED_CLEAN_TWEETS_DIR = os.path.join(PROCESSED_DIR, 'clean', 'tweets', folder_name)
-
 
 KEYWORDS = {
     'is_covid': [

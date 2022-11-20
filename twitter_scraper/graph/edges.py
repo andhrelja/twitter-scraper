@@ -89,7 +89,7 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
         rt_created_at='object',
         og_created_at='object',
         rt_timedelta_sec='int64',
-        langid='string'
+        lang='string'
     )
     
     edges_df = tweets_df[tweets_df['is_retweet'] == True][[
@@ -98,8 +98,10 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
         'created_at',
         'full_text', 
         'retweet_from_user_id', 
-        'retweet_from_tweet_id', 
-        'retweet_created_at'
+        'retweet_from_status_id', 
+        'retweet_created_at',
+        'retweet_timedelta_sec',
+        'lang'
     ]].rename(columns={
         'id':                   'rt_tweet_id', 
         'user_id':              'rt_user_id', 
@@ -107,7 +109,8 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
         'full_text':            'full_text', 
         'retweet_created_at':   'og_created_at',
         'retweet_from_user_id': 'og_user_id', 
-        'retweet_from_tweet_id': 'og_tweet_id'
+        'retweet_from_status_id': 'og_tweet_id',
+        'retweet_timedelta_sec': 'rt_timedelta_sec'
     }).merge(nodes_df[['user_id', 'screen_name']] \
         .rename(columns={'screen_name': 'rt_screen_name'}
         ), how='inner', left_on='rt_user_id', right_on='user_id'
@@ -116,6 +119,7 @@ def get_user_retweets_edges_df(nodes_df, tweets_df):
         ), how='left', left_on='og_user_id', right_on='user_id'
     )
     
+    edges_df = edges_df.rename(columns={'og_user_id': 'source', 'rt_user_id': 'target'})
     edges_df = edges_df.loc[edges_df['source'].isin(nodes_df['user_id'])]
     edges_df = edges_df.loc[edges_df['source'] != edges_df['target']]
     # 14529/49181 og_full_text available

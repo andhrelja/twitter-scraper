@@ -1,4 +1,9 @@
-ROOT_DIR=/srv/milky/twitter_scraper
+if [[ $DEBUG == false ]]; then
+    ROOT_DIR=/srv/milky/twitter_scraper
+else
+    ROOT_DIR=/home/milky/infocov/twitter_scraper
+fi
+
 DATA_DIR=${ROOT_DIR}/data
 LOGS_DIR=${ROOT_DIR}/logs
 
@@ -9,7 +14,7 @@ INPUT_STOP_WORDS_DIR=${INPUT_DIR}/stop_words
 INPUT_LOOKUPS_DIR=${INPUT_DIR}/lookups
 
 OUTPUT_DIR=${DATA_DIR}/output
-PROCESSED_DIR=${DATA_DIR}/processed
+# PROCESSED_DIR=${DATA_DIR}/processed
 
 ROOT_INPUT_BASELINE=${INPUT_DIR}/baseline-user-ids.json
 # ROOT_INPUT_PROCESSED_USER_IDS=${INPUT_DIR}/processed-user-ids.json
@@ -31,9 +36,9 @@ SCRAPE_USERS_DIR=${SCRAPE_DIR}/users
 SCRAPE_USERS_IDS_DIR=${SCRAPE_USERS_DIR}/ids
 SCRAPE_USERS_OBJS_DIR=${SCRAPE_USERS_DIR}/objs
 
-SCRAPE_PROCESSED_DIR=${PROCESSED_DIR}/scrape
-SCRAPE_PROCESSED_USERS_DIR=${PROCESSED_DIR}/scrape/users/
-SCRAPE_PROCESSED_TWEETS_DIR=${PROCESSED_DIR}/scrape/tweets
+# SCRAPE_PROCESSED_DIR=${PROCESSED_DIR}/scrape
+# SCRAPE_PROCESSED_USERS_DIR=${PROCESSED_DIR}/scrape/users/
+# SCRAPE_PROCESSED_TWEETS_DIR=${PROCESSED_DIR}/scrape/tweets
 
 ## Clean
 CLEAN_DIR=${OUTPUT_DIR}/clean
@@ -42,9 +47,9 @@ CLEAN_TWEETS_DIR=${CLEAN_DIR}/tweets
 # Clean Users
 CLEAN_USERS_DIR=${CLEAN_DIR}/users
 
-CLEAN_PROCESSED_DIR=${PROCESSED_DIR}/clean
-CLEAN_PROCESSED_USERS_DIR=${PROCESSED_DIR}/clean/users/
-CLEAN_PROCESSED_TWEETS_DIR=${PROCESSED_DIR}/clean/tweets
+# CLEAN_PROCESSED_DIR=${PROCESSED_DIR}/clean
+# CLEAN_PROCESSED_USERS_DIR=${PROCESSED_DIR}/clean/users/
+# CLEAN_PROCESSED_TWEETS_DIR=${PROCESSED_DIR}/clean/tweets
 
 ## Graph
 GRAPH_DIR=${OUTPUT_DIR}/graph
@@ -75,8 +80,8 @@ echo "Created $INPUT_LOOKUPS_DIR"
 # Output
 [ ! -d $OUTPUT_DIR ]            && mkdir $OUTPUT_DIR
 echo "Created $OUTPUT_DIR"
-[ ! -d $PROCESSED_DIR ]         && mkdir $PROCESSED_DIR
-echo "Created $PROCESSED_DIR"
+# [ ! -d $PROCESSED_DIR ]         && mkdir $PROCESSED_DIR
+# echo "Created $PROCESSED_DIR"
 
 [ ! -d $SCRAPE_DIR ]            && mkdir $SCRAPE_DIR
 echo "Created $SCRAPE_DIR"
@@ -88,8 +93,8 @@ echo "Created $SCRAPE_USERS_DIR"
 echo "Created $SCRAPE_USERS_IDS_DIR"
 [ ! -d $SCRAPE_USERS_OBJS_DIR ] && mkdir $SCRAPE_USERS_OBJS_DIR
 echo "Created $SCRAPE_USERS_OBJS_DIR"
-[ ! -d $SCRAPE_PROCESSED_DIR ] && mkdir $SCRAPE_PROCESSED_DIR
-echo "Created $SCRAPE_PROCESSED_DIR"
+# [ ! -d $SCRAPE_PROCESSED_DIR ] && mkdir $SCRAPE_PROCESSED_DIR
+# echo "Created $SCRAPE_PROCESSED_DIR"
 [ ! -d $SCRAPE_PROCESSED_USERS_DIR ] && mkdir $SCRAPE_PROCESSED_USERS_DIR
 echo "Created $SCRAPE_PROCESSED_USERS_DIR"
 [ ! -d $SCRAPE_PROCESSED_TWEETS_DIR ] && mkdir $SCRAPE_PROCESSED_TWEETS_DIR
@@ -102,8 +107,8 @@ echo "Created $CLEAN_USERS_DIR"
 [ ! -d $CLEAN_TWEETS_DIR ]      && mkdir $CLEAN_TWEETS_DIR
 echo "Created $CLEAN_TWEETS_DIR"
 [ ! -d $GRAPH_DIR ]             && mkdir $GRAPH_DIR
-[ ! -d $CLEAN_PROCESSED_DIR ] && mkdir $CLEAN_PROCESSED_DIR
-echo "Created $CLEAN_PROCESSED_DIR"
+# [ ! -d $CLEAN_PROCESSED_DIR ] && mkdir $CLEAN_PROCESSED_DIR
+# echo "Created $CLEAN_PROCESSED_DIR"
 [ ! -d $CLEAN_PROCESSED_USERS_DIR ] && mkdir $CLEAN_PROCESSED_USERS_DIR
 echo "Created $CLEAN_PROCESSED_USERS_DIR"
 [ ! -d $CLEAN_PROCESSED_TWEETS_DIR ] && mkdir $CLEAN_PROCESSED_TWEETS_DIR

@@ -10,7 +10,7 @@ logger = utils.get_logger(__file__)
 def get_api_connections():
     apis = {}
     for conn_name, conn_details in settings.connections.items():
-        auth = tweepy.OAuthHandler(conn_details['consumer_key'], conn_details['consumer_secret'])
+        auth = tweepy.OAuth1UserHandler(conn_details['consumer_key'], conn_details['consumer_secret'])
         auth.set_access_token(conn_details['access_key'], conn_details['access_secret'])
         apis.update({conn_name: tweepy.API(auth, wait_on_rate_limit=True)})
     logger.info('{} APIs successfully connected!'.format(len(apis)))

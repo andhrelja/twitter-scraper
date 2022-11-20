@@ -83,15 +83,18 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
         
         l.acquire()
         fileio.write_content(
-            path=os.path.join(settings.SCRAPE_TWEETS_FN.format(user_id=user_id)), 
+            path=settings.SCRAPE_TWEETS_FN.format(user_id=user_id),
             content=all_user_tweets,
-            file_type='json', 
+            file_type='json',
             indent=None
         )
-        if max_tweet_ids:
-            fileio.write_content(settings.MAX_TWEET_IDS, max_tweet_ids, 'json')
         l.release()
         pbar.update(1)
+    
+    if max_tweet_ids:
+        l.acquire()
+        fileio.write_content(settings.MAX_TWEET_IDS, max_tweet_ids, 'json')
+        l.release()
 
 
 def tweets(apis: List[dict]):
@@ -107,7 +110,7 @@ def tweets(apis: List[dict]):
     global q, pbar
     
     start_time = dt.datetime.now(settings.TZ_INFO)
-    utils.mkdir(settings.PROCESSED_SCRAPE_TWEETS_DIR)
+    utils.mkdir(os.path.dirname(settings.SCRAPE_TWEETS_FN))
     threads = []
 
     baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)

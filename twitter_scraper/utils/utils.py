@@ -45,3 +45,12 @@ def get_baseline_user_ids(processed_filepath=None):
 def mkdir(path):
     if not os.path.exists(path):
         os.mkdir(path)
+
+
+def pd_read_multiple(directory, read_fn, **kwargs):
+    directory = os.path.dirname(directory)
+    for folder_name in os.listdir(directory):
+        folder_path = os.path.join(directory, folder_name)
+        for file_name in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, file_name)
+            yield read_fn(file_path, **kwargs)
