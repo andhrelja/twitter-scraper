@@ -8,6 +8,19 @@ _, logger_module = os.path.split(path)
 logger_name = '{}.{}'.format(logger_module, logger_filename.replace('.py', ''))
 logger = logging.getLogger(logger_name)
 
+
+def ensure_write(func):
+    def call_write(**kwargs):
+        try:
+            func(**kwargs)
+        except KeyboardInterrupt:
+            # Not feasible because appending content can result with data loss
+            logger.info("Caught a KeyboardInterrupt, finalizing write before exiting")
+            kwargs.update({'overwrite': True})
+            func(**kwargs)
+    return call_write
+
+# @ensure_write
 def write_content(path, content, file_type='csv', fieldnames=None, overwrite=False, **kwargs):
     if os.path.isfile(path):
         if overwrite:

@@ -41,7 +41,7 @@ def default_nlp():
     return stanza.Pipeline(
         lang='en', 
         use_gpu=settings.TEXT_USE_GPU, 
-        logging_level='DEBUG',
+        logging_level='ERROR',
         processors='tokenize,pos,lemma'
     )
 
@@ -60,7 +60,7 @@ def setup_global_nlps():
         nlps[stanza_lang] = stanza.Pipeline(
             lang=stanza_lang, 
             use_gpu=settings.TEXT_USE_GPU, 
-            logging_level='DEBUG',
+            logging_level='ERROR',
             processors='tokenize,pos,lemma'
         )
     
@@ -68,7 +68,7 @@ def setup_global_nlps():
         nlps[classla_lang] = classla.Pipeline(
             lang=classla_lang, 
             use_gpu=settings.TEXT_USE_GPU, 
-            logging_level='DEBUG',
+            logging_level='ERROR',
             processors='tokenize,pos,lemma'
         )
     
@@ -89,7 +89,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
         
     def apply_nlp(row, text_col_name='text', keep_upos=('NOUN', 'PROPN', 'ADJ')):
         if len(row[text_col_name]) > 0:
-            nlp = nlps[row['langid']]
+            nlp = nlps[row['lang']]
             doc = nlp(" ".join(row[text_col_name]))
             return [word.lemma
                     for sentence in doc.sentences
@@ -99,7 +99,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
             return []
 
     
-    text_df = tweets_df[tweets_df['langid'].isin(USE_STANZA_LANGUAGES + USE_CLASSLA_LANGUAGES)].copy()
+    text_df = tweets_df[tweets_df['lang'].isin(USE_STANZA_LANGUAGES + USE_CLASSLA_LANGUAGES)].copy()
     text_df['text'] = text_df['full_text'].transform(lambda x: re.sub(URL_REGEX, '', x))
     text_df['text'] = text_df['text'].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
     # text_df['emoji'] = text_df['text'].transform(demoji.findall_list, desc=False)
@@ -111,8 +111,11 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
     text_df['text'] = text_df['text'].transform(
         lambda text: [word for word in text if word not in stop_words]
     )
-
-    texts = [list(filter(None, x)) for x in text_df['text']]
+    
+    logger.info("Running lemmatization  ...")
+    text_df['lemmatized'] = text_df.apply(apply_nlp, axis=1)
+    
+    texts = [list(filter(None, x)) for x in text_df['lemmatized']]
     texts = list(filter(lambda x: x != [], texts))
     
     logger.info("Running gensim bigrams ...")
@@ -123,8 +126,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
     trigrams = gensim.models.Phrases(sentences=bigram_model[texts], min_count=20, threshold=100)
     # bitri_grams = trigrams[bigram_model[texts]]
     
-    logger.info("Running lemmatization  ...")
-    text_df['lemmatized'] = text_df.apply(apply_nlp, axis=1)
+    
     logger.info("Applying Phrases model ...")
     text_df['word_grams'] = text_df['lemmatized'].transform(lambda x: trigrams[bigram_model[x]] if len(x) > 0 else [])
     return text_df
