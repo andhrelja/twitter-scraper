@@ -53,8 +53,8 @@ def nodes():
     utils.mkdir(os.path.dirname(settings.NODES_CSV))
     
     logger.info("START - Creating Graph data")
-    users_df = utils.pd_read_multiple(settings.CLEAN_USERS_CSV, pd.read_csv, dtype=USER_DTYPE)
-    users_df = pd.concat(users_df)
+    users_dfs = utils.read_directory_files(settings.CLEAN_USERS_DIR, pd.read_csv, dtype=USER_DTYPE)
+    users_df = pd.concat(users_dfs)
     tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, dtype=TWEET_DTYPE)
 
     logger.info("Creating Nodes df, this may take a while")

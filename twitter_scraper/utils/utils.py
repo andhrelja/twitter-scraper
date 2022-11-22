@@ -47,8 +47,7 @@ def mkdir(path):
         os.mkdir(path)
 
 
-def pd_read_multiple(directory, read_fn, **kwargs):
-    directory = os.path.dirname(directory)
+def read_directory_files(directory: str=None, read_fn: object=None, **kwargs):
     for folder_name in os.listdir(directory):
         folder_path = os.path.join(directory, folder_name)
         for file_name in os.listdir(folder_path):
