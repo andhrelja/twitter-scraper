@@ -12,8 +12,6 @@ from twitter_scraper import settings
 
 logger = utils.get_logger(__file__)
 
-SCRAPE_TWEETS_DIR = os.path.dirname(settings.SCRAPE_TWEETS_FN)
-
 MIN_DATE = dt.datetime.fromisoformat("2022-06-01T00:00:00+00:00")
 MAX_DATE = dt.datetime.now(settings.TZ_INFO)
 # MAX_DATE = dt.datetime.fromisoformat("2022-02-01T00:00:00+00:00")
@@ -122,7 +120,7 @@ def get_tweets_df():
     logger.info("Reading raw Tweet json, this may take a while")
     
     all_tweets = []
-    for file_name in tqdm(os.listdir(SCRAPE_TWEETS_DIR), desc='clean.tweets', position=-1):
+    for file_name in tqdm(os.listdir(settings.SCRAPE_TWEETS_DIR), desc='clean.tweets', position=-1):
         user_id = file_name.replace('.json', '')
         user_tweets = fileio.read_content(settings.SCRAPE_TWEETS_FN.format(user_id=user_id), 'json')
         all_tweets += [SCRAPE_TWEET(tweet) for tweet in user_tweets]
