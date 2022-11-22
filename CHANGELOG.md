@@ -1,3 +1,12 @@
+## [2.0.8](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.7...v2.0.8) (2022-11-22)
+
+
+### Bug Fixes
+
+* directory reading on clean.tweets ([b0c7a9b](https://github.com/milanXpetrovic/twitter_scraper/commit/b0c7a9b9050d2054ab85f1b8b578de43148c26c4))
+
+
+
 ## [2.0.7](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.6...v2.0.7) (2022-11-22)
 
 
@@ -33,18 +42,6 @@
 * eliminate moving scraped files to PROCESSED_DIR ([1099ac2](https://github.com/milanXpetrovic/twitter_scraper/commit/1099ac289dfe1b4032326cdcac78b300d60fa417))
 * standardize column names across modules ([dbdcecd](https://github.com/milanXpetrovic/twitter_scraper/commit/dbdcecdbfefc4ba9730bf0a0ca2c69481b281492))
 * tweepy deprecation - use OAuth1UserHandler ([84a31d0](https://github.com/milanXpetrovic/twitter_scraper/commit/84a31d0e56a32b7b9577b8ebe88a73823914c67a))
-
-
-
-## [2.0.3](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.2...v2.0.3) (2022-11-12)
-
-
-### Bug Fixes
-
-* Implement text lemmatization ([0c06553](https://github.com/milanXpetrovic/twitter_scraper/commit/0c06553cf2bb1f01ad4a171e7bf5fb71bf4878e6))
-* Lock file handle in scrape.tweets ([7e3c41b](https://github.com/milanXpetrovic/twitter_scraper/commit/7e3c41baf9f90fefbc8155345206dbff72ca1f19))
-* Workflow runs install packages using setup.py ([d583edf](https://github.com/milanXpetrovic/twitter_scraper/commit/d583edf2dde43bb5948796ae356d519623ef93f4))
-* Write max-tweet-ids.json for each tweet batch ([b9f04b4](https://github.com/milanXpetrovic/twitter_scraper/commit/b9f04b4eeeb4f1d2eadd5fac50eeb8494472c4cd))
 
 
 
