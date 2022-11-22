@@ -12,12 +12,13 @@ on:
 env:
   DEBUG: false
   USE_GPU: true
-  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
   CUDA_VISIBLE_DEVICES: 2
+  NUMEXPR_MAX_THREADS: 9
+  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
   CLASSLA_RESOURCES_DIR: '/srv/milky/classla_resources'
   STANZA_RESOURCES_DIR: '/srv/milky/stanza_resources'
-  NUMEXPR_MAX_THREADS: 9
   TWITTER_SCRAPER_DATA_DIR: '/srv/milky/twitter_scraper'
+  FOLDER_NAME: $(date +%Y-%m-%d)
 
 jobs:
   run-twitter-scraper:

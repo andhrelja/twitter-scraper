@@ -1,3 +1,12 @@
+## [2.0.5](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.4...v2.0.5) (2022-11-20)
+
+
+### Bug Fixes
+
+* read_multiple clean users instead of read_csv ([03b5b46](https://github.com/milanXpetrovic/twitter_scraper/commit/03b5b46920078921825e3423aca3e7e847133046))
+
+
+
 ## [2.0.4](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.3...v2.0.4) (2022-11-20)
 
 
@@ -43,10 +52,6 @@
 
 
 # 1.0.0 (2022-02-04)
-
-
-
-# [2.0.0](https://github.com/milanXpetrovic/twitter_scraper/compare/v1.0.0...v2.0.0) (2022-10-04)
 
 
 
