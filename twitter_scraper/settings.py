@@ -5,7 +5,8 @@ import datetime as dt
 TZ_INFO = dt.timezone.utc
 now = dt.datetime.now(TZ_INFO)
 folder_name = now.strftime('%Y-%m-%d')
-folder_name = '2022-11-01'
+folder_name = os.getenv('FOLDER_NAME', '2022-11-20')
+# folder_name = '2022-11-01'
 
 DEBUG = os.getenv('DEBUG', 'true') == 'true'
 TEXT_USE_GPU = os.getenv('USE_GPU', 'true') == 'true'
@@ -44,16 +45,28 @@ SENTIMENT_LOOKUP    = os.path.join(LOOKUPS_DIR, 'sentiment-lookup.csv')
 LEMMA_LOOKUP        = os.path.join(LOOKUPS_DIR, 'lemma-lookup.csv')
 
 # Output
+
+# Directories
 ## Scrape
-SCRAPE_USER_OBJS_FN     = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'objs', folder_name, 'users.json')
-SCRAPE_USER_IDS_FN      = os.path.join(OUTPUT_DIR, 'scrape', 'users', 'ids', folder_name, '{user_id}.json')
-SCRAPE_TWEETS_FN        = os.path.join(OUTPUT_DIR, 'scrape', 'tweets', folder_name, '{user_id}.json')
+SCRAPE_USER_DIR     = os.path.join(OUTPUT_DIR, 'scrape', 'users')
+SCRAPE_TWEETS_DIR   = os.path.join(OUTPUT_DIR, 'scrape', 'tweets')
 
 ## Clean
-CLEAN_USERS_DIR     = os.path.join(OUTPUT_DIR, 'clean', 'users', folder_name)
-CLEAN_TWEETS_DIR    = os.path.join(OUTPUT_DIR, 'clean', 'tweets', folder_name)
-CLEAN_USERS_CSV     = os.path.join(CLEAN_USERS_DIR, 'users.csv')
-CLEAN_TWEETS_CSV    = os.path.join(CLEAN_TWEETS_DIR, 'tweets.csv')
+CLEAN_USERS_DIR     = os.path.join(OUTPUT_DIR, 'clean', 'users')
+CLEAN_TWEETS_DIR    = os.path.join(OUTPUT_DIR, 'clean', 'tweets')
+
+## Graph
+GRAPH_DIR           = os.path.join(OUTPUT_DIR, 'graph')
+
+# Directories
+## Scrape
+SCRAPE_USER_OBJS_FN = os.path.join(SCRAPE_USER_DIR, 'objs', folder_name, 'users.json')
+SCRAPE_USER_IDS_FN  = os.path.join(SCRAPE_USER_DIR, 'ids', folder_name, '{user_id}.json')
+SCRAPE_TWEETS_FN    = os.path.join(SCRAPE_TWEETS_DIR, folder_name, '{user_id}.json')
+
+## Clean
+CLEAN_USERS_CSV     = os.path.join(CLEAN_USERS_DIR, folder_name, 'users.csv')
+CLEAN_TWEETS_CSV    = os.path.join(CLEAN_TWEETS_DIR, folder_name, 'tweets.csv')
 
 ## Graph 
 NODES_CSV           = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')

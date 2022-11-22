@@ -15,10 +15,11 @@ logger = utils.get_logger(__file__)
 
 l = threading.Lock()
 q = queue.Queue()
+max_tweet_ids = {}
 
 MIN_DATE = dt.datetime.fromisoformat("2020-01-01T00:00:00+00:00")
 
-def get_tweet_max_id(user_id: int):
+def get_max_tweet_id(user_id: int):
     """Reads static ``input/max-tweet-ids`` JSON and returns the latest tweet ID. 
     Latest tweet ID value is used as ``since_id`` for incremental loads.
 
@@ -27,9 +28,9 @@ def get_tweet_max_id(user_id: int):
     :return: Latest tweet ID if exists, else None
     :rtype: Union[int, NoneType]
     """
-    max_tweet_ids = fileio.read_content(os.path.join(settings.MAX_TWEET_IDS), 'json')
-    if max_tweet_ids:
-        return max_tweet_ids.get(user_id)
+    _max_tweet_ids = fileio.read_content(settings.MAX_TWEET_IDS, 'json')
+    if _max_tweet_ids:
+        return _max_tweet_ids.get(str(user_id))
     return None
 
 def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
@@ -46,14 +47,13 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
     """
     # Twitter only allows access to 
     # a users most recent 3240 tweets with this method
-    global q, l
+    global q, l, max_tweet_ids
     
-    max_tweet_ids = {}
     while not q.empty():
         user_id = q.get()
 
         all_user_tweets = []
-        since_id = get_tweet_max_id(user_id)
+        since_id = get_max_tweet_id(user_id)
         max_id = None
         #keep grabbing tweets until there are no tweets left to grab
         while True:
@@ -70,16 +70,13 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
             if len(new_tweets) == 0:
                 break
             else:
-                oldest_tweet = new_tweets[-1]
-                max_id = oldest_tweet.id - 1
+                newest_tweet = new_tweets[0]
+                since_id = newest_tweet.id
                 
                 tweets = [item._json for item in new_tweets]
                 all_user_tweets.extend(tweets)
-                
-                if oldest_tweet.created_at < MIN_DATE:
-                    break
         
-        max_tweet_ids[user_id] = max_id
+        max_tweet_ids[user_id] = since_id
         
         l.acquire()
         fileio.write_content(
@@ -90,11 +87,6 @@ def __collect_users_tweets(conn_name: str, api: tweepy.API, pbar: tqdm):
         )
         l.release()
         pbar.update(1)
-    
-    if max_tweet_ids:
-        l.acquire()
-        fileio.write_content(settings.MAX_TWEET_IDS, max_tweet_ids, 'json')
-        l.release()
 
 
 def tweets(apis: List[dict]):
@@ -107,10 +99,10 @@ def tweets(apis: List[dict]):
     :param apis: list of dictionaries: ``[{connection_name: tweepy.API}]``
     :type apis: List[dict]
     """
-    global q, pbar
+    global q, pbar, max_tweet_ids
     
     start_time = dt.datetime.now(settings.TZ_INFO)
-    utils.mkdir(os.path.dirname(settings.SCRAPE_TWEETS_FN))
+    utils.mkdir(settings.SCRAPE_TWEETS_DIR)
     threads = []
 
     baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)
@@ -119,7 +111,7 @@ def tweets(apis: List[dict]):
     
     logger.info("Scraping Tweets")
 
-    pbar = tqdm(total=len(baseline_user_ids), desc='scrape.tweets', position=-1)
+    pbar = tqdm(total=len(baseline_user_ids), desc='scrape.tweets')
     for conn_name, api in apis.items():
         thread = threading.Thread(
             target=__collect_users_tweets, 
@@ -131,6 +123,11 @@ def tweets(apis: List[dict]):
     for thread in threads:
         thread.join()
     pbar.close()
+    
+    if max_tweet_ids:
+        l.acquire()
+        fileio.write_content(settings.MAX_TWEET_IDS, max_tweet_ids, 'json')
+        l.release()
     
     end_time = dt.datetime.now(settings.TZ_INFO)
     logger.info("Time elapsed: {} min".format(end_time - start_time))
