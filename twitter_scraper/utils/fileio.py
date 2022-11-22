@@ -3,9 +3,9 @@ import csv
 import json
 import logging
 
-path, logger_filename = os.path.split(__file__)
-_, logger_module = os.path.split(path)
-logger_name = '{}.{}'.format(logger_module, logger_filename.replace('.py', ''))
+logger_name = '{}.{}'.format(
+    os.path.basename(os.path.dirname(__file__)), 
+    os.path.basename(__file__).replace('.py', ''))
 logger = logging.getLogger(logger_name)
 
 

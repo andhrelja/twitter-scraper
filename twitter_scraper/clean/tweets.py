@@ -55,6 +55,7 @@ SCRAPE_TWEET = lambda x: {
 TWEET_DTYPE = {
     # Tweet
 	'id':							'int64',
+    'folder_name':                  'string',
 	'user_id':						'int64',
 	'full_text':					'string',
     'possibly_sensitive':			'boolean',
@@ -113,6 +114,7 @@ def transform(tweets_df):
     tweets_df['month']      = tweets_df['created_at'].dt.strftime('%Y-%m')
     tweets_df['full_text']  = tweets_df['full_text'].fillna('')
     tweets_df['lang']       = tweets_df.apply(lambda x: detect_language(x['full_text']) if x['lang'] in ('und', 'zxx', 'pt', 'qme') else x['lang'], axis=1)
+    tweets_df['folder_name'] = settings.folder_name
     return tweets_df.astype(TWEET_DTYPE)
 
 
