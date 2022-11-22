@@ -58,7 +58,7 @@ utils.update_baseline(
 
 logger.info("**************** END UPDATE BASELINE ****************")
 
-# DISCORD_CLIENT.run(DISCORD_TOKEN)
-# utils.notify()
+DISCORD_CLIENT.run(DISCORD_TOKEN)
+utils.notify()
 
 logger.info("********************** DONE **********************")
