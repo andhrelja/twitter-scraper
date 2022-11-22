@@ -102,7 +102,7 @@ def tweets(apis: List[dict]):
     global q, pbar, max_tweet_ids
     
     start_time = dt.datetime.now(settings.TZ_INFO)
-    utils.mkdir(settings.SCRAPE_TWEETS_DIR)
+    utils.mkdir(os.path.dirname(settings.SCRAPE_TWEETS_FN))
     threads = []
 
     baseline_user_ids = utils.get_baseline_user_ids(processed_filepath=None)
