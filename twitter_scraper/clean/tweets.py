@@ -120,7 +120,7 @@ def get_tweets_df():
     logger.info("Reading raw Tweet json, this may take a while")
     
     all_tweets = []
-    for file_name in tqdm(os.listdir(settings.SCRAPE_TWEETS_DIR), desc='clean.tweets', position=-1):
+    for file_name in tqdm(os.listdir(os.path.dirname(settings.SCRAPE_TWEETS_FN)), desc='clean.tweets', position=-1):
         user_id = file_name.replace('.json', '')
         user_tweets = fileio.read_content(settings.SCRAPE_TWEETS_FN.format(user_id=user_id), 'json')
         all_tweets += [SCRAPE_TWEET(tweet) for tweet in user_tweets]
