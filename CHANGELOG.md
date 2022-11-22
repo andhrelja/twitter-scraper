@@ -1,3 +1,12 @@
+## [2.0.7](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.6...v2.0.7) (2022-11-22)
+
+
+### Bug Fixes
+
+* folder creation on scrape.tweets ([a0ab5ff](https://github.com/milanXpetrovic/twitter_scraper/commit/a0ab5ff4e0894df373e142b57af3a1e03f5806e4))
+
+
+
 ## [2.0.6](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.5...v2.0.6) (2022-11-22)
 
 
@@ -36,17 +45,6 @@
 * Lock file handle in scrape.tweets ([7e3c41b](https://github.com/milanXpetrovic/twitter_scraper/commit/7e3c41baf9f90fefbc8155345206dbff72ca1f19))
 * Workflow runs install packages using setup.py ([d583edf](https://github.com/milanXpetrovic/twitter_scraper/commit/d583edf2dde43bb5948796ae356d519623ef93f4))
 * Write max-tweet-ids.json for each tweet batch ([b9f04b4](https://github.com/milanXpetrovic/twitter_scraper/commit/b9f04b4eeeb4f1d2eadd5fac50eeb8494472c4cd))
-
-
-
-## [2.0.2](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.1...v2.0.2) (2022-11-11)
-
-
-### Performance Improvements
-
-* Adminstrative scripting ([46cd641](https://github.com/milanXpetrovic/twitter_scraper/commit/46cd64142748bb493778942aa8c064927a3b2735))
-* Move scrape data to the processed folder after clean.tweets is completed ([ec4e413](https://github.com/milanXpetrovic/twitter_scraper/commit/ec4e413f9fd4332c5aa3e51f25d5dacea96123d1))
-* Separate changelog and commitlint ([08873e9](https://github.com/milanXpetrovic/twitter_scraper/commit/08873e9b6cf837d8e2ee172aa8031af1e8452f50))
 
 
 
