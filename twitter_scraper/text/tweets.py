@@ -91,10 +91,10 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
         if len(row[text_col_name]) > 0:
             nlp = nlps[row['lang']]
             doc = nlp(" ".join(row[text_col_name]))
-            return [word.lemma
+            return list(filter(None, [word.lemma
                     for sentence in doc.sentences
                     for word in sentence.words
-                    if word.upos in keep_upos]
+                    if word.upos in keep_upos]))
         else:
             return []
 
@@ -115,7 +115,6 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
     logger.info("Running lemmatization  ...")
     text_df['lemmatized'] = text_df.apply(apply_nlp, axis=1)
     
-    texts = [list(filter(None, x)) for x in text_df['lemmatized']]
     texts = list(filter(lambda x: x != [], texts))
     
     logger.info("Running gensim bigrams ...")
@@ -126,9 +125,8 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
     trigrams = gensim.models.Phrases(sentences=bigram_model[texts], min_count=20, threshold=100)
     # bitri_grams = trigrams[bigram_model[texts]]
     
-    
     logger.info("Applying Phrases model ...")
-    text_df['word_grams'] = text_df['lemmatized'].transform(lambda x: trigrams[bigram_model[x]] if len(x) > 0 else [])
+    text_df['word_grams'] = text_df['lemmatized'].transform(lambda x: trigrams[bigram_model[list(filter(None, x))]] if len(x) > 0 else [])
     return text_df
 
 def _get_adhoc_tweets_df(tweets_df):
