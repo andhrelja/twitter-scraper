@@ -1,3 +1,12 @@
+## [2.0.10](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.9...v2.0.10) (2022-11-23)
+
+
+### Bug Fixes
+
+* reference texts before assignment ([cd8547c](https://github.com/milanXpetrovic/twitter_scraper/commit/cd8547c0318b283fab4687aebc5d8967b19b2788))
+
+
+
 ## [2.0.9](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.8...v2.0.9) (2022-11-23)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * historic and incremental loads by since-id ([e6a376b](https://github.com/milanXpetrovic/twitter_scraper/commit/e6a376b3d3a888c16badf4bae58d13093a2a0911))
-
-
-
-## [2.0.5](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.4...v2.0.5) (2022-11-20)
-
-
-### Bug Fixes
-
-* read_multiple clean users instead of read_csv ([03b5b46](https://github.com/milanXpetrovic/twitter_scraper/commit/03b5b46920078921825e3423aca3e7e847133046))
 
 
 
