@@ -115,7 +115,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
     logger.info("Running lemmatization  ...")
     text_df['lemmatized'] = text_df.apply(apply_nlp, axis=1)
     
-    texts = list(filter(lambda x: x != [], texts))
+    texts = list(filter(lambda x: x != [], text_df['lemmatized']))
     
     logger.info("Running gensim bigrams ...")
     bigrams = gensim.models.Phrases(sentences=texts, min_count=50, threshold=50)
