@@ -21,8 +21,9 @@ data/input/history*
 data/output/scrape/tweets/*
 data/output/scrape/users/ids/*
 data/output/scrape/users/objs/*
-data/output/clean/user/*
-data/output/clean/tweet/*
+data/output/clean/users/*
+data/output/clean/tweets/*
+data/output/text/*
 
 docs/make.bat
 docs/Makefile
