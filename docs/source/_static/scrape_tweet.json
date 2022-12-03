@@ -1,0 +1,355 @@
+{
+    "created_at": "Tue Nov 22 10:16:18 +0000 2022",
+    "id": 1594998198841798658,
+    "id_str": "1594998198841798658",
+    "full_text": "RT @vatreni_token: 🥳🥳 VATRENI IS LISTED 🚀🚀  \n\nThis is truly a historic moment because #VATRENI is so much more than just a token. Become a…",
+    "truncated": false,
+    "display_text_range": [
+        0,
+        139
+    ],
+    "entities": {
+        "hashtags": [
+            {
+                "text": "VATRENI",
+                "indices": [
+                    86,
+                    94
+                ]
+            }
+        ],
+        "symbols": [],
+        "user_mentions": [
+            {
+                "screen_name": "vatreni_token",
+                "name": "Vatreni",
+                "id": 1526812821744455685,
+                "id_str": "1526812821744455685",
+                "indices": [
+                    3,
+                    17
+                ]
+            }
+        ],
+        "urls": []
+    },
+    "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+    "in_reply_to_status_id": null,
+    "in_reply_to_status_id_str": null,
+    "in_reply_to_user_id": null,
+    "in_reply_to_user_id_str": null,
+    "in_reply_to_screen_name": null,
+    "user": {
+        "id": 790921536,
+        "id_str": "790921536",
+        "name": "HNS",
+        "screen_name": "HNS_CFF",
+        "location": "Hrvatska | Croatia",
+        "description": "Službeni Twitter profil Hrvatskog nogometnog saveza 🥈 Croatian Football Federation official Twitter feed. #HNS #Obitelj #Family",
+        "url": "https://t.co/mpcDxw0blp",
+        "entities": {
+            "url": {
+                "urls": [
+                    {
+                        "url": "https://t.co/mpcDxw0blp",
+                        "expanded_url": "http://www.hns-cff.hr",
+                        "display_url": "hns-cff.hr",
+                        "indices": [
+                            0,
+                            23
+                        ]
+                    }
+                ]
+            },
+            "description": {
+                "urls": []
+            }
+        },
+        "protected": false,
+        "followers_count": 258062,
+        "friends_count": 116,
+        "listed_count": 1782,
+        "created_at": "Thu Aug 30 05:56:36 +0000 2012",
+        "favourites_count": 479,
+        "utc_offset": null,
+        "time_zone": null,
+        "geo_enabled": true,
+        "verified": true,
+        "statuses_count": 19373,
+        "lang": null,
+        "contributors_enabled": false,
+        "is_translator": false,
+        "is_translation_enabled": false,
+        "profile_background_color": "FFFFFF",
+        "profile_background_image_url": "http://abs.twimg.com/images/themes/theme1/bg.png",
+        "profile_background_image_url_https": "https://abs.twimg.com/images/themes/theme1/bg.png",
+        "profile_background_tile": false,
+        "profile_image_url": "http://pbs.twimg.com/profile_images/463945197454245889/ipwbHPLc_normal.png",
+        "profile_image_url_https": "https://pbs.twimg.com/profile_images/463945197454245889/ipwbHPLc_normal.png",
+        "profile_banner_url": "https://pbs.twimg.com/profile_banners/790921536/1641224036",
+        "profile_link_color": "CF1D26",
+        "profile_sidebar_border_color": "FFFFFF",
+        "profile_sidebar_fill_color": "DDEEF6",
+        "profile_text_color": "333333",
+        "profile_use_background_image": false,
+        "has_extended_profile": true,
+        "default_profile": false,
+        "default_profile_image": false,
+        "following": false,
+        "follow_request_sent": false,
+        "notifications": false,
+        "translator_type": "none",
+        "withheld_in_countries": []
+    },
+    "geo": null,
+    "coordinates": null,
+    "place": null,
+    "contributors": null,
+    "retweeted_status": {
+        "created_at": "Tue Nov 22 10:00:18 +0000 2022",
+        "id": 1594994170858463232,
+        "id_str": "1594994170858463232",
+        "full_text": "🥳🥳 VATRENI IS LISTED 🚀🚀  \n\nThis is truly a historic moment because #VATRENI is so much more than just a token. Become a part of the greatest fan story and enjoy all kinds of benefits.\n\n#VATRENI token is now live at @gate_io 🔥\n\n👉🏻 Get it here: https://t.co/sN8mWtUac6 https://t.co/XfqNfwUeCS",
+        "truncated": false,
+        "display_text_range": [
+            0,
+            266
+        ],
+        "entities": {
+            "hashtags": [
+                {
+                    "text": "VATRENI",
+                    "indices": [
+                        67,
+                        75
+                    ]
+                },
+                {
+                    "text": "VATRENI",
+                    "indices": [
+                        185,
+                        193
+                    ]
+                }
+            ],
+            "symbols": [],
+            "user_mentions": [
+                {
+                    "screen_name": "gate_io",
+                    "name": "Gate.io",
+                    "id": 912539725071777792,
+                    "id_str": "912539725071777792",
+                    "indices": [
+                        215,
+                        223
+                    ]
+                }
+            ],
+            "urls": [
+                {
+                    "url": "https://t.co/sN8mWtUac6",
+                    "expanded_url": "https://www.gate.io/trade/VATRENI_USDT",
+                    "display_url": "gate.io/trade/VATRENI_…",
+                    "indices": [
+                        243,
+                        266
+                    ]
+                }
+            ],
+            "media": [
+                {
+                    "id": 1594993532523188226,
+                    "id_str": "1594993532523188226",
+                    "indices": [
+                        267,
+                        290
+                    ],
+                    "media_url": "http://pbs.twimg.com/ext_tw_video_thumb/1594993532523188226/pu/img/oafu8UIOwl2TVq06.jpg",
+                    "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1594993532523188226/pu/img/oafu8UIOwl2TVq06.jpg",
+                    "url": "https://t.co/XfqNfwUeCS",
+                    "display_url": "pic.twitter.com/XfqNfwUeCS",
+                    "expanded_url": "https://twitter.com/vatreni_token/status/1594994170858463232/video/1",
+                    "type": "photo",
+                    "sizes": {
+                        "thumb": {
+                            "w": 150,
+                            "h": 150,
+                            "resize": "crop"
+                        },
+                        "small": {
+                            "w": 680,
+                            "h": 680,
+                            "resize": "fit"
+                        },
+                        "medium": {
+                            "w": 720,
+                            "h": 720,
+                            "resize": "fit"
+                        },
+                        "large": {
+                            "w": 720,
+                            "h": 720,
+                            "resize": "fit"
+                        }
+                    }
+                }
+            ]
+        },
+        "extended_entities": {
+            "media": [
+                {
+                    "id": 1594993532523188226,
+                    "id_str": "1594993532523188226",
+                    "indices": [
+                        267,
+                        290
+                    ],
+                    "media_url": "http://pbs.twimg.com/ext_tw_video_thumb/1594993532523188226/pu/img/oafu8UIOwl2TVq06.jpg",
+                    "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1594993532523188226/pu/img/oafu8UIOwl2TVq06.jpg",
+                    "url": "https://t.co/XfqNfwUeCS",
+                    "display_url": "pic.twitter.com/XfqNfwUeCS",
+                    "expanded_url": "https://twitter.com/vatreni_token/status/1594994170858463232/video/1",
+                    "type": "video",
+                    "sizes": {
+                        "thumb": {
+                            "w": 150,
+                            "h": 150,
+                            "resize": "crop"
+                        },
+                        "small": {
+                            "w": 680,
+                            "h": 680,
+                            "resize": "fit"
+                        },
+                        "medium": {
+                            "w": 720,
+                            "h": 720,
+                            "resize": "fit"
+                        },
+                        "large": {
+                            "w": 720,
+                            "h": 720,
+                            "resize": "fit"
+                        }
+                    },
+                    "video_info": {
+                        "aspect_ratio": [
+                            1,
+                            1
+                        ],
+                        "duration_millis": 15000,
+                        "variants": [
+                            {
+                                "bitrate": 432000,
+                                "content_type": "video/mp4",
+                                "url": "https://video.twimg.com/ext_tw_video/1594993532523188226/pu/vid/320x320/_aggPpZB7SeLFzx9.mp4?tag=12"
+                            },
+                            {
+                                "bitrate": 832000,
+                                "content_type": "video/mp4",
+                                "url": "https://video.twimg.com/ext_tw_video/1594993532523188226/pu/vid/540x540/TATFQ0vDkd-I9SFf.mp4?tag=12"
+                            },
+                            {
+                                "bitrate": 1280000,
+                                "content_type": "video/mp4",
+                                "url": "https://video.twimg.com/ext_tw_video/1594993532523188226/pu/vid/720x720/9AyKp3lfILG_40SN.mp4?tag=12"
+                            },
+                            {
+                                "content_type": "application/x-mpegURL",
+                                "url": "https://video.twimg.com/ext_tw_video/1594993532523188226/pu/pl/5ZHeGZlJ-HNYYmgJ.m3u8?tag=12"
+                            }
+                        ]
+                    },
+                    "additional_media_info": {
+                        "monetizable": false
+                    }
+                }
+            ]
+        },
+        "source": "<a href=\"https://about.twitter.com/products/tweetdeck\" rel=\"nofollow\">TweetDeck</a>",
+        "in_reply_to_status_id": null,
+        "in_reply_to_status_id_str": null,
+        "in_reply_to_user_id": null,
+        "in_reply_to_user_id_str": null,
+        "in_reply_to_screen_name": null,
+        "user": {
+            "id": 1526812821744455685,
+            "id_str": "1526812821744455685",
+            "name": "Vatreni",
+            "screen_name": "vatreni_token",
+            "location": "Croatia",
+            "description": "Home of the Croatian National Teams' loyalty crypto token that rewards @HNS_CFF's most dedicated fans 🇭🇷",
+            "url": "https://t.co/NoL83vjseF",
+            "entities": {
+                "url": {
+                    "urls": [
+                        {
+                            "url": "https://t.co/NoL83vjseF",
+                            "expanded_url": "https://token.hns-cff.hr/",
+                            "display_url": "token.hns-cff.hr",
+                            "indices": [
+                                0,
+                                23
+                            ]
+                        }
+                    ]
+                },
+                "description": {
+                    "urls": []
+                }
+            },
+            "protected": false,
+            "followers_count": 746,
+            "friends_count": 39,
+            "listed_count": 0,
+            "created_at": "Wed May 18 06:32:14 +0000 2022",
+            "favourites_count": 551,
+            "utc_offset": null,
+            "time_zone": null,
+            "geo_enabled": false,
+            "verified": false,
+            "statuses_count": 211,
+            "lang": null,
+            "contributors_enabled": false,
+            "is_translator": false,
+            "is_translation_enabled": false,
+            "profile_background_color": "F5F8FA",
+            "profile_background_image_url": null,
+            "profile_background_image_url_https": null,
+            "profile_background_tile": false,
+            "profile_image_url": "http://pbs.twimg.com/profile_images/1526914009382912000/W1QkUFPh_normal.jpg",
+            "profile_image_url_https": "https://pbs.twimg.com/profile_images/1526914009382912000/W1QkUFPh_normal.jpg",
+            "profile_banner_url": "https://pbs.twimg.com/profile_banners/1526812821744455685/1668902290",
+            "profile_link_color": "1DA1F2",
+            "profile_sidebar_border_color": "C0DEED",
+            "profile_sidebar_fill_color": "DDEEF6",
+            "profile_text_color": "333333",
+            "profile_use_background_image": true,
+            "has_extended_profile": true,
+            "default_profile": true,
+            "default_profile_image": false,
+            "following": false,
+            "follow_request_sent": false,
+            "notifications": false,
+            "translator_type": "none",
+            "withheld_in_countries": []
+        },
+        "geo": null,
+        "coordinates": null,
+        "place": null,
+        "contributors": null,
+        "is_quote_status": false,
+        "retweet_count": 15,
+        "favorite_count": 41,
+        "favorited": false,
+        "retweeted": false,
+        "possibly_sensitive": false,
+        "lang": "en"
+    },
+    "is_quote_status": false,
+    "retweet_count": 15,
+    "favorite_count": 0,
+    "favorited": false,
+    "retweeted": false,
+    "lang": "en"
+}
