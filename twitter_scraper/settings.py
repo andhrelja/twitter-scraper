@@ -5,7 +5,7 @@ import datetime as dt
 TZ_INFO = dt.timezone.utc
 now = dt.datetime.now(TZ_INFO)
 folder_name = now.strftime('%Y-%m-%d')
-folder_name = os.getenv('FOLDER_NAME', '2022-11-20')
+folder_name = os.getenv('FOLDER_NAME', '2022-12-04')
 # folder_name = '2022-11-22'
 
 DEBUG = os.getenv('DEBUG', 'true') == 'true'

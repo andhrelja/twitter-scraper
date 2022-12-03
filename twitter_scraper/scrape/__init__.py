@@ -60,8 +60,9 @@ scrape.user_objs
 The output will finally be used as graph **Nodes**.
 Applies structural transformations to API response data. Original tweet JSON:
 
-.. literalinclude:: _static/user.json
+.. literalinclude:: _static/scrape_user.json
     :language: json
+    :caption: **HNS_CFF.json**
 
 is transformed using the following mapping:
 
@@ -95,11 +96,9 @@ is transformed using the following mapping:
 
 **Example output:**
 
-.. csv-table::
-   :file: ../../docs/source/_static/scrape_user.csv
-   :widths: auto
-   :header-rows: 1
-
+.. literalinclude:: _static/clean_user.json
+    :language: json
+    :caption: **HNS_CFF.json**
 
 
 scrape.tweets
@@ -115,13 +114,14 @@ scrape.tweets
 
 Applies structural transformations to API response data. Original tweet JSON:
 
-.. literalinclude:: _static/tweet.json
+.. literalinclude:: _static/scrape_tweet.json
     :language: json
 
 is transformed using the following mapping:
 
 .. code-block:: python
 
+    flatten_dictlist = lambda dictlist, colname: [_dict.get(colname) for _dict in dictlist]
     SCRAPE_TWEET = lambda x, api=None: {
         'id':                   x.get('id'),
         'user_id':              x.get('user', {}).get('id'),
@@ -151,17 +151,12 @@ is transformed using the following mapping:
         'lang':                 x.get('lang')
     }
 
-    flatten_dictlist = lambda dictlist, colname: [_dict.get(colname) for _dict in dictlist]
 
-**Example outputs:**
+**Example output:**
 
-.. literalinclude:: _static/scrape_tweet_1.json
+.. literalinclude:: _static/clean_tweet.json
     :language: json
     :caption: **146153494.json**
-
-.. literalinclude:: _static/scrape_tweet_2.json
-    :language: json
-    :caption: **1488523272891375621.json**
 
 """
 
