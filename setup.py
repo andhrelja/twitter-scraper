@@ -1,5 +1,5 @@
 from setuptools import setup
-import twitter_scraper
+import twitter_scraper.__version__
 
 with open('README.md', 'r') as f:
    long_description = f.read()
