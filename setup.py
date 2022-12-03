@@ -1,5 +1,5 @@
 from setuptools import setup
-from twitter_scraper.__version__ import __version__
+import twitter_scraper
 
 with open('README.md', 'r') as f:
    long_description = f.read()
@@ -8,7 +8,7 @@ with open('README.md', 'r') as f:
 setup(
    name='twitter-scraper',
    description='Twitter Scraper Python Package',
-   version=__version__,
+   version=twitter_scraper.__version__.__version__,
    long_description=long_description,
    long_description_content_type='text/markdown',
    url='https://github.com/milanXpetrovic/twitter_scraper',

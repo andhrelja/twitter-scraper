@@ -25,10 +25,6 @@ data/output/clean/users/*
 data/output/clean/tweets/*
 data/output/text/*
 
-docs/make.bat
-docs/Makefile
-docs/source*
-
 docs/build/doctrees
 docs/build/html/*
 !docs/build/html/index.html
