@@ -42,4 +42,4 @@ jobs:
       - name: Run Twitter Scraper
         run: python -m ${{ inputs.module_name }}
         env:
-          FOLDER_NAME: '2022-11-22'
+          FOLDER_NAME: '2022-12-04'
