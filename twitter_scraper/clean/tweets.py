@@ -104,6 +104,8 @@ def transform(tweets_df):
     
     tweets_df['is_reply']   = ~tweets_df['in_reply_to_status_id'].isna()
     tweets_df['is_retweet'] = ~tweets_df['retweet_from_status_id'].isna()
+    
+    # retweet_count = tweets_df[tweets_df['is_retweet'] is True].apply(lambda row: row['retweet_from_status_id'] == ?, axis=1)
     tweets_df['retweet_created_at'] = pd.to_datetime(tweets_df['retweet_created_at'], format='%a %b %d %H:%M:%S %z %Y')
     tweets_df['retweet_timedelta_ns']   = tweets_df['created_at'] - tweets_df['retweet_created_at']
     tweets_df['retweet_timedelta_sec']  = tweets_df['retweet_timedelta_ns'].transform(lambda x: x.total_seconds())
