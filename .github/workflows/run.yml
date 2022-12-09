@@ -41,5 +41,3 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run Twitter Scraper
         run: python -m ${{ inputs.module_name }}
-        env:
-          FOLDER_NAME: '2022-12-04'
