@@ -1,3 +1,6 @@
+twitter_scraper/clean/all_tweets.py
+twitter_scraper/clean/all_users.py
+
 *~vsdx
 *.webp
 
