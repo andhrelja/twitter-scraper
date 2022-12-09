@@ -12,46 +12,26 @@ logger = utils.get_logger(__file__)
 
 l = threading.Lock()
 q = queue.Queue()
-
-SCRAPE_USER = lambda x: {
-    'user_id':          x.get('id'),
-    'user_id_str':      x.get('id_str'),
-    'name':             x.get('name'),
-    'screen_name':      x.get('screen_name'),
-    'location':         x.get('location'),
-    "profile_location": x.get('profile_location'),
-    'derived':          x.get('derived'),
-    'url':              x.get('url'),
-    'description':      x.get('description'),
-    'protected':        x.get('protected'),
-    'verified':         x.get('verified'),
-    'followers_count':  x.get('followers_count'),
-    'friends_count':    x.get('friends_count'),
-    'listed_count':     x.get('listed_count'),
-    'favourites_count': x.get('favourites_count'),
-    'statuses_count':   x.get('statuses_count'),
-    'created_at':       x.get('created_at'),
-    'profile_banner_url':      x.get('profile_banner_url'),
-    'profile_image_url_https': x.get('profile_image_url_https'),
-    'default_profile':         x.get('default_profile'),
-    'default_profile_image':   x.get('default_profile_image'),
-    'withheld_in_countries':   x.get('withheld_in_countries'),
-    'withheld_scope':          x.get('withheld_scope'),
-}
+batch = 11
 
 
 def __collect_user_objs(conn_name, api, pbar):
-    global q, l
+    global q, l, batch
     while not q.empty():
         user_ids = q.get()
         user_objs = utils.get_twitter_lookup_users(conn_name, api, user_ids)
-        user_objs = [SCRAPE_USER(user._json) for user in user_objs]
+        user_objs = [user._json for user in user_objs]
         
         l.acquire()
+        existing_users = fileio.read_content(settings.SCRAPE_USER_OBJS_FN.format(batch=batch), file_type='json')
+        if len(existing_users) > 7_000:
+            batch += 1
+            
         fileio.write_content(
-            path=settings.SCRAPE_USER_OBJS_FN, 
+            path=settings.SCRAPE_USER_OBJS_FN.format(batch=batch), 
             content=user_objs, 
-            file_type='json'
+            file_type='json',
+            indent=None
         )
         fileio.write_content(settings.PROCESSED_USER_OBJS, user_ids, 'json')
         l.release()
