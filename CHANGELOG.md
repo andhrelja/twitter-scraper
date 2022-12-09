@@ -1,3 +1,12 @@
+## [2.0.11](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.10...v2.0.11) (2022-12-09)
+
+
+### Performance Improvements
+
+* performance improvements ([0270120](https://github.com/milanXpetrovic/twitter_scraper/commit/0270120f553665fc54b000cebef7e206f06cd89b))
+
+
+
 ## [2.0.10](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.9...v2.0.10) (2022-11-23)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * folder creation on scrape.tweets ([a0ab5ff](https://github.com/milanXpetrovic/twitter_scraper/commit/a0ab5ff4e0894df373e142b57af3a1e03f5806e4))
-
-
-
-## [2.0.6](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.5...v2.0.6) (2022-11-22)
-
-
-### Bug Fixes
-
-* historic and incremental loads by since-id ([e6a376b](https://github.com/milanXpetrovic/twitter_scraper/commit/e6a376b3d3a888c16badf4bae58d13093a2a0911))
 
 
 
