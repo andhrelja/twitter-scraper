@@ -5,8 +5,7 @@ import datetime as dt
 TZ_INFO = dt.timezone.utc
 now = dt.datetime.now(TZ_INFO)
 folder_name = now.strftime('%Y-%m-%d')
-folder_name = os.getenv('FOLDER_NAME', '2022-12-04')
-# folder_name = '2022-11-22'
+# folder_name = '2022-12-09'
 
 DEBUG = os.getenv('DEBUG', 'true') == 'true'
 TEXT_USE_GPU = os.getenv('USE_GPU', 'true') == 'true'
@@ -60,7 +59,7 @@ GRAPH_DIR           = os.path.join(OUTPUT_DIR, 'graph')
 
 # Directories
 ## Scrape
-SCRAPE_USER_OBJS_FN = os.path.join(SCRAPE_USER_DIR, 'objs', folder_name, 'users.json')
+SCRAPE_USER_OBJS_FN = os.path.join(SCRAPE_USER_DIR, 'objs', folder_name, 'users-{batch}.json')
 SCRAPE_USER_IDS_FN  = os.path.join(SCRAPE_USER_DIR, 'ids', folder_name, '{user_id}.json')
 SCRAPE_TWEETS_FN    = os.path.join(SCRAPE_TWEETS_DIR, folder_name, '{user_id}.json')
 
@@ -78,33 +77,47 @@ EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-foll
 TEXT_TWEETS_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'tweets.csv')
 
 KEYWORDS = {
-    'is_covid': [
-      'alemka', 'markotic', 'markotić', 'beros', 'beroš', 'capak', 'hzjz',
-      
-      'antigensk', 'antimaskeri', 'antivakseri',
-      
-      'cijep', 'cijepiv', 'cijeplj', 'cijepljen', 'cjep', 'cjepiv', 'cjepljen',
-      
-      'booster doza', 'prva doza', 'druga doza', 'treca doza', 'treća doza',
-      'astra zeneca', 'biontech', 'curevac', 'inovio', 'janssen', 'johnson', 
-      'novavax', 'moderna', 'pfizer', 'vaxart',
-      
-      'sojevi koronavirusa', 'brazilski', 'britanski', 'ceski soj', 'delta', 
-      'indijski', 'juznoafricki', 'južnoafrički', 'lambda', 
-      'njujorski',  'njujorški', 'omikorn', 'omikron', 'novi soj', 'češki soj'
-      
-      'coron', 'corona', 'covid', 'covid-19', 'covid 19', 'koron', 'korona', 'kovid', 
-      'ncov', 'mutira', 'mutaci', 'n95', 'sars-cov-2', 'sarscov2', 'sputnik',
-      
-      'inkubacij', 'ljekov', 'obolje', 'novozaražen', 'nuspoj', 'patoge', 'regeneron', 
-      'medicin', 'infekc', 'dezinf', 'bolnic', 'dijagnost', 'doktor', 'epidem', 
-      'respir', 'respirator', 'simpto', 'rt pcr', 'terapij', 'virus', # 'viro',
-      
-      'slusaj struku', 'slušaj struku', 'propusnic', 'ostani doma', 'ostanimo doma', 'zaraž', 
-      'festivala slobod',  'pcr', 'samoizola','samoizolacij', 'zaraz', #'testira',
-      'distanc', 'izolac', 'karant', 'lockd', 'mask', 'festival slobod', 
-      'ostanimo odgovorni', 'pandem', 'pandemij', 'stozer', 'stožer',
-    ]
+    'is_covid': {
+        'include': [
+            'alemka', 'markotic', 'markotić', 'beros', 'beroš', 'capak', 'hzjz',
+            
+            'antigensk', 'antimaskeri', 'antivakseri',
+            
+            'cijep', 'cijepiv', 'cijeplj', 'cijepljen', 'cjep', 'cjepiv', 'cjepljen',
+            
+            'booster doza', 'prva doza', 'druga doza', 'treca doza', 'treća doza',
+            'astra zeneca', 'biontech', 'curevac', 'inovio', 'janssen', 'johnson', 
+            'novavax', 'moderna', 'pfizer', 'vaxart',
+            
+            'sojevi koronavirusa', 'brazilski', 'britanski', 'ceski soj', 'delta', 
+            'indijski', 'juznoafricki', 'južnoafrički', 'lambda', 
+            'njujorski',  'njujorški', 'omikorn', 'omikron', 'novi soj', 'češki soj'
+            
+            'coron', 'corona', 'covid', 'covid-19', 'covid 19', 'koron', 'korona', 'kovid', 
+            'ncov', 'mutira', 'mutaci', 'n95', 'sars-cov-2', 'sarscov2', 'sputnik',
+            
+            'inkubacij', 'ljekov', 'obolje', 'novozaražen', 'nuspoj', 'patoge', 'regeneron', 
+            'medicin', 'infekc', 'dezinf', 'bolnic', 'dijagnost', 'doktor', 'epidem', 
+            'respir', 'respirator', 'simpto', 'rt pcr', 'terapij', 'virus', # 'viro',
+            
+            'slusaj struku', 'slušaj struku', 'propusnic', 'ostani doma', 'ostanimo doma', 'zaraž', 
+            'festivala slobod',  'pcr', 'samoizola','samoizolacij', 'zaraz', #'testira',
+            'distanc', 'izolac', 'karant', 'lockd', 'mask', 'festival slobod', 
+            'ostanimo odgovorni', 'pandem', 'pandemij', 'stozer', 'stožer',
+        ],
+        'exclude': []
+    },
+    'ukraine_war': {
+        'include': [
+            ' rat ', ' boj ', 'war', 'ukra', 'zelens', 'putin', 'russ', 'rusk', 'missil', 'rossiya', 
+            'kijev', 'kiev', 'kyiv',  'poljska', 'poland', ' nato', '#nato', 'civil'
+            'vojni', 'militar', 'militair', 'napad', 'attack', 'borba',
+            'украина', 'киев', 'одесса', 'харьков', 'днепр', 'odessa', 'debski', 'crime', 
+        ],
+        'exclude': [
+            'reward', 'warpigstoken', 'warrior nun', ' rate ', ' rates ', 'warn', 'warcraft'
+        ]
+    }
 }
 
 with open(os.path.join(ROOT_DIR, 'twitter-credentials.json'), 'r', encoding='utf-8') as f:

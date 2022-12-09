@@ -4,7 +4,7 @@
 import gensim
 import stanza
 import classla
-# import demoji
+import langid
 import csv
 import re
 import os
@@ -86,7 +86,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
             (tweets_df['created_at'] > start_date) 
             & (tweets_df['created_at'] < end_date)
         ]
-        
+    
     def apply_nlp(row, text_col_name='text', keep_upos=('NOUN', 'PROPN', 'ADJ')):
         if len(row[text_col_name]) > 0:
             nlp = nlps[row['lang']]
@@ -98,7 +98,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
         else:
             return []
 
-    
+    tweets_df['lang']       = tweets_df.apply(lambda x: detect_language(x['full_text']) if x['lang'] in ('und', 'zxx', 'pt', 'qme') else x['lang'], axis=1)
     text_df = tweets_df[tweets_df['lang'].isin(USE_STANZA_LANGUAGES + USE_CLASSLA_LANGUAGES)].copy()
     text_df['text'] = text_df['full_text'].transform(lambda x: re.sub(URL_REGEX, '', x))
     text_df['text'] = text_df['text'].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
@@ -160,9 +160,17 @@ def get_corpus_tweets_df(tweets_df):
     with open(LDAvis_data_filepath, 'rb') as f:
         LDAvis_prepared = pickle.load(f)
     pyLDAvis.save_html(LDAvis_prepared, os.path.join(settings.OUTPUT_DIR, 'LDAvis/ldavis_prepared.html'))
-
     
 # %%
+def detect_language(text):
+    if text is None or text == '':
+        return 'zxx'
+    try:
+        lang, _ = langid.classify(text)
+    except Exception:
+        lang = 'zxx'
+    return lang
+
 def tweets(adhoc=True):
     TEXT_TWEETS_CSV = settings.TEXT_TWEETS_CSV
     if adhoc:

@@ -41,7 +41,8 @@ def get_twitter_endpoint(conn_name, api, method_name, user_id, retry_max=3, retr
     retry_num = 0
     while retry_num < retry_max:
         try:
-            content = method(user_id=user_id, **kwargs)
+            for page in tweepy.Cursor(method, user_id=user_id, **kwargs).pages():
+                content.extend(page)
             return content, None
 
         except tweepy.errors.NotFound: # 404
