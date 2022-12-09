@@ -12,7 +12,7 @@ logger = utils.get_logger(__file__)
 
 l = threading.Lock()
 q = queue.Queue()
-batch = 11
+batch = 1
 
 
 def __collect_user_objs(conn_name, api, pbar):
