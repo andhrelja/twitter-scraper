@@ -98,7 +98,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
         else:
             return []
 
-    tweets_df['lang']       = tweets_df.apply(lambda x: detect_language(x['full_text']) if x['lang'] in ('und', 'zxx', 'pt', 'qme') else x['lang'], axis=1)
+    tweets_df['lang'] = tweets_df.apply(lambda x: detect_language(x['full_text']) if x['lang'] in ('und', 'zxx', 'pt', 'qme') else x['lang'], axis=1)
     text_df = tweets_df[tweets_df['lang'].isin(USE_STANZA_LANGUAGES + USE_CLASSLA_LANGUAGES)].copy()
     text_df['text'] = text_df['full_text'].transform(lambda x: re.sub(URL_REGEX, '', x))
     text_df['text'] = text_df['text'].transform(lambda x: re.sub(MENTIONS_REGEX, '', x))
@@ -125,7 +125,7 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
     trigrams = gensim.models.Phrases(sentences=bigram_model[texts], min_count=20, threshold=100)
     # bitri_grams = trigrams[bigram_model[texts]]
     
-    logger.info("Applying Phrases model ...")
+    logger.info("Applying Phrases model ...") 
     text_df['word_grams'] = text_df['lemmatized'].transform(lambda x: trigrams[bigram_model[list(filter(None, x))]] if len(x) > 0 else [])
     return text_df
 
@@ -181,11 +181,13 @@ def tweets(adhoc=True):
     utils.mkdir(os.path.dirname(TEXT_TWEETS_CSV))
     
     logger.info("Reading tweets CSV")
-    tweets_df = pd.read_csv(
-        settings.CLEAN_TWEETS_CSV, 
+    tweets_dfs = utils.read_directory_files(
+        settings.CLEAN_TWEETS_DIR,
+        pd.read_csv,
         dtype=TWEET_DTYPE, 
         parse_dates=['created_at', 'retweet_created_at']
     )
+    tweets_df = pd.concat(tweets_dfs)
 
     logger.info("START - Text transformations")
     if adhoc:

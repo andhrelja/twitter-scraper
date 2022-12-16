@@ -37,22 +37,32 @@ def transform(tweets_df, folder_name=settings.folder_name):
     # tweets_df['user_mentions_cnt'] = tweets_df['screen_name'].transform(lambda x: user_mentions_gdf.original_user_mentions_cnt.get(x, 0))
     
     # Retweets
-    retweets_size_gdf = tweets_df.groupby('retweet_from_status_id').agg(in_retweet_tweets_cnt=('retweet_from_status_id', 'size'))
-    tweets_df['retweet_cnt'] = tweets_df['id'].transform(lambda x: retweets_size_gdf.in_retweet_tweets_cnt.get(x, 0))
     tweets_df['retweet_created_at'] = pd.to_datetime(tweets_df['retweet_created_at'], format='%a %b %d %H:%M:%S %z %Y')
     tweets_df['retweet_timedelta_ns']   = tweets_df['created_at'] - tweets_df['retweet_created_at']
     tweets_df['retweet_timedelta_sec']  = tweets_df['retweet_timedelta_ns'].transform(lambda x: x.total_seconds())
+    retweets_size_gdf = tweets_df.groupby('retweet_from_status_id').agg(
+        in_retweet_cnt=('retweet_from_status_id', 'size'),
+        in_retweet_timedelta_sec=('retweet_timedelta_sec', 'mean')
+    )
+    tweets_df['in_retweet_cnt'] = tweets_df['id'].transform(lambda x: retweets_size_gdf.in_retweet_cnt.get(x, 0))
+    tweets_df['in_retweet_timedelta_sec'] = tweets_df['id'].transform(lambda x: retweets_size_gdf.in_retweet_timedelta_sec.get(x, 0))
+    
     
     # Quotes
-    quote_size_gdf = tweets_df.groupby('quote_from_status_id').agg(in_quote_tweets_cnt=('quote_from_status_id', 'size'))
-    tweets_df['quote_cnt'] = tweets_df['id'].transform(lambda x: quote_size_gdf.in_quote_tweets_cnt.get(x, 0))
     tweets_df['quote_created_at'] = pd.to_datetime(tweets_df['quote_created_at'], format='%a %b %d %H:%M:%S %z %Y')
     tweets_df['quote_timedelta_ns']   = tweets_df['created_at'] - tweets_df['quote_created_at']
     tweets_df['quote_timedelta_sec']  = tweets_df['quote_timedelta_ns'].transform(lambda x: x.total_seconds())
+    quote_size_gdf = tweets_df.groupby('quote_from_status_id').agg(
+        in_quote_cnt=('quote_from_status_id', 'size'),
+        in_quote_timedelta_sec=('quote_timedelta_sec', 'mean')
+    )
+    tweets_df['in_quote_cnt'] = tweets_df['id'].transform(lambda x: quote_size_gdf.in_quote_cnt.get(x, 0))
+    tweets_df['in_quote_timedelta_sec'] = tweets_df['id'].transform(lambda x: quote_size_gdf.in_quote_timedelta_sec.get(x, 0))
+    
     
     # Replies
-    reply_size_gdf = tweets_df.groupby('in_reply_to_status_id').agg(in_reply_tweets_cnt=('in_reply_to_status_id', 'size'))
-    tweets_df['in_reply_cnt'] = tweets_df['id'].transform(lambda x: reply_size_gdf.in_reply_tweets_cnt.get(x, 0))
+    reply_size_gdf = tweets_df.groupby('in_reply_to_status_id').agg(in_reply_cnt=('in_reply_to_status_id', 'size'))
+    tweets_df['in_reply_cnt'] = tweets_df['id'].transform(lambda x: reply_size_gdf.in_reply_cnt.get(x, 0))
 
     ## Tweet Date & Time
     tweets_df['year']       = tweets_df['created_at'].dt.year
@@ -176,7 +186,8 @@ TWEET_DTYPE = {
 	# Retweets
 	'is_retweet':					'boolean',
     'retweet_favorite_cnt':	        'Int64', # nullable
-    'retweet_cnt':                  'int', # !! important: calculate while transforming
+    'in_retweet_cnt':               'int', # !! important: calculate while transforming
+    'in_retweet_timedelta_sec':     'float', # !! important: calculate while transforming
     'retweet_created_at':			'object', # nullable
 	'retweet_from_user_id':			'Int64', # nullable
     'retweet_from_screen_name':		'string', # nullable
@@ -186,7 +197,8 @@ TWEET_DTYPE = {
     # Quotes
     'is_quote':				        'boolean',
     'quote_favorite_cnt':	        'Int64', # nullable
-    'quote_cnt':                    'int', # !! important: calculate while transforming    
+    'in_quote_cnt':                 'int', # !! important: calculate while transforming    
+    'in_quote_timedelta_sec':       'float', # !! important: calculate while transforming    
     'quote_created_at':             'object', # nullable
     'quote_from_user_id':           'Int64', # nullable
     'quote_from_screen_name':       'string', # nullable

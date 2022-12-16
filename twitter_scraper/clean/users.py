@@ -19,7 +19,8 @@ def update_filtered_baseline():
         logger.warning("STOP - Baseline was not updated, missing scraped users")
         return
     
-    users_df = pd.read_csv(settings.CLEAN_USERS_CSV)
+    users_dfs = utils.read_directory_files(settings.CLEAN_USERS_DIR, pd.read_csv)
+    users_df = pd.concat(users_dfs)
     if settings.DEBUG:
         filters = ((users_df['protected'] == False)
             & (users_df['is_croatian'] == True)
@@ -188,5 +189,5 @@ def users():
 
 # %%
 if __name__ == '__main__':
-    users()
+    # users()
     update_filtered_baseline()
