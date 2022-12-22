@@ -173,13 +173,14 @@ def users():
 
     logger.info("Transforming User data, this may take a while")
     users_df = pd.DataFrame(all_users)
-    users_df = transform(users_df)
-    users_df.to_csv(
-        settings.CLEAN_USERS_CSV,
-        index=False, 
-        encoding='utf-8',
-        quoting=csv.QUOTE_NONNUMERIC
-    )
+    if not users_df.empty:
+        users_df = transform(users_df)
+        users_df.to_csv(
+            settings.CLEAN_USERS_CSV,
+            index=False, 
+            encoding='utf-8',
+            quoting=csv.QUOTE_NONNUMERIC
+        )
     
     logger.info("END - Done cleaning Users. Model saved: {}".format(settings.CLEAN_USERS_CSV))
     
