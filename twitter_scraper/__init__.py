@@ -1,3 +1,4 @@
+from .__version__ import __version__
 from .settings import BASELINE_USER_IDS
 import os
 

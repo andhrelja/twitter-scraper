@@ -8,7 +8,7 @@ with open('README.md', 'r') as f:
 setup(
    name='twitter-scraper',
    description='Twitter Scraper Python Package',
-   version=twitter_scraper.__version__.__version__,
+   version=twitter_scraper.__version__,
    long_description=long_description,
    long_description_content_type='text/markdown',
    url='https://github.com/milanXpetrovic/twitter_scraper',

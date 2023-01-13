@@ -96,14 +96,14 @@ def update_user_retweets_baseline(tweets_df):
 
 def update_baseline(archive=True, user_friends=True, user_mentions=True, user_retweets=True):
     tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, low_memory=False)
-    tweets_df['user_mentions'] = tweets_df['user_mentions'].map(eval)
+    # tweets_df['user_mentions'] = tweets_df['user_mentions'].map(eval)
     
     if archive:
         archive_baseline(prefix='utils.update_baseline')
     if user_friends:
         update_user_friends_baseline()
-    if user_mentions:
-        update_user_mentions_baseline(tweets_df)
+    # if user_mentions:
+    #     update_user_mentions_baseline(tweets_df)
     if user_retweets:
         update_user_retweets_baseline(tweets_df)
 
