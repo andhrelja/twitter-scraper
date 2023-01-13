@@ -21,7 +21,7 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3
         with:
           tag-prefix: 'v'
-          version-file: version.json
+          version-file: twitter_scraper/version.json
           
       - name: Create Release
         uses: actions/create-release@v1
