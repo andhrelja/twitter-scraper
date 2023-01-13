@@ -8,6 +8,12 @@ on:
         required: true
         description: "Name of the Python module to run"
         default: twitter_scraper
+      
+      options:
+        type: string
+        required: true
+        description: "Options for the Python module"
+        default: --collect-tweets
 
 env:
   DEBUG: false
@@ -33,11 +39,8 @@ jobs:
         with:
           python-version: '3.8.10'
       
-      - run: |
-          git checkout master
-          git pull origin master
-          pip install --upgrade .
+      - run: pip install --upgrade .
       
       # Runs a set of commands using the runners shell
       - name: Run Twitter Scraper
-        run: python -m ${{ inputs.module_name }}
+        run: python -m ${{ inputs.module_name }} ${{ inputs.options }}
