@@ -171,31 +171,23 @@ def detect_language(text):
         lang = 'zxx'
     return lang
 
-def tweets(adhoc=True):
-    TEXT_TWEETS_CSV = settings.TEXT_TWEETS_CSV
-    if adhoc:
-        TEXT_TWEETS_CSV = settings.TEXT_TWEETS_CSV.replace(settings.folder_name, 'adhoc')
-    
+def tweets():
     logger.info("Setting up NLPs (stanza, classla) ...")  
     setup_global_nlps()
-    utils.mkdir(os.path.dirname(TEXT_TWEETS_CSV))
+    utils.mkdir(os.path.dirname(settings.TEXT_TWEETS_CSV))
     
     logger.info("Reading tweets CSV")
-    tweets_dfs = utils.read_directory_files(
-        settings.CLEAN_TWEETS_DIR,
-        pd.read_csv,
+    tweets_df = pd.read_csv(
+        settings.CLEAN_TWEETS_CSV,
         dtype=TWEET_DTYPE, 
         parse_dates=['created_at', 'retweet_created_at']
     )
-    tweets_df = pd.concat(tweets_dfs)
 
     logger.info("START - Text transformations")
-    if adhoc:
-        tweets_df = _get_adhoc_tweets_df(tweets_df)
     text_df = get_text_dt(tweets_df)
     logger.info("END - Text transformations")
     text_df.to_csv(
-        TEXT_TWEETS_CSV.replace('tweets.csv', 'tweets-lemmatized-wordgrams.csv'), 
+        settings.TEXT_TWEETS_CSV, 
         encoding='utf-8', 
         index=False, 
         quoting=csv.QUOTE_ALL

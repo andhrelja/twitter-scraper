@@ -95,6 +95,7 @@ SCRAPE_TWEET = lambda x: {
  
     'hashtags':            flatten_dictlist(x.get('entities', {}).get('hashtags', []), 'text'),
     'user_mentions':       flatten_dictlist(x.get('entities', {}).get('user_mentions', []), 'screen_name'),
+    'user_mentions_ids':   flatten_dictlist(x.get('entities', {}).get('user_mentions', []), 'id'),
     
     # Hashtags Transform
     'original_hashtags': flatten_dictlist(x.get('entities', {}).get('hashtags', []), 'text') \
@@ -158,6 +159,7 @@ TWEET_DTYPE = {
     
     'hashtags':				        'object',
     'user_mentions':				'object',
+    'user_mentions_ids':			'object',
     
     ## Tweet Date & Time
 	'created_at':					'object',
