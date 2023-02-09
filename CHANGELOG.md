@@ -1,3 +1,13 @@
+## [2.0.14](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.13...v2.0.14) (2023-02-09)
+
+
+### Bug Fixes
+
+* add missing notification message keys ([7eb7649](https://github.com/milanXpetrovic/twitter_scraper/commit/7eb7649875fa3c0da599868aabcbe9a7e01ca5f6))
+* read notification log file on_ready ([09a6dce](https://github.com/milanXpetrovic/twitter_scraper/commit/09a6dce53e87dde586aec0f51c205010fa24f96a))
+
+
+
 ## [2.0.13](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.12...v2.0.13) (2023-02-08)
 
 
@@ -37,15 +47,6 @@
 ### Bug Fixes
 
 * reference texts before assignment ([cd8547c](https://github.com/milanXpetrovic/twitter_scraper/commit/cd8547c0318b283fab4687aebc5d8967b19b2788))
-
-
-
-## [2.0.9](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.8...v2.0.9) (2022-11-23)
-
-
-### Bug Fixes
-
-* filter lemmatized lists for None values ([ce175d1](https://github.com/milanXpetrovic/twitter_scraper/commit/ce175d1c68c9f54a69b905668a698ada2391f39e))
 
 
 
