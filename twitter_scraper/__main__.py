@@ -1,11 +1,9 @@
+from . import settings
 from . import utils
 from . import scrape
 from . import clean
 from . import text
 from . import graph
-
-from . import DISCORD_CLIENT
-from . import settings
 
 import sys
 import argparse
@@ -14,12 +12,14 @@ PROG = 'Twitter Scraper'
 DESCRIPTION = 'Scrapes and Cleans Croatian Twitter data'
 EPILOG = '(C) Faculty of Informatics and Digital Technologies, 2023'
 ARGUMENTS = (
-    ('-t', '--collect-tweets',
-        {'action': 'store_true', 'default': False,
-         'help': 'Incrementally collects Tweets and Users for the given baseline-user-ids.json'}),
-    ('-f', '--collect-ff',
-        {'action': 'store_true', 'default': False,
-         'help': 'Collects all Followers and Friends for the given baseline-user-ids.json'}),
+    (('-t', '--collect-tweets'),
+    {'action': 'store_true',
+     'help': 'Incrementally collects Tweets and Users for the given baseline-user-ids.json',
+     'default': False}),
+    (('-f', '--collect-ff'),
+    {'action': 'store_true',
+     'help': 'Collects all Followers and Friends for the given baseline-user-ids.json',
+     'default': False}),
 )
 
 logger = utils.get_logger(__file__)
@@ -108,5 +108,4 @@ if __name__ == '__main__':
         f = getattr(sys.modules[__name__], f_name)
         if execute: f()
 
-    DISCORD_CLIENT.run(settings.DISCORD_TOKEN)
     utils.notify(collect_ff=args_dict['collect_ff'])
