@@ -1,3 +1,12 @@
+## [2.0.15](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.14...v2.0.15) (2023-02-09)
+
+
+### Bug Fixes
+
+* run DISCORD_CLIENT inside utils instead of __main__ ([88b6b93](https://github.com/milanXpetrovic/twitter_scraper/commit/88b6b932d920add0bf94acfb980cd2441afafa0d))
+
+
+
 ## [2.0.14](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.13...v2.0.14) (2023-02-09)
 
 
@@ -38,15 +47,6 @@
 ### Performance Improvements
 
 * performance improvements ([0270120](https://github.com/milanXpetrovic/twitter_scraper/commit/0270120f553665fc54b000cebef7e206f06cd89b))
-
-
-
-## [2.0.10](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.9...v2.0.10) (2022-11-23)
-
-
-### Bug Fixes
-
-* reference texts before assignment ([cd8547c](https://github.com/milanXpetrovic/twitter_scraper/commit/cd8547c0318b283fab4687aebc5d8967b19b2788))
 
 
 
