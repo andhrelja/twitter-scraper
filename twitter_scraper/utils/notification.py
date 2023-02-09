@@ -34,15 +34,15 @@ message_defaults = {
     'cro_users_len': 0,
     'nodes_len': 0,
     'found_mentions': 0,
-    'len_mentions': 0,
-    'nodes_len': 0,
-    'found_retweets': 0,
-    'len_retweets': 0,
-    'nodes_len': 0,
     'found_followers': 0,
+    'len_mentions': 0,
+    'len_retweets': 0,
     'len_followers': 0,
+    'len_followers_source': 0,
     'len_mentions_source': 0,
-    'len_retweets_source': 0,
+    'len_retweets_source': 0, 
+    'found_retweets': 0,
+    'nodes_len': 0,
 }
 
 
