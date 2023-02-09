@@ -57,12 +57,12 @@ def update_log_outputs():
         'initial_baseline_len': len(initial_baseline_user_ids),
         'final_baseline_len': len(utils.get_baseline_user_ids())
     })
-    message_defaults.update(log_outputs)
     fileio.write_content(LOG_OUTPUT_PATH, log_outputs, 'json', overwrite=True)
 
 @DISCORD_CLIENT.event
 async def on_ready():
-    global message_defaults
+    message_content = fileio.read_content(LOG_OUTPUT_PATH, 'json')
+    message_defaults.update(message_content)
     await DISCORD_CLIENT.get_channel(CHANNEL_ID).send(
         content=message.format(**message_defaults), 
         file=discord.File(os.path.join(settings.LOGS_DIR, '{}.log'.format(settings.folder_name)))
