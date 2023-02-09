@@ -41,6 +41,8 @@ message_defaults = {
     'nodes_len': 0,
     'found_followers': 0,
     'len_followers': 0,
+    'len_mentions_source': 0,
+    'len_retweets_source': 0,
 }
 
 
