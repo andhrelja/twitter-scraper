@@ -99,8 +99,8 @@ def collect_ff():
 
 
 if __name__ == '__main__':
-    for arg, argument, kwargs in ARGUMENTS:
-        parser.add_argument(arg, argument, **kwargs)
+    for args, kwargs in ARGUMENTS:
+        parser.add_argument(*args, **kwargs)
     
     args = parser.parse_args()
     args_dict = vars(args)
