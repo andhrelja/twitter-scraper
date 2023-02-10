@@ -9,7 +9,6 @@ from twitter_scraper import settings
 
 CHANNEL_ID = 1029494278751273011
 LOG_OUTPUT_PATH = os.path.join(settings.LOGS_DIR, '{}.json'.format(settings.folder_name))
-log_outputs = fileio.read_content(LOG_OUTPUT_PATH, file_type='json')
 
 message = """twitter-scraper outputs:
 
@@ -47,7 +46,8 @@ message_defaults = {
 
 
 def update_log_outputs():
-    global log_outputs, message_defaults
+    global message_defaults
+    log_outputs = fileio.read_content(LOG_OUTPUT_PATH, file_type='json')
     initial_baseline_user_ids = fileio.read_content(
         path=os.path.join(settings.INPUT_DIR, 'history', 'clean.users_{}_baseline-user-ids.json'.format(settings.folder_name)),
         file_type='json'
@@ -61,8 +61,8 @@ def update_log_outputs():
 
 @DISCORD_CLIENT.event
 async def on_ready():
-    message_content = fileio.read_content(LOG_OUTPUT_PATH, 'json')
-    message_defaults.update(message_content)
+    log_outputs = fileio.read_content(LOG_OUTPUT_PATH, 'json')
+    message_defaults.update(log_outputs)
     await DISCORD_CLIENT.get_channel(CHANNEL_ID).send(
         content=message.format(**message_defaults), 
         file=discord.File(os.path.join(settings.LOGS_DIR, '{}.log'.format(settings.folder_name)))
