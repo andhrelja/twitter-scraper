@@ -1,3 +1,17 @@
+# [2.1.0](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.15...v2.1.0) (2023-02-14)
+
+
+### Bug Fixes
+
+* Discord notification errors ([deb0d13](https://github.com/milanXpetrovic/twitter_scraper/commit/deb0d13ebda183297f2ecd7aaadd43bc50587757))
+
+
+### Features
+
+* run twitter_scraper on schedule ([7ce0227](https://github.com/milanXpetrovic/twitter_scraper/commit/7ce0227e587f275d5598f9bb7adf1c3d5e82ca09))
+
+
+
 ## [2.0.15](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.14...v2.0.15) (2023-02-09)
 
 
@@ -38,15 +52,6 @@
 
 * read version.json as package resource ([4880572](https://github.com/milanXpetrovic/twitter_scraper/commit/4880572bb2d1b33fb35c7b84e9163448eeca5bcc))
 * read version.json as package resource ([71023a4](https://github.com/milanXpetrovic/twitter_scraper/commit/71023a48567b79dcac606fee5b48e3d0644ec336))
-
-
-
-## [2.0.11](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.10...v2.0.11) (2022-12-09)
-
-
-### Performance Improvements
-
-* performance improvements ([0270120](https://github.com/milanXpetrovic/twitter_scraper/commit/0270120f553665fc54b000cebef7e206f06cd89b))
 
 
 
