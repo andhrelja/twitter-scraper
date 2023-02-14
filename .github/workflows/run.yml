@@ -1,6 +1,9 @@
 name: Run Twitter Scraper
 
 on:
+  schedule:
+    - cron: "0 9 * * 1"
+  
   workflow_dispatch:
     inputs:
       module_name:
@@ -43,4 +46,7 @@ jobs:
       
       # Runs a set of commands using the runners shell
       - name: Run Twitter Scraper
-        run: python -m ${{ inputs.module_name }} ${{ inputs.options }}
+        run: python -m ${{ env.module_name }} ${{ env.options }}
+        with:
+          module_name: ${{ inputs.module_name || 'twitter_scraper' }}
+          options: ${{ inputs.options || '--collect-tweets' }}
