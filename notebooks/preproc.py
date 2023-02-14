@@ -8,7 +8,7 @@ import pandas as pd
 import csv
 
 
-ANALYSIS_MIN_DATE = dt.datetime.fromisoformat('2022-10-01T00:00:00+00:00')
+ANALYSIS_MIN_DATE = dt.datetime.fromisoformat('2022-11-01T00:00:00+00:00')
 ANALYSIS_COLUMNS = {
     # Tweet
     'tweets': [
@@ -80,7 +80,7 @@ def preproc():
     start_time = dt.datetime.now()
     print("- Users data:", settings.CLEAN_USERS_DIR)
     print("- Tweets data:", settings.CLEAN_TWEETS_DIR)
-    print("- `text` Tweets data:", settings.TEXT_TWEETS_CSV.replace('tweets.csv', 'tweets-lemmatized-wordgrams.csv').replace(settings.folder_name, '2022-12-09'))
+    print("- `text` Tweets data:", settings.TEXT_DIR)
     print("Analyse data from:", ANALYSIS_MIN_DATE.isoformat())
 
     clean_users_dfs = utils.read_directory_files(
@@ -95,6 +95,11 @@ def preproc():
         dtype=TWEET_DTYPE,
         parse_dates=['created_at', 'retweet_created_at']
     )
+    text_dfs = utils.read_directory_files(
+        directory=settings.TEXT_DIR,
+        read_fn=pd.read_csv,
+        parse_dates=['created_at']
+    )
 
     # Users
     users_df = pd.concat(clean_users_dfs)
@@ -103,20 +108,15 @@ def preproc():
 
     # Tweets
     tweets_df = pd.concat(clean_tweets_dfs).drop_duplicates('id')
-    tweets_df = tweets_df.loc[tweets_df['created_at'] > ANALYSIS_MIN_DATE].set_index('id')
+    tweets_df = tweets_df.loc[tweets_df['created_at'] >= ANALYSIS_MIN_DATE].set_index('id')
     print("Loaded Tweet data: {:,} records".format(len(tweets_df)))
     print("- earliest Tweet date:", tweets_df.created_at.min())
     print("- latest Tweet date:", tweets_df.created_at.max())
 
     # `text` Tweets
-    text_df = pd.read_csv(
-        settings.TEXT_TWEETS_CSV.replace(
-            'tweets.csv', 'tweets-lemmatized-wordgrams.csv'
-            ).replace(settings.folder_name, '2022-12-09'), 
-        parse_dates=['created_at']
-    )
-
+    text_df = pd.concat(text_dfs).drop_duplicates('id')
     text_df = text_df.dropna(subset=['lemmatized'])
+    text_df = text_df.loc[text_df['created_at'] >= ANALYSIS_MIN_DATE]
     print("Loaded `text` Tweet data: {:,} records".format(len(text_df)))
     print("- earliest `text` Tweet date:", text_df.created_at.min())
     print("- latest `text` Tweet date:", text_df.created_at.max())
