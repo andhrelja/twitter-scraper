@@ -57,6 +57,9 @@ CLEAN_TWEETS_DIR    = os.path.join(OUTPUT_DIR, 'clean', 'tweets')
 ## Graph
 GRAPH_DIR           = os.path.join(OUTPUT_DIR, 'graph')
 
+## Text
+TEXT_DIR           = os.path.join(OUTPUT_DIR, 'text')
+
 # Directories
 ## Scrape
 SCRAPE_USER_OBJS_FN = os.path.join(SCRAPE_USER_DIR, 'objs', folder_name, 'users-{batch}.json')
@@ -68,13 +71,13 @@ CLEAN_USERS_CSV     = os.path.join(CLEAN_USERS_DIR, folder_name, 'users.csv')
 CLEAN_TWEETS_CSV    = os.path.join(CLEAN_TWEETS_DIR, folder_name, 'tweets.csv')
 
 ## Graph 
-NODES_CSV           = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'nodes.csv')
-EDGES_MENTIONS_CSV  = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-mentions.csv')
-EDGES_RETWEETS_CSV  = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-retweets.csv')
-EDGES_FOLLOWERS_CSV = os.path.join(OUTPUT_DIR, 'graph', folder_name, 'edges-followers.csv')
+NODES_CSV           = os.path.join(GRAPH_DIR, folder_name, 'nodes.csv')
+EDGES_MENTIONS_CSV  = os.path.join(GRAPH_DIR, folder_name, 'edges-mentions.csv')
+EDGES_RETWEETS_CSV  = os.path.join(GRAPH_DIR, folder_name, 'edges-retweets.csv')
+EDGES_FOLLOWERS_CSV = os.path.join(GRAPH_DIR, folder_name, 'edges-followers.csv')
 
 ## Text
-TEXT_TWEETS_CSV = os.path.join(OUTPUT_DIR, 'text', folder_name, 'tweets.csv')
+TEXT_TWEETS_CSV = os.path.join(TEXT_DIR, folder_name, 'tweets.csv')
 
 KEYWORDS = {
     'is_covid': {
