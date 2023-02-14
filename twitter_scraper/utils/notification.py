@@ -85,5 +85,4 @@ def notify(collect_ff=False):
 
 if __name__ == '__main__':
     update_log_outputs()
-    print(log_outputs)
     DISCORD_CLIENT.run(settings.DISCORD_TOKEN)
