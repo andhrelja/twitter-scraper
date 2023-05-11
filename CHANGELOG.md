@@ -1,3 +1,15 @@
+## [2.1.1](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.0...v2.1.1) (2023-05-11)
+
+
+### Bug Fixes
+
+* **ci:** add workflow to validate build status ([97dedbf](https://github.com/milanXpetrovic/twitter_scraper/commit/97dedbf981fa66b892eeb9937f695235ec253b6e))
+* **ci:** bump python-version to 3.9 ([af0da0c](https://github.com/milanXpetrovic/twitter_scraper/commit/af0da0cbb00bab4fed357bd5c3d02b5f4f8b9523))
+* **ci:** upgrade setup.py to pyproject.toml ([8765134](https://github.com/milanXpetrovic/twitter_scraper/commit/87651346b810354c7b294bf3e524bb1b60c649d6))
+* disable pyLDAvis from running on __init__ ([17a44c4](https://github.com/milanXpetrovic/twitter_scraper/commit/17a44c45cb337947be9324e0b4c2eee56f1a176b))
+
+
+
 # [2.1.0](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.15...v2.1.0) (2023-02-14)
 
 
@@ -37,21 +49,6 @@
 ### Bug Fixes
 
 * update notifications ([ec21a44](https://github.com/milanXpetrovic/twitter_scraper/commit/ec21a4483b949356abd3774418f05afaf10c84ae))
-
-
-
-## [2.0.12](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.11...v2.0.12) (2023-01-13)
-
-
-### Bug Fixes
-
-* update notifications message parsing ([c412704](https://github.com/milanXpetrovic/twitter_scraper/commit/c41270451eb01b34ddcdc4c08b419ab766e35c05))
-
-
-### Performance Improvements
-
-* read version.json as package resource ([4880572](https://github.com/milanXpetrovic/twitter_scraper/commit/4880572bb2d1b33fb35c7b84e9163448eeca5bcc))
-* read version.json as package resource ([71023a4](https://github.com/milanXpetrovic/twitter_scraper/commit/71023a48567b79dcac606fee5b48e3d0644ec336))
 
 
 

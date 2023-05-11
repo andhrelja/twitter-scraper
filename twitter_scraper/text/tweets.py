@@ -13,9 +13,6 @@ import pickle
 import pandas as pd
 from collections import defaultdict
 
-import pyLDAvis
-import pyLDAvis.gensim_models as gensimvis
-
 from twitter_scraper import settings
 from twitter_scraper import utils
 from twitter_scraper.utils import fileio
@@ -135,6 +132,9 @@ def _get_adhoc_tweets_df(tweets_df):
 
 
 def get_corpus_tweets_df(tweets_df):
+    import pyLDAvis
+    import pyLDAvis.gensim_models as gensimvis
+    
     id2word = gensim.corpora.Dictionary(tweets_df['stemmed'])
     corpus = [id2word.doc2bow(text) for text in tweets_df['stemmed']]
     lda_model = gensim.models.LdaMulticore(
