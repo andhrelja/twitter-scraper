@@ -1,0 +1,30 @@
+name: Build Twitter Scraper
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize]
+
+env:
+  DEBUG: false
+  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+  CLASSLA_RESOURCES_DIR: '/srv/milky/classla_resources'
+  STANZA_RESOURCES_DIR: '/srv/milky/stanza_resources'
+  TWITTER_SCRAPER_DATA_DIR: '/srv/milky/twitter_scraper'
+
+jobs:
+  build-twitter-scraper:
+    name: build-twitter-scraper
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Build package
+        run: pip install build && python -m build

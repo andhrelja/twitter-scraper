@@ -1,0 +1,79 @@
+[project]
+name = "twitter-scraper"
+description = "Twitter Scraper Python Package"
+dynamic = ["version"]
+readme = "README.md"
+authors = [
+    {name = "FIDIT - Fakultet informatike i digitalnih tehnologija", email = "ured@inf.uniri.hr"}
+]
+maintainers = [
+    {name = "Andrea Hrelja", email = "andhrelja@hotmail.com"},
+    {name = "Milan Petrović", email = "milan.petrovic@uniri.hr"}
+]
+requires-python = ">=3.9"
+dependencies=[
+    "pandas==2.0.1",
+    "tweepy==4.12.1",
+    "stanza==1.4.2",
+    "classla==1.2.0",
+    "langid==1.1.6",
+    "discord.py==2.0.1",
+    "torch==1.12.0",
+    "tqdm==4.62.3",
+    "gensim==4.2.0"
+]
+keywords = ["twitter", "scrape", "data", "big-data", "data-analysis", "data-engineering", "topic-modeling", "LDA"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Environment :: Other Environment",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+[tool.setuptools.packages.find]
+include = [
+    "twitter_scraper",
+    "twitter_scraper.scrape",
+    "twitter_scraper.clean",
+    "twitter_scraper.graph",
+    "twitter_scraper.text",
+    "twitter_scraper.utils"
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "twitter_scraper.__version__"}
+
+[project.urls]
+Documentation="https://github.com/milanXpetrovic/twitter_scraper/blob/master/docs/build/markdown/index.md"
+Source="https://github.com/milanXpetrovic/twitter_scraper"
+Issues="https://github.com/milanXpetrovic/twitter_scraper/issues"
+Changelog="https://github.com/milanXpetrovic/twitter_scraper/blob/master/CHANGELOG.md"
+
+[project.optional-dependencies]
+docs = [
+    "Sphinx>=5.3.0, <6",
+    "myst-parser==0.18.1",
+    "sphinx-markdown-builer==0.5.5",
+    "sphinx-rtd-theme==0.5.1"
+]
+
+[build-system]
+requires = [
+    "setuptools>=61",
+    "wheel",
+    "discord.py==2.0.1"
+]
+build-backend = "setuptools.build_meta"
