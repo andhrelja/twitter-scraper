@@ -1,3 +1,15 @@
+## [2.1.1](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.0...v2.1.1) (2023-05-11)
+
+
+### Bug Fixes
+
+* **ci:** add workflow to validate build status ([97dedbf](https://github.com/milanXpetrovic/twitter_scraper/commit/97dedbf981fa66b892eeb9937f695235ec253b6e))
+* **ci:** bump python-version to 3.9 ([af0da0c](https://github.com/milanXpetrovic/twitter_scraper/commit/af0da0cbb00bab4fed357bd5c3d02b5f4f8b9523))
+* **ci:** upgrade setup.py to pyproject.toml ([8765134](https://github.com/milanXpetrovic/twitter_scraper/commit/87651346b810354c7b294bf3e524bb1b60c649d6))
+* disable pyLDAvis from running on __init__ ([17a44c4](https://github.com/milanXpetrovic/twitter_scraper/commit/17a44c45cb337947be9324e0b4c2eee56f1a176b))
+
+
+
 # [2.1.0](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.15...v2.1.0) (2023-02-14)
 
 
@@ -28,6 +40,15 @@
 
 * add missing notification message keys ([7eb7649](https://github.com/milanXpetrovic/twitter_scraper/commit/7eb7649875fa3c0da599868aabcbe9a7e01ca5f6))
 * read notification log file on_ready ([09a6dce](https://github.com/milanXpetrovic/twitter_scraper/commit/09a6dce53e87dde586aec0f51c205010fa24f96a))
+
+
+
+## [2.0.13](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.12...v2.0.13) (2023-02-08)
+
+
+### Bug Fixes
+
+* update notifications ([ec21a44](https://github.com/milanXpetrovic/twitter_scraper/commit/ec21a4483b949356abd3774418f05afaf10c84ae))
 
 
 
