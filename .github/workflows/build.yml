@@ -16,4 +16,4 @@ jobs:
           fetch-depth: 0
       
       - name: Build package
-        run: python -m build
+        run: pip install build && python -m build
