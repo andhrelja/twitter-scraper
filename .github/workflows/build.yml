@@ -5,6 +5,13 @@ on:
     branches: [develop]
     types: [opened, synchronize]
 
+env:
+  DEBUG: false
+  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+  CLASSLA_RESOURCES_DIR: '/srv/milky/classla_resources'
+  STANZA_RESOURCES_DIR: '/srv/milky/stanza_resources'
+  TWITTER_SCRAPER_DATA_DIR: '/srv/milky/twitter_scraper'
+
 jobs:
   build-twitter-scraper:
     name: build-twitter-scraper
