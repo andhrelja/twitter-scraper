@@ -40,13 +40,10 @@ jobs:
       
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.8.10'
+          python-version: '3.9'
       
-      - run: pip install --upgrade .
+      - run: pip install .
       
       # Runs a set of commands using the runners shell
       - name: Run Twitter Scraper
-        run: python -m ${{ env.module_name }} ${{ env.options }}
-        with:
-          module_name: ${{ inputs.module_name || 'twitter_scraper' }}
-          options: ${{ inputs.options || '--collect-tweets' }}
+        run: python -m ${{ inputs.module_name }} ${{ inputs.options }}
