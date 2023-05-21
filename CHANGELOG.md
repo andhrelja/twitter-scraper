@@ -1,3 +1,12 @@
+## [2.1.2](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.1...v2.1.2) (2023-05-21)
+
+
+### Bug Fixes
+
+* **ci:** set default values for run.yml inputs ([0b0a4d1](https://github.com/milanXpetrovic/twitter_scraper/commit/0b0a4d1046c048e7045b4656a49fdfd98e3effaa))
+
+
+
 ## [2.1.1](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.0...v2.1.1) (2023-05-11)
 
 
@@ -40,15 +49,6 @@
 
 * add missing notification message keys ([7eb7649](https://github.com/milanXpetrovic/twitter_scraper/commit/7eb7649875fa3c0da599868aabcbe9a7e01ca5f6))
 * read notification log file on_ready ([09a6dce](https://github.com/milanXpetrovic/twitter_scraper/commit/09a6dce53e87dde586aec0f51c205010fa24f96a))
-
-
-
-## [2.0.13](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.12...v2.0.13) (2023-02-08)
-
-
-### Bug Fixes
-
-* update notifications ([ec21a44](https://github.com/milanXpetrovic/twitter_scraper/commit/ec21a4483b949356abd3774418f05afaf10c84ae))
 
 
 
