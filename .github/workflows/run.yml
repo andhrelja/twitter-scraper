@@ -45,5 +45,8 @@ jobs:
       - run: pip install .
       
       # Runs a set of commands using the runners shell
-      - name: Run Twitter Scraper
-        run: python -m ${{ inputs.module_name || 'twitter_scraper' }} ${{ inputs.options || '--collect-tweets' }}
+      - name: Collect Tweets
+        run: python -m twitter_scraper --collect-tweets
+      
+      - name: Collect Friends & Followers
+        run: python -m twitter_scraper --collect-ff
