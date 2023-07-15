@@ -1,3 +1,17 @@
+## [2.1.3](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.2...v2.1.3) (2023-07-15)
+
+
+### Bug Fixes
+
+* undefined variable usage ([0747a53](https://github.com/milanXpetrovic/twitter_scraper/commit/0747a5302b6775687bd65233c8cd46d9744e006b))
+
+
+### Performance Improvements
+
+* **ci:** run collect-ff after collect-tweets ([ade6c1c](https://github.com/milanXpetrovic/twitter_scraper/commit/ade6c1c96113ab39c0276cc8fbeacf19e91eedff))
+
+
+
 ## [2.1.2](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.1...v2.1.2) (2023-05-21)
 
 
@@ -39,16 +53,6 @@
 ### Bug Fixes
 
 * run DISCORD_CLIENT inside utils instead of __main__ ([88b6b93](https://github.com/milanXpetrovic/twitter_scraper/commit/88b6b932d920add0bf94acfb980cd2441afafa0d))
-
-
-
-## [2.0.14](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.13...v2.0.14) (2023-02-09)
-
-
-### Bug Fixes
-
-* add missing notification message keys ([7eb7649](https://github.com/milanXpetrovic/twitter_scraper/commit/7eb7649875fa3c0da599868aabcbe9a7e01ca5f6))
-* read notification log file on_ready ([09a6dce](https://github.com/milanXpetrovic/twitter_scraper/commit/09a6dce53e87dde586aec0f51c205010fa24f96a))
 
 
 
