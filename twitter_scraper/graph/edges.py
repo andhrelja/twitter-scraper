@@ -26,8 +26,8 @@ def get_user_followers_edges_df(nodes_df):
 
     for user_id in tqdm(nodes_df.user_id.unique(), desc='graph.user_follower_edges', position=-1):
         user_path = settings.SCRAPE_USER_IDS_FN.format(user_id=user_id)
+        user_id_str = str(user_id)
         if os.path.exists(user_path):
-            user_id_str = str(user_id)
             user_ids_content = fileio.read_content(user_path, 'json')
             users_friends[user_id_str] = user_ids_content[user_id_str]['friends']
         else:
