@@ -46,9 +46,11 @@ def get_twitter_endpoint(conn_name, api, method_name, user_id, retry_max=3, retr
             return content, None
 
         except tweepy.errors.NotFound: # 404
+            logger.warning("NotFound: returning empty content")
             return content, user_id
 
         except tweepy.errors.Unauthorized: # 401
+            logger.warning("Unauthorized: returning empty content")
             return content, user_id
 
         except requests.exceptions.ConnectionError:
@@ -94,14 +96,19 @@ def get_twitter_lookup_users(conn_name, api, user_ids, retry_max=3, retry_delay=
             batch_users = api.lookup_users(user_id=user_ids)
 
         except tweepy.errors.NotFound: # 404
+            logger.warning("NotFound: returning empty content")
             return []
             
+        except tweepy.errors.Unauthorized: # 401
+            logger.warning("Unauthorized: returning empty content")
+            return []
+        
         except tweepy.errors.TwitterServerError: # 503
             retry_num += 1
             delay = retry_delay*(retry_num)
             logger.warning("TwitterServerError: try #{}, {}s delay".format(retry_num+1, retry_delay))
             time.sleep(delay)
-            
+        
         except tweepy.errors.TweepyException:
             api = reconnect_api(conn_name)
             retry_num += 1

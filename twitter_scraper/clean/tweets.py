@@ -235,13 +235,16 @@ def tweets():
 
     logger.info("Transforming Tweet data, this may take a while")
     tweets_df = pd.DataFrame(all_tweets)
-    tweets_df = transform(tweets_df)
-    tweets_df.to_csv(
-        settings.CLEAN_TWEETS_CSV, 
-        index=False, 
-        encoding='utf-8',
-        quoting=csv.QUOTE_ALL
-    )
+    if tweets_df.empty:
+        logger.warning("Collected an empty Clean DataFrame")
+    else:
+        tweets_df = transform(tweets_df)
+        tweets_df.to_csv(
+            settings.CLEAN_TWEETS_CSV, 
+            index=False, 
+            encoding='utf-8',
+            quoting=csv.QUOTE_ALL
+        )
     
     logger.info("END - Done cleaning Tweets. Model saved: {}".format(settings.CLEAN_TWEETS_CSV))
     

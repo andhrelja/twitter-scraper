@@ -12,6 +12,7 @@ debug/*
 build/*
 
 *-credentials.json
+*-credentials-cancelled.json
 rm-csv-json.sh
 zip-docs.sh
 mk-data-dirs.sh
