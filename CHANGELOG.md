@@ -1,3 +1,12 @@
+## [2.1.4](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.3...v2.1.4) (2023-08-14)
+
+
+### Bug Fixes
+
+* **collect-tweets:** handle empty clean dataframes ([200df2a](https://github.com/milanXpetrovic/twitter_scraper/commit/200df2a756178d58c25ec4708acbbc6781f1d3a0))
+
+
+
 ## [2.1.3](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.2...v2.1.3) (2023-07-15)
 
 
@@ -44,15 +53,6 @@
 ### Features
 
 * run twitter_scraper on schedule ([7ce0227](https://github.com/milanXpetrovic/twitter_scraper/commit/7ce0227e587f275d5598f9bb7adf1c3d5e82ca09))
-
-
-
-## [2.0.15](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.14...v2.0.15) (2023-02-09)
-
-
-### Bug Fixes
-
-* run DISCORD_CLIENT inside utils instead of __main__ ([88b6b93](https://github.com/milanXpetrovic/twitter_scraper/commit/88b6b932d920add0bf94acfb980cd2441afafa0d))
 
 
 
