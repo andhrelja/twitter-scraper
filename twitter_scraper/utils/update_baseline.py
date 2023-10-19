@@ -94,7 +94,7 @@ def update_user_retweets_baseline(tweets_df):
     logger.info("Time elapsed: {} min".format(end_time - start_time))
 
 
-def update_baseline(archive=True, user_friends=True, user_mentions=True, user_retweets=True):
+def update_baseline(archive=True, user_friends=True, user_mentions=False, user_retweets=True):
     tweets_df = pd.read_csv(settings.CLEAN_TWEETS_CSV, low_memory=False)
     # tweets_df['user_mentions'] = tweets_df['user_mentions'].map(eval)
     
@@ -111,6 +111,6 @@ if __name__ == '__main__':
     update_baseline(
         archive=True, 
         user_friends=False,
-        user_mentions=True, 
+        # user_mentions=False, 
         user_retweets=True
     )

@@ -1,3 +1,12 @@
+## [2.1.5](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.4...v2.1.5) (2023-10-19)
+
+
+### Bug Fixes
+
+* update logging ([67e8ae1](https://github.com/milanXpetrovic/twitter_scraper/commit/67e8ae1a00f63e48396ab77e0a9588d3c748139b))
+
+
+
 ## [2.1.4](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.1.3...v2.1.4) (2023-08-14)
 
 
@@ -39,20 +48,6 @@
 * **ci:** bump python-version to 3.9 ([af0da0c](https://github.com/milanXpetrovic/twitter_scraper/commit/af0da0cbb00bab4fed357bd5c3d02b5f4f8b9523))
 * **ci:** upgrade setup.py to pyproject.toml ([8765134](https://github.com/milanXpetrovic/twitter_scraper/commit/87651346b810354c7b294bf3e524bb1b60c649d6))
 * disable pyLDAvis from running on __init__ ([17a44c4](https://github.com/milanXpetrovic/twitter_scraper/commit/17a44c45cb337947be9324e0b4c2eee56f1a176b))
-
-
-
-# [2.1.0](https://github.com/milanXpetrovic/twitter_scraper/compare/v2.0.15...v2.1.0) (2023-02-14)
-
-
-### Bug Fixes
-
-* Discord notification errors ([deb0d13](https://github.com/milanXpetrovic/twitter_scraper/commit/deb0d13ebda183297f2ecd7aaadd43bc50587757))
-
-
-### Features
-
-* run twitter_scraper on schedule ([7ce0227](https://github.com/milanXpetrovic/twitter_scraper/commit/7ce0227e587f275d5598f9bb7adf1c3d5e82ca09))
 
 
 

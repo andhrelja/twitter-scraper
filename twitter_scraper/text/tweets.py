@@ -126,10 +126,6 @@ def get_text_dt(tweets_df, start_date=None, end_date=None):
     text_df['word_grams'] = text_df['lemmatized'].transform(lambda x: trigrams[bigram_model[list(filter(None, x))]] if len(x) > 0 else [])
     return text_df
 
-def _get_adhoc_tweets_df(tweets_df):
-    
-    return tweets_df
-
 
 def get_corpus_tweets_df(tweets_df):
     import pyLDAvis
