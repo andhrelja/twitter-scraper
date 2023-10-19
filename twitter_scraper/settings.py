@@ -125,6 +125,3 @@ KEYWORDS = {
 
 with open(os.path.join(ROOT_DIR, 'twitter-credentials.json'), 'r', encoding='utf-8') as f:
     connections = json.load(f)
-
-# with open(os.path.join(INPUT_DIR, 'latest-load.json'), 'r', encoding='utf-8') as f:
-#     latest_load_json = json.load(f)
