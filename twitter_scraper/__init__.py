@@ -3,7 +3,7 @@ from .settings import BASELINE_USER_IDS
 import os
 
 if not os.path.exists(BASELINE_USER_IDS):
-    raise LookupError("Baseline user IDs was not found")
+    raise FileNotFoundError("Baseline user IDs not found at {}".format(BASELINE_USER_IDS))
 
 import discord
 

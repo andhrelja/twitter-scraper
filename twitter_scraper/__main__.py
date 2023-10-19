@@ -22,7 +22,7 @@ ARGUMENTS = (
      'default': False}),
 )
 
-logger = utils.get_logger(__file__)
+logger = utils.get_logger('twitter_scraper')
 
 parser = argparse.ArgumentParser(
     prog=PROG,
