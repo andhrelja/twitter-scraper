@@ -1,0 +1,31 @@
+\subsection{Overview}
+\label{sec:methods-overview}
+
+The goal of this thesis is to analyse social trends on Twitter and determine how trends spread among Croatian Twitter users over a period of time. The main challenge in conducting a data analysis is obtaining a credible dataset that allows for insightful analysis. To overcome this challenge, a \gls{data-platform} \cite{moses_gavish_2022} was created to collect, clean, transform, and apply data using a \gls{data-pipeline} developed in \gls{python} \footnote{Thesis code repository: \href{https://github.com/andhrelja/twitter\_scraper}{https://github.com/andhrelja/twitter\_scraper}}.
+
+The following subsections describe the implementation process of the \gls{data-platform}. Work examples for the phases of the \acrfull{sdlc} are defined and described. The advantages and disadvantages of the software process models and how these methods are used to identify the created platform are shown. In addition, the ingestion, transformation and analysis processes are described in detail. This section concludes with a description of the CI/CD infrastructure.
+
+
+\subsection{System Development Life Cycle}
+\label{sec:methods-sdlc}
+\input{chapters/methods/sdlc.tex}
+
+\clearpage
+\subsection{Data Ingestion}
+\label{sec:methods-data-ingestion}
+\input{chapters/methods/data_ingestion}
+
+\clearpage
+\subsection{Data Transformation}
+\label{sec:methods-data-transformation}
+\input{chapters/methods/data_transformation}
+
+\clearpage
+\subsection{Data Analysis}
+\label{sec:methods-data-analysis}
+\input{chapters/methods/data_analysis}
+
+\clearpage
+\subsection{CI/CD Overview}
+\label{sec:methods-cicd}
+\input{chapters/methods/cicd}

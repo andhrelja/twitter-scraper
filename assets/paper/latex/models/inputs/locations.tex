@@ -1,0 +1,24 @@
+\begin{code}
+\captionof{listing}{Croatian Locations Input} 
+\label{methods:sdlc-inputs-locations}
+\begin{minted}[frame=single,
+               framesep=3mm,
+               tabsize=2]{js}
+[
+    "Hrvatska",
+    "Croatia",
+    "Žminj",
+    "Zaprešić,Croatia",
+    "Virovitica",
+    "republic of dalmatia baby!",
+    "velika gorica, croatia",
+    "RIJEKA"
+]
+\end{minted}
+\end{code}
+
+The \nameref{methods:sdlc-inputs-locations} was derived manually by inspecting the \nameref{subsubsec:sdlc-analysis-data-source:ingest-user}'s \texttt{location} attribute values and capturing them in a separate \acrshort{json} file. The values were only inspected once and the input locations were not revised since. 
+
+Additional transformations were performed on \nameref{methods:sdlc-inputs-locations} to ensure Users are correctly identified as Croatian users. Some transformations include converting the \texttt{location} strings to lowercase, punctuation and diacritics removal and white-space and Unicode character removal. 
+
+These operations were simple to execute on this input file, but they were time-expensive when applied to the User models and they did not yield results that would justify their use. After performing this due diligence, the additional transformation functionality was discarded and it is no longer in use.

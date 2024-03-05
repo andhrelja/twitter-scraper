@@ -1,0 +1,48 @@
+Data ingestion is the process of obtaining data from a \textit{data source} to its home system as efficiently and correctly as possible~\cite{meehan2017data}. Home system in the context of this thesis is a \gls{file-system} used as a part of the developed \gls{data-platform}. A \textit{data source} is a place where information is obtained - the source can be a database, a \gls{flat-file}, an XML file, or any other format an \gls{operating-system} can read.
+
+The \textit{data source} used by this thesis is Twitter, offering a \gls{rest-api} service to serve their data. High volume of data generated on Twitter makes it difficult for the \acrshort{rest} service to enable high \gls{data-availability}, so Twitter limits the amount of data that can be collected per user (e.g. only the \textbf{latest 3,200} user's tweets can be obtained). To support historic data storage - the collected data is continuously collected and never deleted.
+
+Data ingestion architecture depends on the \textit{data source} system type and the \nameref{sec:methods-data-analysis} requirements. Four common architecture patterns are described in the following paragraphs.
+
+\hfill
+
+\paragraph{Real-Time Ingestion} Real-Time Ingestion is usually used for \gls{real-time-data}. It applies simultaneous intermittent processing to data in small sizes (order of Kilobytes). This is an \gls{event-based} ingestion system.
+
+\paragraph{Streaming Ingestion} Streaming Ingestion is usually used for \gls{streaming-data}. It applies simultaneous continuous processing of data in small sizes (order of Kilobytes). This is an \gls{event-based} ingestion system.
+ 
+\paragraph{Batch Ingestion} Batch Ingestion is usually used for \gls{big-data}. It applies non-simultaneous processing of data in large sizes (batches, order of Megabytes). This is a \gls{schedule-based} ingestion system.
+
+\paragraph{Lambda Architecture} \gls{lambda-architecture} is usually used for a combination of \gls{streaming-data} and \gls{big-data}. It applies simultaneous and non-simultaneous processing of data in all sizes. This can be \gls{event-based} and \gls{schedule-based} ingestion system.
+
+\hfill
+
+Twitter \textit{data source} provides both \gls{real-time-data} and \gls{big-data}. Real-time ingestion is not required by the \nameref{sec:methods-data-analysis} for this \gls{data-platform} because \glspl{data-analyst} conduct their analysis on weekly or monthly bases. Given the requirements, the \textbf{batch ingestion} architecture pattern is selected to guide the \textit{design} for this \gls{data-platform}, with the ingestion schedule set for every \textbf{Monday at 12AM UTC}.
+
+After the architecture pattern is curated, the methods for moving the data need to be defined. It is important to note that all architecture patterns require data movement methods, but each pattern only supports a subset of data movement methods. Two of the most commonly used data movement methods for batch ingestion are described in the following paragraphs.
+
+\hfill
+
+\paragraph{Full Load} Full loads are also known as \textit{Historic} loads. They takes place the first time a data source is loaded into the home system.
+
+\paragraph{Incremental Load} Incremental loads are also known as \textit{Delta} loads. They take place on each subsequent time a data source is loaded into the home system. Delta loads are usually tracked by a date and time value (last received record date and time, last historic or incremental load date and time and similar) for the next incremental load to correctly identify the starting point of the data being collected.
+
+\hfill
+
+This \gls{data-platform} supports full and incremental data movement methods. Because of the Twitter \acrshort{rest} limitation where only the latest 3,200 user's tweets can be obtained, it is essential that the collected data is stored and never deleted. If the collected data gets deleted, it is unrecoverable because Twitter will never serve the user's 3,201\textsuperscript{st} tweet using the current version of their \acrshort{rest} service again.
+
+\clearpage
+
+By creating software support for incremental loads, support for full loads is implied. The \gls{data-pipeline} reads the following \acrshort{json} inputs to determine what is the starting point of the data being moved:
+
+\begin{itemize}
+    \item \texttt{baseline-user-ids}: array of user IDs, manually created to collect tweets from
+    \item \texttt{processed-user-objs}: array of user IDs, processed in a previous ingestion
+    \item \texttt{missing-user-objs}: array of user IDs, non-existing profiles for a given user ID
+    \item \texttt{max-tweet-ids}: object, last received tweet record for a user represented by a key-value pair (\texttt{\{user ID: last tweet ID\}})
+    \vspace{0.6cm}
+\end{itemize}
+
+
+First time the data is loaded into the home system, the full load takes place collecting the manually created \texttt{baseline-user-ids}. At this point, the remaining inputs still do not exist. After the first user ID is processed, the respective user object is created, adding the processed user ID to \texttt{processed-user-objs}. Once all the users are processed, they are filtered to Croatian users only (using the \nameref{methods:sdlc-inputs-locations} \acrshort{json} input) within the \nameref{sec:methods-data-transformation} process, the \texttt{baseline-user-ids} gets updated with the Croatian user IDs and the tweet ingestion starts. Since there isn't a \texttt{max-tweet-ids} to determine the last received user's tweet, all the latest \(3,200\) user's tweets (from today) until \texttt{2022-11-01 00:00 UTC} are obtained and the \texttt{max-tweet-ids} file is created.
+
+All the next loads are incremental ones, reading inputs created by the full load. Incremental loads only collect the \texttt{baseline-user-ids} that do not exist in \texttt{processed-user-objs} and \texttt{missing-user-objs}.

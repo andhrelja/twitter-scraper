@@ -1,0 +1,70 @@
+\begin{code}
+\captionof{listing}{Transform Tweet}
+\label{subsubsec:sdlc-analysis-data-transformations:transform-tweet}
+\begin{minted}[frame=single,
+               framesep=3mm,
+               tabsize=2]{js}
+{
+    "created_at": "2022-11-22 10:00:18+00:00",
+    "created_at_year": 2022,
+    "created_at_month": 11,
+    "created_at_week": 47,
+    "created_at_day": 22,
+    "full_text": "VATRENI IS LISTED"
+                 "\n\nThis is truly a historic moment"
+                 "because #VATRENI is so much more "
+                 "than just a token. Become a part"
+                 "of the greatest fan story and enjoy"
+                 "all kinds of benefits.\n\n#VATRENI"
+                 "token is now live at @gate_io \n\n"
+                 "Get it here: "
+                 "https://t.co/sN8mWtUac6"
+                 "https://t.co/XfqNfwUeCS",
+    "hashtags": ["VATRENI", "VATRENI"],
+    "user_mentions": ["gate_io"],
+    "is_retweet": true,
+    "retweet_count": 15,
+    "retweet_created_at": "2022-11-22 10:29:47+00:00",
+    "retweet_from_tweet_id": 1594994170858463232,
+    "retweet_from_user_name": "vatreni_token",
+    "retweet_timedelta_sec": 960,
+    "is_reply": false,
+    "reply_to_tweet_id": null,
+    "reply_to_user_name": null,
+    "is_quote": false,
+    "favorite_count": 41,
+    "possibly_sensitive": false,
+    "lang": "en",
+    "transform_date": "2022-11-22"
+}
+\end{minted}
+\end{code}
+
+The Tweet object contains a large number of transformations. The following attributes and transformations are applied to the Tweet object:
+
+\begin{itemize}
+    \item \texttt{created\_at\_year}: \underline{extract} year number from \texttt{created\_at}
+    \item \texttt{created\_at\_month}: \underline{extract} month number from \texttt{created\_at}
+    \item \texttt{created\_at\_week}: \underline{extract} week number from \texttt{created\_at}
+    \item \texttt{created\_at\_day}: \underline{extract} day number from \texttt{created\_at}
+    \item \texttt{hashtags}: \underline{extract} hashtag text from \texttt{entities.hashtags}
+    \item \texttt{user\_mentions}: \underline{extract} mentioned user's screen\_name from \\ 
+    \texttt{entities.user\_mentions}
+    \item \texttt{is\_retweet}: \underline{create} boolean value based on existence of \\
+    \texttt{retweeted\_status}
+    \item \texttt{retweet\_count}: \underline{create} numeric value based on all other Tweet objects where their \texttt{retweeted\_status.id} equals this Tweet object's \texttt{id}
+    \item \texttt{retweet\_created\_at}: \underline{extract} date-time object from \\
+    \texttt{retweeted\_status.created\_at}
+    \item \texttt{retweet\_from\_tweet\_id}: \underline{extract} numeric Tweet identifier from \\
+    \texttt{retweeted\_status.id}
+    \item \texttt{retweet\_from\_user\_name}: \underline{extract} text User identifier from \\
+    \texttt{retweeted\_status.user.user\_id}
+    \item \texttt{retweet\_timedelta\_sec}: \underline{create} \href{https://pandas.pydata.org/docs/reference/api/pandas.Timedelta.html}timedelta\footnote{https://pandas.pydata.org/docs/reference/api/pandas.Timedelta.html} value based on the difference between \texttt{retweet\_created\_at} and \texttt{created\_at}
+    \item \texttt{is\_reply}: \underline{create} boolean value based on existence of \\
+    \texttt{in\_reply\_to\_status\_id}
+    \item \texttt{reply\_to\_tweet\_id}: \underline{rename} \texttt{in\_reply\_to\_status\_id}
+    \item \texttt{reply\_to\_user\_name}: \underline{rename} \texttt{in\_reply\_to\_screen\_name}
+    \item \texttt{is\_quote}: \underline{rename} \texttt{is\_quote\_status}
+    \item \texttt{lang}: \underline{apply} a language detection function using \href{https://github.com/saffsd/langid.py}{langid}\footnote{https://github.com/saffsd/langid.py} if the original value was undefined
+    \item \texttt{transform\_date}: \underline{create} text value based on the transformation date
+\end{itemize}

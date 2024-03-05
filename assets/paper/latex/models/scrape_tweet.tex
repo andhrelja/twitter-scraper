@@ -1,0 +1,54 @@
+\begin{code}
+\captionof{listing}{Ingest Tweet}
+\label{subsubsec:sdlc-analysis-data-source:ingest-tweet}
+\begin{minted}[frame=single,
+               framesep=3mm,
+               tabsize=2]{js}
+{
+    "created_at": "Tue Nov 22 10:00:18 +0000 2022",
+    "full_text": "VATRENI IS LISTED"
+                 "\n\nThis is truly a historic moment"
+                 "because #VATRENI is so much more "
+                 "than just a token. Become a part"
+                 "of the greatest fan story and enjoy"
+                 "all kinds of benefits.\n\n#VATRENI"
+                 "token is now live at @gate_io \n\n",
+    "entities": {
+        "hashtags": [
+            {"text": "VATRENI"},
+            {"text": "VATRENI"}
+        ],
+        "user_mentions": [
+            {"id": 912539722, "screen_name": "gate_io"}
+        ]
+    },
+    "user": { ingested_user },
+    "retweet_status": { ingested_tweet },
+    "in_reply_to_status_id": null,
+    "in_reply_to_user_id": null,
+    "quoted_status": { ingested_tweet },
+    "favorite_count": 41,
+    "possibly_sensitive": false,
+    "lang": "en"
+}
+\end{minted}
+\end{code}
+
+\begin{itemize}
+    \item \texttt{created\_at}: UTC time when this Tweet was created
+    \item \texttt{full\_text}: The actual UTF-8 text of the status update
+    \item \texttt{entities}: Entities which have been parsed out of the text of the Tweet. Additionally see \href{https://developer.twitter.com/overview/api/entities-in-twitter-objects}{Entities in Twitter objects}\footnote{https://developer.twitter.com/overview/api/entities-in-twitter-objects}
+        \begin{itemize}
+        \item \texttt{hashtags}: Names of the hashtags used in this Tweet, minus the leading \texttt{"\#"} character
+        \item \texttt{user\_mentions}: IDs of the mentioned users, as an integer
+        \end{itemize}
+    \item \texttt{user}: Ingested User (\nameref{subsubsec:sdlc-analysis-data-source:ingest-user})
+    \item \texttt{retweet\_status}: Retweets can be distinguished from typical Tweets by the existence of a retweeted\_status attribute. This attribute contains a representation of the original Tweet that was retweeted (\nameref{subsubsec:sdlc-analysis-data-source:ingest-tweet})
+    \item \texttt{in\_reply\_to\_status\_id}: \textit{Nullable}. If the represented Tweet is a reply, this field will contain the integer representation of the original Tweet's ID
+    \item \texttt{in\_reply\_to\_user\_id}: \textit{Nullable}. If the represented Tweet is a reply, this field will contain the integer representation of the original Tweet's author ID
+    \item \texttt{is\_quote\_status}: Indicates whether this is a Quoted Tweet
+    \item \texttt{quoted\_status}: This attribute contains a representation of the original Tweet that was quoted (\nameref{subsubsec:sdlc-analysis-data-source:ingest-tweet}). Quote tweets are Retweets that contain some original content (\texttt{full\_text}, \texttt{hashtagas}, \texttt{user\_mentions})  
+    \item \texttt{favorite\_count}: \textit{Nullable}. Indicates approximately how many times this Tweet has been liked by Twitter users
+    \item \texttt{possibly\_sensitive}: \textit{Nullable}. This field indicates content may be recognized as sensitive. This may also be judged and labeled by an internal Twitter support agent
+    \item \texttt{lang}: \textit{Nullable}. When present, indicates a \href{http://tools.ietf.org/html/bcp47}{BCP 47}\footnote{http://tools.ietf.org/html/bcp47} language identifier corresponding to the machine-detected language of the Tweet text, or und if no language could be detected
+\end{itemize}

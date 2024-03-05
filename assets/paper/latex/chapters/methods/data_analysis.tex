@@ -1,0 +1,42 @@
+Data analysis is a process of inspecting, cleansing, transforming, and modeling data with the goal of discovering useful information, informing conclusions, and supporting decision-making \cite{brown2014transforming}. It is usually conducted by a \Gls{data-analyst}. Depending on the context to which the term is applied, data analysis can imply additional methods such as ingesting, transforming, modeling or other data processing methods. Within the context of this thesis, data analysis includes preprocessing transformed data, analysing it and interpreting the analysis to draw conclusions about the ways users share information and what information they share on this social network.
+
+In statistical applications, data analysis can be divided into descriptive statistics, \acrfull{eda}, and \acrfull{cda} \cite{leech2015spss}. Descriptive statistics is the process of using and analysing quantitative descriptions or feature\footnote{The terms \textit{attribute}, \textit{field}, and \textit{column} from previous sections are synonyms to the term \textit{feature}. The main difference between the terms is that \glspl{data-analyst} tend to use the term \textit{feature} to empathize the importance of an \textit{attribute}} summaries from a collection of information \cite{mann1995introductory}. \acrshort{eda} focuses on discovering new features in the data while \acrshort{cda} focuses on confirming or rejecting existing hypotheses. Additionally, in social networks and similar applications, graph analytics is frequently used to observe the relationships between objects which are being analysed.
+
+The analysis conducted as a part of this thesis combines descriptive statistics, \acrshort{eda} and graph analysis approaches to describe the available dataset, summarize its main characteristics and derive new \glspl{data-view} that allow for tracking social trends on Twitter through time. In the scope of this thesis, a trend is defined as a set of topics consisting of hashtags (often referred to as Tweet content).
+
+
+\subsubsection{Descriptive Statistics}
+\label{subsubsec:methods-data-analysis:descriptive-statistics}
+
+Descriptive statistics applications include data statistics calculation techniques to provide a quantitative summary of the analysed data. Additional data metrics include the earliest and latest tweet date and time (\texttt{2022-11-01 00:00:12+00:00} - \texttt{2022-11-30 23:59:52+00:00}), total number of tweets (\(386,168\)), number of all Croatian Users (\(48,954\)) and the number of Users who are active within the described time range (\(6,887\)). Additional information available in Appendix\ref{part:appendix}. Table \ref{sec:data-analysis:descriptive-statistics:stat-desc}. provides a summary about the measures of the data. Some information that can be interpreted is the average number of followers a user has (\texttt{mean} of \texttt{followers\_count}: \(1,408.73\), however this average is unreliable because of a high \gls{standard-deviation} - the \texttt{90\%} column shows that the least amount of users has the most followers) and the average number of original tweets a user posted (\textit{mean} of \texttt{original\_tweets\_cnt}: \(95.34\)). It is surprising to see that only a small group of users' tweets get retweeted or quoted (\textit{mean} of \texttt{in\_retweet\_cnt}: \(2.67\), \texttt{in\_quote\_cnt}: \(1.0\)). Related works on the topic of Twitter analysis have shown that retweets are the most common way of spreading information on Twitter \cite{mestrovic2022retweetprediction}, so it can be expected that the information spread among Croatian Twitter Users is seeded from a very small number of users - those with the highest retweets count. 
+
+\input{tables/descriptive_statistics.tex}
+
+
+\subsubsection{Exploratory Data Analysis}
+\label{subsubsec:methods-data-analysis:eda}
+
+\acrshort{eda} applications include \gls{data-preprocessing} and \gls{data-visualization} techniques to provide valuable data insights and allow for different types of Data Analysis. \Gls{data-preprocessing} was an integral part to the conducted analysis as it provided deeper insights into User interactions with Tweets, by aggregating tweets data. Produced aggregations expanded the original User and Tweets objects with information about the user's outbound (how many tweets they published and count of favorites the user gave out) and inbound (how many other users retweeted or quoted this user and count of favorites the user received) interactions, supporting drill-downs through date and time, hashtags and user mentions. Twitter object \ref{subsubsec:methods-data-analysis:eda:expand-user}. describes a User object after it was preprocessed. 
+
+\clearpage
+\input{models/preprocessed.tex}
+
+\clearpage
+\subsubsection{Graph Analytics}
+\label{subsubsec:methods-data-analysis:graph-analysis}
+
+Graph analytics, or Graph algorithms, are analytic tools used to determine the strength and direction of relationships between objects in a graph. The focus of graph analytics is on pairwise relationships between two objects at a time and structural characteristics of the graph as a whole\cite{nvidia2022graphanalytics}. A graph data structure comprises a distinct set of \textit{nodes} (often referred to as \textit{vertices} or \textit{points}) and a sequence of \textit{edges} (also referred to as \textit{links} or \textit{lines}), where each \textit{edge} contains a pair of nodes \((node_i, node_j)\). Various types of graphs exist based on the representation of an \textit{edge}. This thesis focuses on directed and undirected graphs; \textbf{directed} - where Users are presented by \textit{nodes}, with \textit{edges} representing a "retweet" relationship between the Users (if \(user_i\) retweets \(user_j\), that does not mean \(user_j\) retweeted \(user_i\)); and \textbf{undirected} - where Hashtags are presented by \textit{nodes}, with \textit{edges} representing a "mutually shared" relationship between each pair of Hashtags in a Tweet. The number of relationships a \textit{node} is a part of is denoted as the \textit{node's} degree. Degrees differ by the relationship type - the number of Incoming links a node has is denoted as \textbf{in-degree} and the number of Outgoing links a node has is denoted as \textbf{out-degree}. 
+
+The following paragraphs describe some additional measures used to quantify the analysed graph.
+
+\paragraph{Density} Graph density measures how many edges are close to the maximum number of edges (where every pair of vertices is connected by one edge). The opposite, a graph with only a few edges, is a sparse graph. Depending on the size of the graph and techniques used to manipulate it's size, density can vary.
+
+\paragraph{Betweenness Centrality} Betweenness centrality is a measure of centrality in a graph based on shortest paths. Nodes with higher degrees are more centered in a graph than nodes with lower degrees.
+
+\paragraph{PageRank} PageRank is an algorithm used by Google Search to rank web pages in their search engine results. It works by counting the number and quality of links to a node to determine a rough estimate of how important the node is. The underlying assumption is that more important nodes are likely to receive more links from other nodes\cite{wikipedia2022pagerank}.
+
+\paragraph{Clustering Coefficient} A node's clustering coefficient measures the degree to which nodes in a graph tend to cluster together. A high clustering coefficient signals that there are a lot of nodes clustered around the observed node, while a low clustering coefficient signals that the observed node is isolated, it is not close to other nodes in the network. 
+
+\paragraph{Distance} Graph distance is measured by a finite or infinite sequence of edges which joins a sequence of distinct nodes. A "walk" from one User to another is accomplished by following a path created by the User's relationships. If a User at the other end of the relationship has relationships with a third User, the initial "walk" is extended by one more path.
+
+Analysis results are captured and described in the \nameref{ch:results} section.

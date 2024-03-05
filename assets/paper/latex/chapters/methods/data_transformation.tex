@@ -1,0 +1,10 @@
+Data transformation is the process of converting data from one format or structure into another format or structure. This is often done to make the data more useful or easier to work with for specific purposes, such as analysis or machine learning. Data transformation can involve a wide range of techniques, such as cleaning and preprocessing, normalization, aggregation, and feature extraction. The specific steps involved in a data transformation process will depend on the specific data and the desired end result.
+
+The data transformation process applied to the collected data is designed to be re-runnable in a way that does not affect the stored raw data. This process usually consumes a large amount of time, so it only runs once. The transformed data is then reused throughout the \ref{sec:methods-data-analysis} process. To support the given data requirements, the transformation process filters all collected Users to Croatian users only (\nameref{methods:sdlc-inputs-locations}) and applies other filters (\texttt{statuses\_count > 10}, \texttt{followers\_count > 10}, \texttt{friends\_count > 10} and similar), to ensure the collected Users represent a legitimate sample.
+
+The resulting transformed data is used to create \glspl{data-view} to be used by the \Glspl{data-analyst}.
+
+\input{models/clean_user.tex}
+
+\clearpage
+\input{models/clean_tweet.tex}

@@ -1,0 +1,34 @@
+\begin{code}
+\captionof{listing}{Transform User}
+\label{subsubsec:sdlc-analysis-data-transformations:transform-user}
+\begin{minted}[frame=single,
+               framesep=3mm,
+               tabsize=2]{js}
+{
+    "name": "HNS",
+    "screen_name": "HNS_CFF",
+    "location": "Croatia",
+    "is_croatian": true,
+    "description": "Službeni Twitter profil Hrvatskog"
+                   "nogometnog saveza Croatian Football"
+                   "Federation official Twitter feed."
+                   "#HNS #Obitelj #Family",
+    "followers_count": 253625,
+    "friends_count": 117,
+    "statuses_count": 19209,
+    "created_at": "2022-08-30T05:56:36+00:00"
+}
+\end{minted}
+\end{code}
+
+The User object contains a small number of transformations compared to the Tweet object. The following attributes and transformations are applied to the User object:
+
+\begin{itemize}
+    \item \texttt{location}: \underline{extract} city name text value if it is included in the original value, otherwise set to \texttt{Hrvatska}
+    \item \texttt{is\_croatian}: \underline{create} boolean value to indicate whether or not the user is from Croatia 
+    \item \texttt{description}: User provided profile description
+    \item \texttt{followers\_count}: number of users following this User
+    \item \texttt{friends\_count}: number of users this User follows
+    \item \texttt{statuses\_count}: total number of published Tweets since \texttt{created\_at}
+    \item \texttt{created\_at}: \underline{evaluate} string to date-time object; represents profile creation date and time
+\end{itemize}

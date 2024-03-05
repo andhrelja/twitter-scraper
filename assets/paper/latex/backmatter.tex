@@ -1,0 +1,34 @@
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{unsrt}
+\bibliography{bibliography}
+
+\addcontentsline{toc}{section}{\listfigurename}
+\listoffigures
+
+\addcontentsline{toc}{section}{\listtablename}
+\listoftables
+
+\printglossary[type=\acronymtype]
+\printglossary
+
+\appendix
+\section{Appendix}
+\label{part:appendix}
+
+\begin{center}
+\includegraphics[width=16cm,keepaspectratio]{figures/users-retweet-in-initiators.eps}
+\label{figure:users-retweet-in-initiators}
+\captionof{figure}{Outgoing Original Tweet reactions compared to Incoming reactions aggregated by size. Referenced by: \ref{sec:results-tweets}}
+\end{center}
+
+
+\begin{center}
+\includegraphics[width=16cm,keepaspectratio]{figures/hashtags-reply-in-reactions.eps}
+\label{figure:hashtags-reply-in-reactions}
+\captionof{figure}{Outgoing Hashtags compared to Incoming Hashtags aggregated by size. Referenced by: \ref{sec:results-hashtags}}
+\end{center}
+
+\begin{center}
+\input{tables/correlation_matrix.tex}
+\label{table:graph-measures-correlation-matrix}
+\end{center}

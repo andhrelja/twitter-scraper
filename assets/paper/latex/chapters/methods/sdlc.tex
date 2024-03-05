@@ -1,0 +1,97 @@
+Every software development process has a starting point, but saying that it has an end point can be ambiguous. Once the software is deployed in a production environment and all \glspl{feature} have been developed, it can be assumed that the development phase is complete and the end point has been reached. At this point, software maintenance, often referred to as software support, can begin and additional system \glspl{enhancement} can be made. Maintenance usually focuses on \gls{bug} fixes or new \glspl{enhancement}, but sometimes end users may request \glspl{feature} that require additional development, which restarts the development process 
+
+Given the cyclical nature of software processes, numerous software process models \cite{pavlic2009is} have been developed by various authors throughout history. The most famous model, the waterfall model, was introduced in the 1970s, but did not address the cyclic nature of software processes and was therefore an inefficient mechanism for software development. Over time, other models were developed to improve the rigidity of the waterfall model, leaving a variety of options to choose from to select the most appropriate software process model and create a flexible \acrlong{sdlc}. 
+
+A software process model is used to identify the system to be built. It defines the activities for designing, implementing, testing, and monitoring software systems. Some software process models include the classic Waterfall Model, Incremental and Iterative Models and their combination, the \acrfull{rad} Model, various Prototyping Models, the Spiral model, the \acrfull{rup} Model, the V-model (verification and validation model) as an extended implementation of the Waterfall Model, and others \cite{pi2019}. The waterfall model is a precursor to other software process models, but it poses risks to the project outcome due to its linear (sequential) life cycle model.
+
+All the models listed have similarities between the phases they define (analysis, design, development, test, and maintenance). Most models are based on an iterative life cycle model that allows for flexible requirements updates, and they are often user-driven in an \gls{agile} manner. The \gls{data-platform} created as part of this thesis is a small project guided by an implementation of iterative rapid prototyping through Analysis, Design, and Development \& Testing cycles.
+
+
+\begin{center}
+\includegraphics[width=14cm,keepaspectratio]{images/twitter-data-platform-sdlc.png}
+\label{figure:twitter-data-platform-sdlc}
+\captionof{figure}{Twitter \Gls{data-platform} \acrshort{sdlc}}
+\end{center}
+
+During Development \& Prototype, there was frequent switching between the analysis phase and the development and testing phase. This model has proven to be a fast development and release process, especially for features that required additional testing 
+
+After the Testing phase demonstrates that the developed system meets the requirements of the Development \& Prototype phase, the Maintenance phase is initiated. This transition requires that data output not be compromised by developers, analysts, or others interacting with the \gls{data-platform}, so a production environment is introduced. This means that development and testing must occur as infrequently as possible and with as few changes as possible to avoid \gls{data-integrity} issues. To improve the security of the system, native GitHub functions such as \gls{branch-protection-rules} can be used.
+
+The following subsections describe the rapid prototyping phases in the platform life cycle.
+
+\vspace{1.2cm}
+\subsubsection{Analysis}
+\label{subsec:sdlc-analysis}
+% \setlength\parindent{0pt}
+
+The \textbf{goal} of this thesis is to create a dataset that provides valuable knowledge about the information being shared on Twitter and to enable analyzing social trends on Twitter through time.
+
+Analysis phase identifies the \textbf{\gls{data-service-provider}}, \textbf{data source} endpoints, their limitations and restrictions, and finally - \textbf{data requirements}.
+
+\paragraph{\Gls{data-service-provider}} Twitter\footnote{https://twitter.com} is the \gls{data-service-provider} for this \gls{data-platform}. The provided \acrshort{rest} service imposes various limitations and restrictions, some of them being \underline{Tweet limits} - \textit{up to 500k Tweets} are served per month and \underline{User limits} - \textit{inability to lookup Users} in a given range (location, age...). The identified limitations and restrictions need to be accounted for at the earliest stages of the Analysis phase. Failing to do so may result with disastrous effects on the product at a stage when it is too late to iterate over Analysis again. This \gls{data-platform} accounts for \underline{Tweet limits} with an option of creating multiple accounts if the \textit{500k Tweets per month} limit is surpassed and re-running the full load process (\ref{sec:methods-data-ingestion}). \underline{User limits} are accounted for by creating a baseline list of User IDs and \textit{}{expanding} it with each \gls{data-pipeline} run \textit{}{using the user's followers and friends IDs} \cite{mipro2022c19prediction}.
+
+\paragraph{Data source} Data source endpoints are used to collect information about Twitter defined User objects and Tweet objects. Endpoints impose technical limitations, with most common limitations including a limited number of \acrshort{api} requests that an external system can make to the data source's \acrshort{rest} server. These limitations are documented in table \ref{tables:source-endpoints-limitations}.
+
+\input{tables/source_limitations.tex}
+
+\paragraph{Data requirements} Data requirements identify the information that needs to be obtained from the data source. The \gls{data-service-provider} must be capable of satisfying the given data requirements by providing curated sets of information. The resulting \gls{data-platform} must be designed to support the given data requirements. The following bullet list provides the requirements summary:
+
+\begin{itemize}
+    \item \textbf{Users quantity}: Croatian users only
+    \item \textbf{Tweets quantity}: from \texttt{2022-11-01} onward
+    \item \textbf{Data re-usability}: never delete ingested data
+    \item \textbf{Object details}: identify attributes that can be used to analyse social trends
+\end{itemize}
+
+Collected (\textit{ingested} afterwards) data needs to provide as much information about \textit{data source} objects as possible. This is accomplished by storing all available source object attributes and only eliminating irrelevant attributes in the \nameref{sec:methods-data-transformation} process. The ingested data is never deleted, moved or modified (in place).
+
+The following paragraphs describes some valuable \textit{data source} object attributes and other inputs used to apply User and Tweets quantitative restrictions.
+
+\paragraph{Location Inputs} A User object is identified as a Croatian user if their \texttt{location} attribute \textbf{contains} at least one Croatian location from \ref{methods:sdlc-inputs-locations}. As an example, if a User object's \texttt{location} attribute is set to \texttt{"Zaprešić"}, he will be identified as a Croatian user because (\texttt{"Zaprešić"} is a subset of \texttt{"Zaprešić,Croatia"} \textbf{or} \texttt{"Zaprešić,Croatia"} is a subset of \texttt{"Zaprešić"}). 
+
+
+\input{models/inputs/locations.tex}
+
+
+\paragraph{Ingested Users} The User object contains a large number of attributes. Only a subset of attributes are presented and described, but all of them are ingested. Details about all attributes can be found at the Twitter's \href{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/user}{Tweet object}\footnote{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/user} page.
+
+\clearpage
+\input{models/scrape_user.tex}
+
+\clearpage
+\paragraph{Ingested Tweets} Twitter uses the term \textit{status} when referring to a Tweet. The Tweet object contains a large number of attributes. Only a subset of attributes are presented and described, but the entire set is ingested. Details about all attributes can be found at the Twitter's \href{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet}{Tweet object}\footnote{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet} page.
+
+\input{models/scrape_tweet.tex}
+
+
+\clearpage
+\subsubsection{Design}
+\label{subsec:sdlc-design}
+
+Design phase focuses on shaping the mechanisms by which data is ingested and transformed to create a dataset that can be easily used for data analysis 
+
+The resulting \gls{data-platform} must support storage of the full raw data as-is, without any changes being made in the ingestion process (\ref{sec:methods-data-ingestion}). The transformation process uses the full data set to apply filters and changes to the raw data. This process performs read operations on the ingested data, transforms \gls{in-memory} data, and stores the resulting dataset in a new location that is independent of the ingestion location. Before the resulting dataset is stored, it is filtered to contain only Croatian users, and the baseline list of User IDs is overwritten with the available Croatian user IDs. Figure \ref{figure:twitter-data-platform-design} shows an overview of the implemented \gls{data-platform} architecture.
+
+\begin{center}
+\includegraphics[width=14cm,keepaspectratio]{images/twitter-data-platform.png}
+\label{figure:twitter-data-platform-design}
+\captionof{figure}{Twitter \Gls{data-platform} Architecture}
+\end{center}
+
+Both ingestion and transformation output locations (in particular, the directories reflecting the ingestion date) are created at runtime. This mechanism allows the ingested and transformed data to be examined per ingestion date, and ensures that only the most recently ingested data is transformed, rather than the entire data for each \gls{data-pipeline} run. The resulting dataset is a union of all files in the date directories in the output file system of the data conversion and is analysed (\ref{sec:methods-data-analysis}) using the \gls{pandas} and \gls{matplotlib} tools.
+
+\paragraph{Data target filesystem} A filesystem is used to store data throughout the \gls{data-pipeline}. The data is stored on an on-premise Linux server provided by the University of Rijeka. The filesystem includes two main directories: \texttt{input} and \texttt{output}. The \texttt{output} directory is then divided into the \texttt{scrape} ( ingested data) and \texttt{clean} (transformed data) directories, partitioned by date.
+\input{tables/target_fs.tex}
+
+\vspace{1.2cm}
+\subsubsection{Development \& Testing}
+\label{subsec:sdlc-development}
+
+Development (Prototyping) \& Testing phase is focused on developing the mechanisms used to ingest, and transform data defined in the \nameref{subsec:sdlc-design} phase. This phase ensures that ingestion and transformation are independent (\gls{loosely-coupled}) processes, that enable historical and incremental data ingestion, notification mechanism and CI/CD mechanisms (\ref{sec:methods-cicd}).
+
+
+\vspace{1.2cm}
+\subsubsection{Maintenance}
+\label{subsec:sdlc-maintenance}
+
+Maintenance phase focuses on supporting the end-users in their \gls{data-platform} usage. Once Development \& Testing is completed and the system is deployed to \textit{production}, it is maintained to ensure that any unexpected \glspl{bug} are promptly fixed and supported to accommodate new \glspl{enhancement}. This phase may also support \gls{feature} development requests, but if a development effort exceeds the scope of the defined Design, a new iteration is initiated across \acrshort{sdlc} phases.

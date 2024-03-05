@@ -1,0 +1,91 @@
+\documentclass[a4paper, 12pt]{article}
+\AddToHook{cmd/section/before}{\clearpage}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[skip=10pt plus1pt, indent=40pt]{parskip}
+\usepackage[toc,section=section,acronym]{glossaries}
+\usepackage[titletoc]{appendix}
+\usepackage[font=small,labelfont=bf,hypcap=false]{caption}
+\usepackage[final]{pdfpages}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{footnote}
+\makesavenoteenv{tabular}
+\makesavenoteenv{table}
+
+\graphicspath{figures/}
+
+\usepackage{dirtree}
+\setlength{\DTbaselineskip}{20pt}
+\DTsetlength{0.4em}{1.8em}{0.2em}{0.8pt}{3.6pt}
+
+\usepackage[newfloat]{minted}
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Twitter objects}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Document start
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\title{Information Spread Analysis on Twitter}
+\author{Andrea Hrelja}
+\newcommand{\mentor}{prof. Ana Meštrović, PhD}
+
+%% Glossary + Acronyms
+\makeglossaries
+\input{definitions}
+
+\setlength{\parindent}{1cm}
+
+\begin{document}
+
+\begin{titlepage}
+\input{titlepage}
+\end{titlepage}
+
+% \setcounter{tocdepth}{2}
+
+\pagenumbering{roman}
+%% Frontmatter
+\include{frontmatter}
+\pagenumbering{arabic}
+
+
+%% Introduction
+%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{ch:introduction}
+\input{chapters/introduction}
+
+%% Methods
+%%%%%%%%%%
+\section{Methods}
+\label{ch:methods}
+\input{chapters/methods}
+
+%% Results
+%%%%%%%%%%
+\section{Results}
+\label{ch:results}
+\input{chapters/results}
+
+%% Conclusion
+%%%%%%%%%%%%%
+\section{Conclusion}
+\label{ch:conclusion}
+\input{chapters/conclusion}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Document end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Backmatter
+\include{backmatter}
+
+\end{document}
+abbrv

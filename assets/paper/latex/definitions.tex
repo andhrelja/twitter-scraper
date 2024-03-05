@@ -1,0 +1,256 @@
+\newglossaryentry{data-platform}
+{
+    name={\textit{data platform}},
+    description={A central repository and processing house for all of an organization's data}
+}
+
+\newglossaryentry{data-pipeline}
+{
+    name={data pipeline},
+    description={Series of data processing steps where the output of one element is the input of the next one}
+}
+
+\newglossaryentry{data-warehouse}
+{
+    name={Data Warehouse},
+    description={Central repository of information that can be analyzed to make more informed decisions}
+}
+
+\newglossaryentry{data-analyst}
+{
+    name={Data Analyst},
+    description={A person performing exploratory and statistical analysis on a dataset}
+}
+
+\newglossaryentry{data-view}
+{
+    name={data view},
+    description={A dataset that contains a subset of available information}
+}
+
+\newglossaryentry{data-service-provider}
+{
+    name={data service provider},
+    description={A natural or legal person who provides information and communication technology services to a declarant in relation to reporting obligations \cite{law_insider_2022}}
+}
+
+\newglossaryentry{user-object}
+{
+    name={User object},
+    description={\footnote{\href{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/user}{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/user}}Twitter User object model}
+}
+
+\newglossaryentry{tweet-object}
+{
+    name={Tweet object},
+    description={\footnote{\href{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet}{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet}} Twitter Tweet object model}
+}
+
+\newglossaryentry{operating-system}
+{
+    name={operating system},
+    description={(OS) System software that manages computer hardware, software resources, and provides common services for computer programs}
+}
+
+\newglossaryentry{loosely-coupled}
+{
+    name={loosely coupled},
+    description={An approach to system design where individual components depend on each other to the least extent practicable}
+}
+
+\newglossaryentry{branch-protection-rules}
+{
+    name={branch protection rules},
+    description={A feature available as a part of \gls{github} services that allows setting up security constraints on \acrshort{crud} and other manipulation with the repository}
+}
+
+\newglossaryentry{rest-api}
+{
+    name={\acrshort{rest} API},
+    description={(also known as RESTful API) is an [A]pplication [P]rogramming [I]nterface that allows for interaction with RESTful web services, created by computer scientist Roy Fielding \cite{redhat2022}}
+}
+
+\newglossaryentry{python}
+{
+    name=Python,
+    description={Programming language, convenient for data processing}
+}
+
+
+\newglossaryentry{data-structure}
+{
+    name={data structure},
+    description={A data organization, management, and storage format that is usually chosen for efficient access to data \cite{algintro2009}}
+}
+
+\newglossaryentry{bug}
+{
+    name=bug,
+    description={An error, flaw or fault in computer software}
+}
+
+\newglossaryentry{feature}
+{
+    name=feature,
+    description={An options or functional capability available to the user; a distinguishing characteristic of a software item}
+}
+
+\newglossaryentry{enhancement}
+{
+    name=enhancement,
+    description={Software enhancements and tweaks to existing \glspl{feature}}
+}
+
+\newglossaryentry{agile}
+{
+    name=Agile,
+    description={An iterative approach to project management and software development \cite{atlassian2022agile}}
+}
+
+% Data Ingestion
+\newglossaryentry{event-based}
+{
+    name={event-based},
+    description={A triggering mechanism that starts on an event (usually an \acrshort{http} request method)}
+}
+
+\newglossaryentry{schedule-based}
+{
+    name={schedule-based},
+    description={A triggering mechanism that starts at a given point in time}
+}
+
+\newglossaryentry{streaming-data}
+{
+    name={streaming data},
+    description={Data that is generated continuously by thousands of data sources, which typically send in the data records simultaneously, and in small sizes (order of Kilobytes) \cite{aws2022streamingdata}}
+}
+
+\newglossaryentry{real-time-data}
+{
+    name={real time data},
+    description={Data that is generated within specific time constraints \cite{medium2022wang}}
+}
+
+\newglossaryentry{big-data}
+{
+    name={big data},
+    description={Data that is distinguishable by specific attributes ("Big V's", volume, velocity, variety, veracity, value, ...) \cite{bigdataplatforms2016} }
+}
+
+\newglossaryentry{flat-file}
+{
+    name={flat file},
+    description={A type of database that stores data in a plain-text format}
+}
+
+\newglossaryentry{Json}
+{
+    name={JavaScript Object Notation},
+    description={A lightweight data-interchange format; type of \gls{flat-file}}
+}
+
+\newglossaryentry{file-system}
+{
+    name={file system},
+    description={A method and \gls{data-structure} that the \gls{operating-system} uses to control how data is stored and retrieved \cite{wirzenius2007linux}}
+}
+
+\newglossaryentry{lambda-architecture}
+{
+    name={Lambda Architecture},
+    description={Architecture designed to handle massive quantities of data by taking advantage of both batch and real-time processing methods \cite{wikipedia2022lambdaarchitecture}}
+}
+
+\newglossaryentry{OAuth}
+{
+    name={Open Authorization},
+    description={A delegated authorization framework for \acrshort{rest}ful services}
+}
+
+% Data Analysis
+
+\newglossaryentry{data-preprocessing}{
+    name={data preprocessing},
+    description={Data manipulation process used to ensure or enhance analysis performance \cite{tableau2022datacleaning}}
+}
+
+\newglossaryentry{data-visualization}{
+    name={data visualization},
+    description={A pictorial representation of data}
+}
+
+\newglossaryentry{standard-deviation}{
+    name={standard deviation},
+    description={A measure of the amount of variation or dispersion of a set of values \cite{bland1996}}
+}
+
+% CI/CD Deployments
+\newglossaryentry{github}{
+    name={GitHub},
+    description={An Internet hosting service for software development and version control using Git \cite{wikipedia2022github}}
+}
+
+\newglossaryentry{semantic-release}{
+    name={semantic release},
+    description={\footnote{\href{https://github.com/semantic-release/semantic-release}{https://github.com/semantic-release/semantic-release}} A process that creates a new (incremental) software version by determining if a new version is needed by reading commit messages that follow a set of formalized conventions}
+}
+
+\newglossaryentry{github-actions}{
+    name={GitHub Actions},
+    description={\footnote{\href{https://github.com/features/actions}{https://github.com/features/actions}} A deployment automation service issued by \gls{github}}
+}
+
+\newglossaryentry{unit-testing}{
+    name={unit testing},
+    description={A validation technique that asserts accuracy on the smallest piece of code that can be logically isolated in a system \cite{smartbear2022unittesting}}
+}
+
+\newglossaryentry{code-repository}{
+    name={code repository},
+    description={File archive and web hosting facility where programmers, software developers, and designers store large amounts of source code for the software and/or web pages for safekeeping}
+}
+
+\newglossaryentry{in-memory}{
+    name={in-memory},
+    description={Term used to describe information stored in a computer's \acrfull{ram}}
+}
+
+\newglossaryentry{pandas}{
+    name={pandas},
+    description={Flexible and easy to use open source data analysis and manipulation tool, built on top of the Python programming language}
+}
+
+\newglossaryentry{matplotlib}{
+    name={matplotlib},
+    description={Comprehensive library for creating static, animated, and interactive visualizations in Python}
+}
+
+\newglossaryentry{data-integrity}{
+    name={data integrity},
+    description={The maintenance and the assurance data accuracy and consistency over its entire life-cycle\cite{boritz2005isintegrity}}
+}
+
+\newglossaryentry{data-availability}{
+    name={data availability},
+    description={A constant availability of time-grained data sourced from an extended time period}
+}
+
+\newglossaryentry{temporal-network}{
+    name={temporal network},
+    description={A network whose links are only active at certain points in time}
+}
+
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{rad}{RAD}{Rapid Application Development}
+\newacronym{rup}{RUP}{Rational Unified Process}
+\newacronym{sdlc}{SDLC}{System Development Life Cycle}
+\newacronym{rest}{REST}{Representational State Transfer}
+\newacronym{http}{HTTP}{Hypertext Transfer Protocol}
+\newacronym{https}{HTTPS}{Hypertext Transfer Protocol Secure}
+\newacronym{json}{JSON}{\gls{Json}}
+\newacronym{oauth}{OAuth}{\gls{OAuth}}
+\newacronym{eda}{EDA}{Exploratory Data Analysis}
+\newacronym{cda}{CDA}{Confirmatory Data Analysis}
+\newacronym{crud}{CRUD}{Create, Read, Update, Delete}
+\newacronym{ram}{RAM}{Random Access Memory}
